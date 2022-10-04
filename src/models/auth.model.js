@@ -27,6 +27,14 @@ const authSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    location: {
+        type: Object,
+        default: {
+            type: "Point",
+            coordinates: [0.0, 0.0],
+        },
+        index: '2dsphere'
+    },
     email: {
         type: String,
         required: true

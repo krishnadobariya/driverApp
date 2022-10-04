@@ -1,5 +1,7 @@
 const chatRoom = require("./models/chatRoom.model");
 const chatModel = require("./models/chat.model");
+const authModel = require("../models/auth.model");
+
 const mongoose = require("mongoose");
 
 function socket(io) {
@@ -330,6 +332,35 @@ function socket(io) {
         })
         // ----- End readUnread ----- //
 
+
+        // ----- updateLatLong ----- //
+
+        socket.on("updateLatLong" , async(arg) => {
+           
+            const findAllUser = await authModel.find();
+            for(const updateUserLatLong of findAllUser){
+                await authModel.updateOne({
+                    _id : updateUserLatLong._id
+                },{
+                    $set: {
+                        location: {
+                            type: "Point",
+                            coordinates: [
+                                parseFloat(arg.longitude),
+                                parseFloat(arg.latitude),
+                            ],
+                        },
+                    }
+                })
+
+                const userRoom = `User${updateUserLatLong._id}`
+                io.to(userRoom).emit("updateLatLongSuccess", "lat long updated")
+
+            }
+
+        })
+
+        // ----- End readUnread ----- //
     })
 
 }

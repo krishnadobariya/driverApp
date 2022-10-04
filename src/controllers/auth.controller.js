@@ -51,14 +51,14 @@ exports.registration = async (req, res) => {
                 password: req.body.password
             });
 
-            const saveData = await authData.save();
+            const saveData = await authData.save(); 
             console.log("saveData", saveData.profile[0].res);
 
             const response = {
                 user_id: saveData._id,
                 profile: saveData.profile[0].res,
                 username: saveData.username,
-                age: saveData.age,
+                age: saveData.age,  
                 sex: saveData.sex,
                 vehicleType: saveData.vehicleType,
                 dailyKM: saveData.dailyKM,
@@ -196,7 +196,7 @@ exports.all_user = async (req, res) => {
                 }
             );
 
-            console.log("finalChatId",finalChatId.length);
+            console.log("finalChatId", finalChatId.length);
 
             if (finalChatId.length == 0) {
                 finalChatId = await chatRoom.find(
@@ -205,10 +205,10 @@ exports.all_user = async (req, res) => {
                         user1: userId,
                     }
                 );
-                console.log("2", userId, getChatRoomId._id,finalChatId._id);
+                console.log("2", userId, getChatRoomId._id, finalChatId._id);
             }
-            else{
-                console.log("1", getChatRoomId._id,userId,finalChatId._id);
+            else {
+                console.log("1", getChatRoomId._id, userId, finalChatId._id);
             }
 
             console.log("userId::", finalChatId[0] ? finalChatId[0]._id : "");
@@ -342,6 +342,42 @@ exports.viewById = async (req, res) => {
                 code: 500,
                 statusCode: 0,
                 error: error.message
+            }
+        )
+    }
+}
+
+exports.getLatLong = async(req,res) => {
+    const findUser = await authModel.findOne({
+        _id : req.params.id
+    })
+
+    if(findUser){
+
+        const data = {
+            userId : findUser._id,
+            userProfile: findUser.profile[0] ? findUser.profile[0].res : "",
+            latitude : findUser.location.coordinates[1],
+            longitude : findUser.location.coordinates[0]
+        }
+        res.status(status.NOT_FOUND).json(
+            {
+                message: "User Not Found",
+                status: false,
+                code: 404,
+                statusCode: 0,
+                data :data
+            }
+        )
+        
+
+    }else{
+        res.status(status.NOT_FOUND).json(
+            {
+                message: "User Not Found",
+                status: false,
+                code: 404,
+                statusCode: 0
             }
         )
     }
