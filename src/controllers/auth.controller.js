@@ -360,12 +360,12 @@ exports.getLatLong = async(req,res) => {
             latitude : findUser.location.coordinates[1],
             longitude : findUser.location.coordinates[0]
         }
-        res.status(status.NOT_FOUND).json(
+        res.status(status.OK).json(
             {
-                message: "User Not Found",
-                status: false,
-                code: 404,
-                statusCode: 0,
+                message: "get Lat long!",
+                status: true,
+                code: 200,
+                statusCode: 1,
                 data :data
             }
         )
