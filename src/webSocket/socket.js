@@ -337,26 +337,33 @@ function socket(io) {
 
         socket.on("updateLatLong" , async(arg) => {
            
-            const findAllUser = await authModel.find();
-            for(const updateUserLatLong of findAllUser){
-                await authModel.updateOne({
-                    _id : updateUserLatLong._id
-                },{
-                    $set: {
-                        location: {
-                            type: "Point",
-                            coordinates: [
-                                parseFloat(arg.longitude),
-                                parseFloat(arg.latitude),
-                            ],
-                        },
-                    }
-                })
+          
+            const userId = await authModel.findOne({
+                _id : arg.user_id
+            })
 
-                const userRoom = `User${updateUserLatLong._id}`
-                io.to(userRoom).emit("updateLatLongSuccess", "lat long updated")
-
+            if(userId){
+                for(const updateUserLatLong of findAllUser){
+                    await authModel.updateOne({
+                        _id : arg.user_id
+                    },{
+                        $set: {
+                            location: {
+                                type: "Point",
+                                coordinates: [
+                                    parseFloat(arg.longitude),
+                                    parseFloat(arg.latitude),
+                                ],
+                            },
+                        }
+                    })
+                    io.emit("updateLatLongSuccess", "lat long updated")
+                }
+            }else{
+                io.emit("updateLatLongSuccess", "User Not Found!")
             }
+
+            
 
         })
 
