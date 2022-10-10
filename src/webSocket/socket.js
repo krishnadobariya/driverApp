@@ -359,7 +359,12 @@ function socket(io) {
                             },
                         }
                     })
-                    io.emit("updateLatLongSuccess", "lat long updated")
+                    const data = {
+                        user_id : arg.user_id,
+                        longitude: arg.longitude,
+                        latitude: arg.latitude
+                    }
+                    io.emit("updateLatLongSuccess", data)
             }else{
                 io.emit("updateLatLongSuccess", "User Not Found!")
             }
