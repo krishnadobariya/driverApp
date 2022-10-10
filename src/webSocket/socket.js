@@ -342,8 +342,10 @@ function socket(io) {
                 _id : arg.user_id
             })
 
+            console.log(userId);
+
             if(userId){
-                for(const updateUserLatLong of findAllUser){
+             
                     await authModel.updateOne({
                         _id : arg.user_id
                     },{
@@ -358,7 +360,6 @@ function socket(io) {
                         }
                     })
                     io.emit("updateLatLongSuccess", "lat long updated")
-                }
             }else{
                 io.emit("updateLatLongSuccess", "User Not Found!")
             }
