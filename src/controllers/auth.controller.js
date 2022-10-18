@@ -400,8 +400,8 @@ exports.getUserInfo = async(req,res) => {
                 _id: userInfo._id,
                 profile: userInfo.profile,
                 username: userInfo.username,
-               latitude:userInfo.location.coordinates[0],
-               longitude:userInfo.location.coordinates[1]
+               latitude:userInfo.location.coordinates[1],
+               longitude:userInfo.location.coordinates[0]
             }
             userInfoList.push(response)
 
