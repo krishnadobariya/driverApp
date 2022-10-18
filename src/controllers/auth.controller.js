@@ -381,3 +381,51 @@ exports.getLatLong = async (req, res) => {
         )
     }
 }
+
+exports.getUserInfo = async(req,res) => {
+    try {
+
+        const page = parseInt(req.query.page)
+        const limit = parseInt(req.query.limit)
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
+
+        const getAllData = await authModel.find().skip(startIndex).limit(endIndex).select('-__v');
+
+        const userInfoList = [];
+        for (const userInfo of getAllData) {
+
+        
+            const response = {
+                _id: userInfo._id,
+                profile: userInfo.profile,
+                username: userInfo.username,
+               latitude:userInfo.location.coordinates[0],
+               longitude:userInfo.location.coordinates[1]
+            }
+            userInfoList.push(response)
+
+
+        }
+
+        res.status(status.OK).json(
+            {
+                message: "User Login Successfully",
+                status: true,
+                code: 200,
+                statusCode: 1,
+                data: userInfoList
+            }
+        )
+
+    } catch (error) {
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Somthing Went Wrong",
+                status: false,
+                code: 501,
+                statusCode: 0
+            }
+        )
+    }
+}
