@@ -20,8 +20,12 @@ const authSchema = mongoose.Schema({
         required: true
     },
     vehicleType: {
-        type: String,
+        type: Number,
         required: true
+    },
+    vehicleSubType:{
+        type: String,
+        required : true
     },
     dailyKM: {
         type: String,
