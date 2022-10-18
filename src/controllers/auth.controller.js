@@ -134,6 +134,7 @@ exports.login = async (req, res) => {
                     age: getData[0].age,
                     sex: getData[0].sex,
                     vehicleType: getData[0].vehicleType,
+                    vehicleSubType: getData[0].vehicleSubType,
                     dailyKM: getData[0].dailyKM,
                     email: getData[0].email,
                     number: getData[0].number,
@@ -401,7 +402,8 @@ exports.getUserInfo = async(req,res) => {
                 profile: userInfo.profile,
                 username: userInfo.username,
                latitude:userInfo.location.coordinates[1],
-               longitude:userInfo.location.coordinates[0]
+               longitude:userInfo.location.coordinates[0],
+
             }
             userInfoList.push(response)
 
