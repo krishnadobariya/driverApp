@@ -45,22 +45,24 @@ exports.registration = async (req, res) => {
                 age: req.body.age,
                 sex: req.body.sex,
                 vehicleType: req.body.vehicleType,
+                vehicleSubType: req.body.vehicleSubType,
                 dailyKM: req.body.dailyKM,
                 email: email,
                 number: req.body.number,
                 password: req.body.password
             });
 
-            const saveData = await authData.save(); 
+            const saveData = await authData.save();
             console.log("saveData", saveData.profile[0].res);
 
             const response = {
                 user_id: saveData._id,
                 profile: saveData.profile[0].res,
                 username: saveData.username,
-                age: saveData.age,  
+                age: saveData.age,
                 sex: saveData.sex,
                 vehicleType: saveData.vehicleType,
+                vehicleSubType: saveData.vehicleSubType,
                 dailyKM: saveData.dailyKM,
                 email: saveData.email,
                 number: saveData.number,
@@ -182,9 +184,9 @@ exports.all_user = async (req, res) => {
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
 
-        const getAllData = await authModel.find({ _id: { $ne: userId } }).skip(startIndex).limit(endIndex).select('-__v');
-        // console.log("getAllData::", getAllData._id);
+        const getAllData = await authModel.find({ _id : {$ne : userId}, vehicleType: req.body.vehicle_type }).skip(startIndex).limit(endIndex).select('-__v');
 
+        console.log("getAllData", getAllData);
         const chatRoomId = [];
         for (const getChatRoomId of getAllData) {
 
@@ -196,7 +198,6 @@ exports.all_user = async (req, res) => {
                 }
             );
 
-            console.log("finalChatId", finalChatId.length);
 
             if (finalChatId.length == 0) {
                 finalChatId = await chatRoom.find(
@@ -205,14 +206,11 @@ exports.all_user = async (req, res) => {
                         user1: userId,
                     }
                 );
-                console.log("2", userId, getChatRoomId._id, finalChatId._id);
+
             }
             else {
-                console.log("1", getChatRoomId._id, userId, finalChatId._id);
+
             }
-
-            console.log("userId::", finalChatId[0] ? finalChatId[0]._id : "");
-
             const response = {
                 _id: getChatRoomId._id,
                 chatRoom: finalChatId[0] ? finalChatId[0]._id : "",
@@ -221,6 +219,7 @@ exports.all_user = async (req, res) => {
                 age: getChatRoomId.age,
                 sex: getChatRoomId.sex,
                 vehicleType: getChatRoomId.vehicleType,
+                vehicleSubType: getChatRoomId.vehicleSubType,
                 dailyKM: getChatRoomId.dailyKM,
                 email: getChatRoomId.email,
                 number: getChatRoomId.number,
@@ -347,18 +346,18 @@ exports.viewById = async (req, res) => {
     }
 }
 
-exports.getLatLong = async(req,res) => {
+exports.getLatLong = async (req, res) => {
     const findUser = await authModel.findOne({
-        _id : req.params.id
+        _id: req.params.id
     })
 
-    if(findUser){
+    if (findUser) {
 
         const data = {
-            userId : findUser._id,
+            userId: findUser._id,
             userProfile: findUser.profile[0] ? findUser.profile[0].res : "",
-            latitude : findUser.location.coordinates[1],
-            longitude : findUser.location.coordinates[0]
+            latitude: findUser.location.coordinates[1],
+            longitude: findUser.location.coordinates[0]
         }
         res.status(status.OK).json(
             {
@@ -366,12 +365,12 @@ exports.getLatLong = async(req,res) => {
                 status: true,
                 code: 200,
                 statusCode: 1,
-                data :data
+                data: data
             }
         )
-        
 
-    }else{
+
+    } else {
         res.status(status.NOT_FOUND).json(
             {
                 message: "User Not Found",
