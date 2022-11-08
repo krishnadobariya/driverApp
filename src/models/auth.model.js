@@ -60,6 +60,10 @@ const authSchema = mongoose.Schema({
     password: {
         type: String,
         required: true
+    },
+    fcm_token : {
+        type: String,
+        required : true
     }
 },{
     collection: 'auth'
