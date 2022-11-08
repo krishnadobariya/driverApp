@@ -121,6 +121,8 @@ exports.login = async (req, res) => {
 
         const getAuthData = await authModel.find({ email: email });
 
+        
+
         if (getAuthData.length == 0) {
             res.status(status.NOT_FOUND).json(
                 {
@@ -133,6 +135,13 @@ exports.login = async (req, res) => {
         } else {
             if (getAuthData[0].password == password) {
 
+                await authModel.updateOne({
+                    email: email
+                }, {
+                    $set : {
+                        fcm_token : req.body.fcm_token
+                    }
+                })
                 const getData = await authModel.find({ email: email });
 
                 const response = {
@@ -197,7 +206,7 @@ exports.all_user = async (req, res) => {
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
 
-        const getAllData = await authModel.find({ _id : {$ne : userId}, vehicleType: req.body.vehicle_type }).skip(startIndex).limit(endIndex).select('-__v');
+        const getAllData = await authModel.find({ _id : {$ne : userId}, vehicleType: req.body.vehicle_type }).sort(up).skip(startIndex).limit(endIndex).select('-__v');
 
         console.log("getAllData", getAllData);
         const chatRoomId = [];
