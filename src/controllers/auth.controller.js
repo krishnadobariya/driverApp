@@ -3,6 +3,8 @@ const chatRoom = require("../webSocket/models/chatRoom.model")
 const cloudinary = require("../utils/cloudinary.utils");
 const status = require("http-status");
 const mongoose = require("mongoose");
+const chatRoomModel = require("../webSocket/models/chatRoom.model");
+const chatModel = require("../webSocket/models/chat.model");
 const objectId = mongoose.Schema.Types.ObjectId;
 
 exports.registration = async (req, res) => {
@@ -49,7 +51,10 @@ exports.registration = async (req, res) => {
                 dailyKM: req.body.dailyKM,
                 email: email,
                 number: req.body.number,
-                password: req.body.password
+                password: req.body.password,
+                model : req.body.model,
+                year : req.body.year,
+                trim : req.body.trim ? req.body.trim : 0 
             });
 
             const saveData = await authData.save();
@@ -66,7 +71,10 @@ exports.registration = async (req, res) => {
                 dailyKM: saveData.dailyKM,
                 email: saveData.email,
                 number: saveData.number,
-                password: saveData.password
+                password: saveData.password,
+                model : saveData.model,
+                year : saveData.year,
+                trim : saveData.trim
             }
 
             res.status(status.CREATED).json(
@@ -138,7 +146,10 @@ exports.login = async (req, res) => {
                     dailyKM: getData[0].dailyKM,
                     email: getData[0].email,
                     number: getData[0].number,
-                    password: getData[0].password
+                    password: getData[0].password,
+                    model : getData[0].model,
+                    year : getData[0].year,
+                    trim : getData[0].trim
                 }
 
                 res.status(status.OK).json(
@@ -224,7 +235,11 @@ exports.all_user = async (req, res) => {
                 dailyKM: getChatRoomId.dailyKM,
                 email: getChatRoomId.email,
                 number: getChatRoomId.number,
-                password: getChatRoomId.password
+                password: getChatRoomId.password,
+                model : getChatRoomId.model,
+                year : getChatRoomId.year,
+                trim : getChatRoomId.trim
+                
             }
             chatRoomId.push(response)
 
@@ -430,4 +445,71 @@ exports.getUserInfo = async(req,res) => {
             }
         )
     }
+}
+
+exports.userLogout = async(req,res,next) => {
+try {
+
+    const findUser = await authModel.findOne({
+        _id : req.params.id
+    })
+
+    if(findUser){
+
+        await authModel.deleteOne({
+            _id : req.params.id
+        })
+
+        const findChatRoom = await chatRoomModel.find({
+            $or : [{
+                user1 : req.params.id
+            }, {
+                user2 : req.params.id
+            }]
+        })
+
+        for(const roomId of findChatRoom){
+            await chatModel.deleteOne({
+                chatRoomId : roomId._id
+            })
+        }
+        await chatRoomModel.deleteOne({
+            user1 : req.params.id
+        })
+
+        await chatRoomModel.deleteOne({
+            user2 : req.params.id
+        })
+
+        res.status(status.OK).json(
+            {
+                message: "User Logout Successfully",
+                status: true,
+                code: 200,
+                statusCode: 1,
+            }
+        )
+
+
+    }else{
+        res.status(status.NOT_FOUND).json(
+            {
+                message: "User Not Found",
+                status: true,
+                code: 404,
+                statusCode: 1
+            }
+        )
+    }
+    
+} catch (error) {
+    res.status(status.INTERNAL_SERVER_ERROR).json(
+        {
+            message: "Somthing Went Wrong",
+            status: false,
+            code: 501,
+            statusCode: 0
+        }
+    )
+}
 }
