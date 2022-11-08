@@ -147,8 +147,8 @@ exports.login = async (req, res) => {
                     email: getData[0].email,
                     number: getData[0].number,
                     password: getData[0].password,
-                    model : getData[0].model,
-                    year : getData[0].year,
+                    model : getData[0].model ? getData[0].model : "",
+                    year : getData[0].year ? getData[0].year : "",
                     trim : getData[0].trim
                 }
 
@@ -236,8 +236,8 @@ exports.all_user = async (req, res) => {
                 email: getChatRoomId.email,
                 number: getChatRoomId.number,
                 password: getChatRoomId.password,
-                model : getChatRoomId.model,
-                year : getChatRoomId.year,
+                model : getChatRoomId.model ? getChatRoomId.model  : "",
+                year : getChatRoomId.year ? getChatRoomId.year : "",
                 trim : getChatRoomId.trim
                 
             }
