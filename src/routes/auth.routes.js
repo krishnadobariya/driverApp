@@ -7,7 +7,8 @@ const {
     all_user,
     viewById,
     getLatLong,
-    getUserInfo
+    getUserInfo,
+    userLogout
 } = require("../controllers/auth.controller");
 
 router.post("/register", upload.array('profile'), registration);
@@ -16,5 +17,6 @@ router.get("/all-user", all_user);
 router.get("/view-by-id/:id", viewById);
 router.get("/get-lat-long/:id" , getLatLong);
 router.get("/get-user-info" , getUserInfo);
+router.get("/logout/:id" , userLogout)
 
 module.exports = router;
