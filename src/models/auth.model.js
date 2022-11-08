@@ -23,6 +23,16 @@ const authSchema = mongoose.Schema({
         type: Number,
         required: true
     },
+    model: {
+        type: String,
+    },
+    year : {
+        type: String,
+    },
+    trim:{
+        type: Number,
+        default:0
+    },
     vehicleSubType:{
         type: String,
         required : true
