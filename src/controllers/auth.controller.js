@@ -54,7 +54,8 @@ exports.registration = async (req, res) => {
                 password: req.body.password,
                 model : req.body.model,
                 year : req.body.year,
-                trim : req.body.trim ? req.body.trim : 0 
+                trim : req.body.trim ? req.body.trim : 0,
+                fcm_token : req.body.fcm_token
             });
 
             const saveData = await authData.save();
@@ -86,7 +87,6 @@ exports.registration = async (req, res) => {
                     data: response
                 }
             )
-
         } else {
             res.status(status.CONFLICT).json(
                 {
@@ -149,7 +149,8 @@ exports.login = async (req, res) => {
                     password: getData[0].password,
                     model : getData[0].model ? getData[0].model : "",
                     year : getData[0].year ? getData[0].year : "",
-                    trim : getData[0].trim
+                    trim : getData[0].trim,
+                    fcm_token : getData[0].fcm_token ? getData[0].fcm_token  :""
                 }
 
                 res.status(status.OK).json(
