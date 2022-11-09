@@ -120,9 +120,6 @@ exports.login = async (req, res) => {
         let password = req.body.password;
 
         const getAuthData = await authModel.find({ email: email });
-
-        
-
         if (getAuthData.length == 0) {
             res.status(status.NOT_FOUND).json(
                 {
@@ -206,7 +203,7 @@ exports.all_user = async (req, res) => {
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
 
-        const getAllData = await authModel.find({ _id : {$ne : userId}, vehicleType: req.body.vehicle_type }).sort(up).skip(startIndex).limit(endIndex).select('-__v');
+        const getAllData = await authModel.find({ _id : {$ne : userId}, vehicleType: req.body.vehicle_type }).skip(startIndex).limit(endIndex).select('-__v');
 
         console.log("getAllData", getAllData);
         const chatRoomId = [];
@@ -219,7 +216,6 @@ exports.all_user = async (req, res) => {
                     user2: userId,
                 }
             );
-
 
             if (finalChatId.length == 0) {
                 finalChatId = await chatRoom.find(
