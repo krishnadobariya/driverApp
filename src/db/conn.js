@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-mongoose.connect("mongodb://localhost:27017/cityRiders")
+mongoose.connect("mongodb+srv://driverApp:driverApp@cluster0.kod8wg5.mongodb.net/?retryWrites=true&w=majority")
 .then(() => {
     console.log("Database Connected..")
 })
