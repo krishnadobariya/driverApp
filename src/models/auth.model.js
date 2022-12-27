@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 
-// Profile picture, name, age, sex, Type of vehicle they drive, Daily KM driving, Email, Phone num, password
-
 const authSchema = mongoose.Schema({
     profile: {
         type: Array,
@@ -11,33 +9,23 @@ const authSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    email: {
+        type: String,
+        required: true
+    },
+    country_code: {
+        type: String,
+        required: true
+    },
+    phone_number: {
+        type: String,
+        required: true
+    },
     age: {
         type: String,
         required: true
     },
-    sex: {
-        type: String,
-        required: true
-    },
-    vehicleType: {
-        type: Number,
-        required: true
-    },
-    model: {
-        type: String,
-    },
-    year : {
-        type: String,
-    },
-    trim:{
-        type: Number,
-        default:0
-    },
-    vehicleSubType:{
-        type: String,
-        required : true
-    },
-    dailyKM: {
+    gender: {
         type: String,
         required: true
     },
@@ -48,14 +36,6 @@ const authSchema = mongoose.Schema({
             coordinates: [0.0, 0.0],
         },
         index: '2dsphere'
-    },
-    email: {
-        type: String,
-        required: true
-    },
-    number: {
-        type: String,
-        required: true
     },
     password: {
         type: String,

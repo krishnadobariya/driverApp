@@ -1,11 +1,10 @@
-const authModel = require("../models/auth.model");
-const chatRoom = require("../webSocket/models/chatRoom.model")
-const cloudinary = require("../utils/cloudinary.utils");
-const status = require("http-status");
 const mongoose = require("mongoose");
+const authModel = require("../models/auth.model");
+const Vehicle = require("../models/vehicle.model");
 const chatRoomModel = require("../webSocket/models/chatRoom.model");
 const chatModel = require("../webSocket/models/chat.model");
-const objectId = mongoose.Schema.Types.ObjectId;
+const cloudinary = require("../utils/cloudinary.utils");
+const status = require("http-status");
 
 exports.registration = async (req, res) => {
     try {
@@ -15,7 +14,6 @@ exports.registration = async (req, res) => {
         const cloudinaryImageUploadMethod = async file => {
             return new Promise(resolve => {
                 cloudinary.uploader.upload(file, (err, res) => {
-                    console.log("file", file);
                     if (err) return err
                     resolve({
                         res: res.secure_url
@@ -27,55 +25,66 @@ exports.registration = async (req, res) => {
 
         const urls = []
         const files = req.files;
-        console.log("req.files::::", req.files);
 
         for (const file of files) {
             const { path } = file
             console.log("path::", path);
 
             const newPath = await cloudinaryImageUploadMethod(path)
-            console.log("newPath::", newPath);
             urls.push(newPath)
         }
 
         const getData = await authModel.find({ email: email });
 
         if (getData.length == 0) {
+            // --- User's Basic Details Inserting Here --- //
             const authData = authModel({
                 profile: urls,
                 username: req.body.username,
+                email: req.body.email,
+                country_code: req.body.country_code,
+                phone_number: req.body.phone_number,
                 age: req.body.age,
-                sex: req.body.sex,
-                vehicleType: req.body.vehicleType,
-                vehicleSubType: req.body.vehicleSubType,
-                dailyKM: req.body.dailyKM,
-                email: email,
-                number: req.body.number,
+                gender: req.body.gender,
                 password: req.body.password,
-                model : req.body.model,
-                year : req.body.year,
-                trim : req.body.trim ? req.body.trim : 0,
-                fcm_token : req.body.fcm_token
+                fcm_token: req.body.fcm_token
             });
-
             const saveData = await authData.save();
-            console.log("saveData", saveData.profile[0].res);
+            console.log("saveData:::", saveData);
+
+
+            // --- After the details of the user are added, to add the details of the vehicle --- // 
+            const vehicleData = Vehicle({
+                user_id: saveData._id,
+                vehicle_img_id: "63aa904fca104dd60f252724", // when create image related collection that time input image table id here
+                vehicle_type: req.body.vehicle_type,
+                model: req.body.model,
+                trim: req.body.trim,
+                year: req.body.year,
+                daily_driving: req.body.daily_driving,
+                unit: req.body.unit,
+            })
+            const saveVehicleData =await vehicleData.save();
+            console.log("saveVehicleData:::", saveVehicleData);
 
             const response = {
                 user_id: saveData._id,
                 profile: saveData.profile[0].res,
                 username: saveData.username,
-                age: saveData.age,
-                sex: saveData.sex,
-                vehicleType: saveData.vehicleType,
-                vehicleSubType: saveData.vehicleSubType,
-                dailyKM: saveData.dailyKM,
                 email: saveData.email,
-                number: saveData.number,
+                country_code: saveData.country_code,
+                phone_number: saveData.phone_number,
+                age: saveData.age,
+                gender: saveData.gender,
                 password: saveData.password,
-                model : saveData.model,
-                year : saveData.year,
-                trim : saveData.trim
+                fcm_token: saveData.fcm_token,
+                vehicle_img_id: saveVehicleData.vehicle_img_id,
+                vehicle_type: saveVehicleData.vehicle_type,
+                model: saveVehicleData.model,
+                trim: saveVehicleData.trim,
+                year: saveVehicleData.year,
+                daily_driving: saveVehicleData.daily_driving,
+                unit: saveVehicleData.unit
             }
 
             res.status(status.CREATED).json(
@@ -97,8 +106,6 @@ exports.registration = async (req, res) => {
                 }
             )
         }
-
-
     } catch (error) {
         console.log("Error::", error);
         res.status(status.INTERNAL_SERVER_ERROR).json(
@@ -135,8 +142,8 @@ exports.login = async (req, res) => {
                 await authModel.updateOne({
                     email: email
                 }, {
-                    $set : {
-                        fcm_token : req.body.fcm_token
+                    $set: {
+                        fcm_token: req.body.fcm_token
                     }
                 })
                 const getData = await authModel.find({ email: email });
@@ -153,10 +160,10 @@ exports.login = async (req, res) => {
                     email: getData[0].email,
                     number: getData[0].number,
                     password: getData[0].password,
-                    model : getData[0].model ? getData[0].model : "",
-                    year : getData[0].year ? getData[0].year : "",
-                    trim : getData[0].trim,
-                    fcm_token : getData[0].fcm_token ? getData[0].fcm_token  :""
+                    model: getData[0].model ? getData[0].model : "",
+                    year: getData[0].year ? getData[0].year : "",
+                    trim: getData[0].trim,
+                    fcm_token: getData[0].fcm_token ? getData[0].fcm_token : ""
                 }
 
                 res.status(status.OK).json(
@@ -203,14 +210,14 @@ exports.all_user = async (req, res) => {
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
 
-        const getAllData = await authModel.find({ _id : {$ne : userId}, vehicleType: req.body.vehicle_type }).skip(startIndex).limit(endIndex).select('-__v');
+        const getAllData = await authModel.find({ _id: { $ne: userId }, vehicleType: req.body.vehicle_type }).skip(startIndex).limit(endIndex).select('-__v');
 
         console.log("getAllData", getAllData);
         const chatRoomId = [];
         for (const getChatRoomId of getAllData) {
 
             var finalChatId = "";
-            finalChatId = await chatRoom.find(
+            finalChatId = await chatRoomModel.find(
                 {
                     user1: getChatRoomId._id,
                     user2: userId,
@@ -218,7 +225,7 @@ exports.all_user = async (req, res) => {
             );
 
             if (finalChatId.length == 0) {
-                finalChatId = await chatRoom.find(
+                finalChatId = await chatRoomModel.find(
                     {
                         user2: getChatRoomId._id,
                         user1: userId,
@@ -242,15 +249,15 @@ exports.all_user = async (req, res) => {
                 email: getChatRoomId.email,
                 number: getChatRoomId.number,
                 password: getChatRoomId.password,
-                model : getChatRoomId.model ? getChatRoomId.model  : "",
-                year : getChatRoomId.year ? getChatRoomId.year : "",
-                trim : getChatRoomId.trim
-                
+                model: getChatRoomId.model ? getChatRoomId.model : "",
+                year: getChatRoomId.year ? getChatRoomId.year : "",
+                trim: getChatRoomId.trim
+
             }
             chatRoomId.push(response)
 
 
-            // const findChatRoom = await chatRoom.find(
+            // const findChatRoom = await chatRoomModel.find(
             //     {
             //         $or: [
             //             {
@@ -404,7 +411,7 @@ exports.getLatLong = async (req, res) => {
     }
 }
 
-exports.getUserInfo = async(req,res) => {
+exports.getUserInfo = async (req, res) => {
     try {
 
         const page = parseInt(req.query.page)
@@ -417,13 +424,13 @@ exports.getUserInfo = async(req,res) => {
         const userInfoList = [];
         for (const userInfo of getAllData) {
 
-        
+
             const response = {
                 _id: userInfo._id,
                 profile: userInfo.profile,
                 username: userInfo.username,
-               latitude:userInfo.location.coordinates[1],
-               longitude:userInfo.location.coordinates[0],
+                latitude: userInfo.location.coordinates[1],
+                longitude: userInfo.location.coordinates[0],
 
             }
             userInfoList.push(response)
@@ -453,69 +460,69 @@ exports.getUserInfo = async(req,res) => {
     }
 }
 
-exports.userLogout = async(req,res,next) => {
-try {
+exports.userLogout = async (req, res, next) => {
+    try {
 
-    const findUser = await authModel.findOne({
-        _id : req.params.id
-    })
-
-    if(findUser){
-
-        await authModel.deleteOne({
-            _id : req.params.id
+        const findUser = await authModel.findOne({
+            _id: req.params.id
         })
 
-        const findChatRoom = await chatRoomModel.find({
-            $or : [{
-                user1 : req.params.id
-            }, {
-                user2 : req.params.id
-            }]
-        })
+        if (findUser) {
 
-        for(const roomId of findChatRoom){
-            await chatModel.deleteOne({
-                chatRoomId : roomId._id
+            await authModel.deleteOne({
+                _id: req.params.id
             })
-        }
-        await chatRoomModel.deleteOne({
-            user1 : req.params.id
-        })
 
-        await chatRoomModel.deleteOne({
-            user2 : req.params.id
-        })
+            const findChatRoom = await chatRoomModel.find({
+                $or: [{
+                    user1: req.params.id
+                }, {
+                    user2: req.params.id
+                }]
+            })
 
-        res.status(status.OK).json(
-            {
-                message: "User Logout Successfully",
-                status: true,
-                code: 200,
-                statusCode: 1,
+            for (const roomId of findChatRoom) {
+                await chatModel.deleteOne({
+                    chatRoomId: roomId._id
+                })
             }
-        )
+            await chatRoomModel.deleteOne({
+                user1: req.params.id
+            })
+
+            await chatRoomModel.deleteOne({
+                user2: req.params.id
+            })
+
+            res.status(status.OK).json(
+                {
+                    message: "User Logout Successfully",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                }
+            )
 
 
-    }else{
-        res.status(status.NOT_FOUND).json(
+        } else {
+            res.status(status.NOT_FOUND).json(
+                {
+                    message: "User Not Found",
+                    status: true,
+                    code: 404,
+                    statusCode: 1
+                }
+            )
+        }
+
+    } catch (error) {
+        res.status(status.INTERNAL_SERVER_ERROR).json(
             {
-                message: "User Not Found",
-                status: true,
-                code: 404,
-                statusCode: 1
+                message: "Somthing Went Wrong",
+                status: false,
+                code: 501,
+                statusCode: 0
             }
         )
     }
-    
-} catch (error) {
-    res.status(status.INTERNAL_SERVER_ERROR).json(
-        {
-            message: "Somthing Went Wrong",
-            status: false,
-            code: 501,
-            statusCode: 0
-        }
-    )
-}
 }
