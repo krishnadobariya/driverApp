@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const authModel = require("../models/auth.model");
-const Vehicle = require("../models/vehicle.model");
+const vehicleModel = require("../models/vehicle.model");
 const chatRoomModel = require("../webSocket/models/chatRoom.model");
 const chatModel = require("../webSocket/models/chat.model");
 const cloudinary = require("../utils/cloudinary.utils");
@@ -35,8 +35,10 @@ exports.registration = async (req, res) => {
         }
 
         const getData = await authModel.find({ email: email });
+        
 
         if (getData.length == 0) {
+
             // --- User's Basic Details Inserting Here --- //
             const authData = authModel({
                 profile: urls,
@@ -47,25 +49,12 @@ exports.registration = async (req, res) => {
                 age: req.body.age,
                 gender: req.body.gender,
                 password: req.body.password,
-                fcm_token: req.body.fcm_token
+                fcm_token: req.body.fcm_token,
+                vehicle: req.body.vehicle
             });
             const saveData = await authData.save();
             console.log("saveData:::", saveData);
 
-
-            // --- After the details of the user are added, to add the details of the vehicle --- // 
-            const vehicleData = Vehicle({
-                user_id: saveData._id,
-                vehicle_img_id: "63aa904fca104dd60f252724", // when create image related collection that time input image table id here
-                vehicle_type: req.body.vehicle_type,
-                model: req.body.model,
-                trim: req.body.trim,
-                year: req.body.year,
-                daily_driving: req.body.daily_driving,
-                unit: req.body.unit,
-            })
-            const saveVehicleData =await vehicleData.save();
-            console.log("saveVehicleData:::", saveVehicleData);
 
             const response = {
                 user_id: saveData._id,
@@ -78,13 +67,7 @@ exports.registration = async (req, res) => {
                 gender: saveData.gender,
                 password: saveData.password,
                 fcm_token: saveData.fcm_token,
-                vehicle_img_id: saveVehicleData.vehicle_img_id,
-                vehicle_type: saveVehicleData.vehicle_type,
-                model: saveVehicleData.model,
-                trim: saveVehicleData.trim,
-                year: saveVehicleData.year,
-                daily_driving: saveVehicleData.daily_driving,
-                unit: saveVehicleData.unit
+                vehicle: saveData.vehicle
             }
 
             res.status(status.CREATED).json(
@@ -342,22 +325,22 @@ exports.all_user = async (req, res) => {
     }
 }
 
-exports.viewById = async (req, res) => {
+exports.userProfile = async (req, res) => {
     try {
 
-        const findUserById = await authModel.findById(
+        const getUserData = await vehicleModel.find(
             {
-                _id: req.params.id
+                user_id: req.params.id
             }
-        ).select('-__v');
+        ).populate("user_id")
 
         res.status(status.OK).json(
             {
-                message: "User Login Successfully",
+                message: "Get User Profile Data",
                 status: true,
                 code: 200,
                 statusCode: 1,
-                data: findUserById
+                data: getUserData
             }
         )
 

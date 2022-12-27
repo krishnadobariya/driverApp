@@ -1,0 +1,291 @@
+{
+	"info": {
+		"_postman_id": "8030dd10-0d4e-450d-b5f5-80b61334b646",
+		"name": "City Riders",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "24667163"
+	},
+	"item": [
+		{
+			"name": "registration (139.59.88.204:5000/auth/register)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "profile",
+							"type": "file",
+							"src": "/home/kurm/Pictures/Wallpapers/images.png"
+						},
+						{
+							"key": "username",
+							"value": "user3",
+							"type": "text"
+						},
+						{
+							"key": "email",
+							"value": "user30@gmail.com",
+							"type": "text"
+						},
+						{
+							"key": "country_code",
+							"value": "+91",
+							"type": "text"
+						},
+						{
+							"key": "phone_number",
+							"value": "9876543210",
+							"type": "text"
+						},
+						{
+							"key": "age",
+							"value": "26",
+							"type": "text"
+						},
+						{
+							"key": "gender",
+							"value": "male",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "user3",
+							"type": "text"
+						},
+						{
+							"key": "fcm_token",
+							"value": "qwerfdbvcbagGNJSwwdjwejoiwelaitjasmndnkj",
+							"type": "text"
+						},
+						{
+							"key": "vehicle_type",
+							"value": "car",
+							"description": "Vehicle Related Data",
+							"type": "text"
+						},
+						{
+							"key": "model",
+							"value": "bmw",
+							"type": "text"
+						},
+						{
+							"key": "trim",
+							"value": "fsergfser",
+							"type": "text"
+						},
+						{
+							"key": "year",
+							"value": "2019",
+							"type": "text"
+						},
+						{
+							"key": "daily_driving",
+							"value": "10",
+							"type": "text"
+						},
+						{
+							"key": "unit",
+							"value": "km",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "139.59.88.204:5000/auth/register",
+					"host": [
+						"139",
+						"59",
+						"88",
+						"204"
+					],
+					"port": "5000",
+					"path": [
+						"auth",
+						"register"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login (https://driverrapp.herokuapp.com/auth/login)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "email",
+							"value": "user2@gmail.com",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "user2",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://driverrapp.herokuapp.com/auth/login",
+					"protocol": "https",
+					"host": [
+						"driverrapp",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "all_user (https://driverrapp.herokuapp.com/auth/all-user)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/auth/all-user",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"auth",
+						"all-user"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1",
+							"disabled": true
+						},
+						{
+							"key": "limit",
+							"value": "2",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getChatByUserId (https://driverrapp.herokuapp.com/chat/get-chat-by-userid)",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "user_id",
+							"value": "6310a2a1031f8230e6327692",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://driverrapp.herokuapp.com/chat/get-chat-by-userid",
+					"protocol": "https",
+					"host": [
+						"driverrapp",
+						"herokuapp",
+						"com"
+					],
+					"path": [
+						"chat",
+						"get-chat-by-userid"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getAllChatData (https://driverrapp.herokuapp.com/chat/get-all-chat)",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "chat_room_id",
+							"value": "631197eee9329b2fd2efef88",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:5000/chat/get-all-chat",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"chat",
+						"get-all-chat"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "readChat (https://driverrapp.herokuapp.com/chat/read-chat)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "chat_room_id",
+							"value": "630ddd680578c17364b8157f",
+							"type": "text"
+						},
+						{
+							"key": "sender_id",
+							"value": "630dd6e56f1c372cab1dfca7",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:5000/chat/read-chat",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"chat",
+						"read-chat"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "viewById (https://driverrapp.herokuapp.com/auth/view-by-id/630dd4b90578c17364b8157a)",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": ""
+				}
+			},
+			"response": []
+		}
+	]
+}
