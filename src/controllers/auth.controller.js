@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 const authModel = require("../models/auth.model");
-const vehicleModel = require("../models/vehicle.model");
 const chatRoomModel = require("../webSocket/models/chatRoom.model");
 const chatModel = require("../webSocket/models/chat.model");
 const cloudinary = require("../utils/cloudinary.utils");
@@ -35,7 +34,7 @@ exports.registration = async (req, res) => {
         }
 
         const getData = await authModel.find({ email: email });
-        
+
 
         if (getData.length == 0) {
 
@@ -327,12 +326,12 @@ exports.all_user = async (req, res) => {
 
 exports.userProfile = async (req, res) => {
     try {
-
-        const getUserData = await vehicleModel.find(
+        const getUserData = await authModel.findOne(
             {
-                user_id: req.params.id
+                _id: req.params.id
             }
-        ).populate("user_id")
+        );
+        
 
         res.status(status.OK).json(
             {

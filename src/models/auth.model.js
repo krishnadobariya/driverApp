@@ -51,38 +51,6 @@ const authSchema = mongoose.Schema({
         type : Array,
         required: true
     }
-    // vehicle: [
-    //     {
-    //         vehicle_img_id: {
-    //             type: ObjectId,
-    //             required: true
-    //         },
-    //         vehicle_type: {
-    //             type: String,
-    //             required: true
-    //         },
-    //         model: {
-    //             type: String,
-    //             required: true
-    //         },
-    //         trim: {
-    //             type: String,
-    //             required: true
-    //         },
-    //         year: {
-    //             type: String,
-    //             required: true
-    //         },
-    //         daily_driving: {
-    //             type: Number,
-    //             required: true
-    //         },
-    //         unit: {
-    //             type: String,
-    //             required: true
-    //         }
-    //     }
-    // ]
 }, {
     collection: 'auth'
 });

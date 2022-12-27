@@ -12,85 +12,13 @@
 				"method": "POST",
 				"header": [],
 				"body": {
-					"mode": "formdata",
-					"formdata": [
-						{
-							"key": "profile",
-							"type": "file",
-							"src": "/home/kurm/Pictures/Wallpapers/images.png"
-						},
-						{
-							"key": "username",
-							"value": "user3",
-							"type": "text"
-						},
-						{
-							"key": "email",
-							"value": "user30@gmail.com",
-							"type": "text"
-						},
-						{
-							"key": "country_code",
-							"value": "+91",
-							"type": "text"
-						},
-						{
-							"key": "phone_number",
-							"value": "9876543210",
-							"type": "text"
-						},
-						{
-							"key": "age",
-							"value": "26",
-							"type": "text"
-						},
-						{
-							"key": "gender",
-							"value": "male",
-							"type": "text"
-						},
-						{
-							"key": "password",
-							"value": "user3",
-							"type": "text"
-						},
-						{
-							"key": "fcm_token",
-							"value": "qwerfdbvcbagGNJSwwdjwejoiwelaitjasmndnkj",
-							"type": "text"
-						},
-						{
-							"key": "vehicle_type",
-							"value": "car",
-							"description": "Vehicle Related Data",
-							"type": "text"
-						},
-						{
-							"key": "model",
-							"value": "bmw",
-							"type": "text"
-						},
-						{
-							"key": "trim",
-							"value": "fsergfser",
-							"type": "text"
-						},
-						{
-							"key": "year",
-							"value": "2019",
-							"type": "text"
-						},
-						{
-							"key": "daily_driving",
-							"value": "10",
-							"type": "text"
-						},
-						{
-							"key": "unit",
-							"value": "km",
-							"type": "text"
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"test1\",\n    \"email\": \"test15@gmail.com\",\n    \"country_code\": \"+91\",\n    \"phone_number\": \"9876543210\",\n    \"age\": \"20\",\n    \"gender\": \"male\",\n    \"password\": \"123\",\n    \"fcm_token\": \"kasdhfdiuahKBAUDHsandliae\",\n    \"vehicle\": [\n        {\n            \"vehicle_img_id\": \"63aa904fca104dd60f252724\",\n            \"vehicle_type\": \"1\",\n            \"model\": \"BMW\",\n            \"trim\": \"gsrthgrf\",\n            \"year\": \"2019\",\n            \"daily_driving\": 20,\n            \"unit\": \"km\"\n        },\n        {\n            \"vehicle_img_id\": \"63aa904fca104dd60f252724\",\n            \"vehicle_type\": \"2\",\n            \"model\": \"Spendor\",\n            \"trim\": \"gsrthgrfwewdwef\",\n            \"year\": \"2018\",\n            \"daily_driving\": 35,\n            \"unit\": \"km\"\n        }\n    ] \n}",
+					"options": {
+						"raw": {
+							"language": "json"
 						}
-					]
+					}
 				},
 				"url": {
 					"raw": "139.59.88.204:5000/auth/register",
@@ -177,7 +105,7 @@
 			"response": []
 		},
 		{
-			"name": "getChatByUserId (https://driverrapp.herokuapp.com/chat/get-chat-by-userid)",
+			"name": "User Profile ()",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -188,23 +116,22 @@
 					"mode": "urlencoded",
 					"urlencoded": [
 						{
-							"key": "user_id",
-							"value": "6310a2a1031f8230e6327692",
+							"key": "id",
+							"value": "63aa9346612002dbd951aae4",
 							"type": "text"
 						}
 					]
 				},
 				"url": {
-					"raw": "https://driverrapp.herokuapp.com/chat/get-chat-by-userid",
-					"protocol": "https",
+					"raw": "localhost:5000/auth/user-profile/63aa9346612002dbd951aae4",
 					"host": [
-						"driverrapp",
-						"herokuapp",
-						"com"
+						"localhost"
 					],
+					"port": "5000",
 					"path": [
-						"chat",
-						"get-chat-by-userid"
+						"auth",
+						"user-profile",
+						"63aa9346612002dbd951aae4"
 					]
 				}
 			},
