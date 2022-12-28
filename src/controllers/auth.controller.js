@@ -201,7 +201,7 @@ exports.userList = async (req, res) => {
             _id: { $ne: userId }
         }).skip(startIndex).limit(endIndex).select('-__v');
         const vehicleDetails = [];
-        
+
         for (const userDetails of getUser) {
 
             var finalChatId = "";
@@ -448,6 +448,124 @@ exports.userLogout = async (req, res, next) => {
         }
 
     } catch (error) {
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Somthing Went Wrong",
+                status: false,
+                code: 501,
+                statusCode: 0
+            }
+        )
+    }
+}
+
+
+exports.userUpdate = async (req, res) => {
+    try {
+
+        const cloudinaryImageUploadMethod = async file => {
+            return new Promise(resolve => {
+                cloudinary.uploader.upload(file, (err, res) => {
+                    if (err) return err
+                    resolve({
+                        res: res.secure_url
+                    })
+                }
+                )
+            })
+        }
+
+        const urls = []
+        const files = req.files;
+
+        for (const file of files) {
+            const { path } = file
+            console.log("path::", path);
+
+            const newPath = await cloudinaryImageUploadMethod(path)
+            urls.push(newPath)
+        }
+
+        const updateData = await authModel.findByIdAndUpdate({ _id: req.params.id }, {
+            $set: {
+                profile: urls,
+                username: req.body.username,
+                email: req.body.email,
+                country_code: req.body.country_code,
+                phone_number: req.body.phone_number,
+                age: req.body.age,
+                gender: req.body.gender,
+                password: req.body.password
+            }
+        }, {
+            new: true,
+            useFindAndModify: false
+        }).then(() => {
+            res.status(status.OK).json(
+                {
+                    message: "User Detail Update Successfully",
+                    status: true,
+                    code: 200,
+                    statusCode: 1
+                }
+            )
+        })
+
+    } catch (error) {
+        console.log("error::", error);
+
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Somthing Went Wrong",
+                status: false,
+                code: 501,
+                statusCode: 0
+            }
+        )
+    }
+
+}
+
+exports.userVehicleUpdateData = async (req, res) => {
+    try {
+
+        const updateVehicleData = await authModel.findOneAndUpdate({
+            _id: req.params.id,
+            "vehicle.vehicle_type": req.params.type
+        }, {
+            $set: {
+                "vehicle.$.model": req.body.model,
+                "vehicle.$.trim": req.body.trim,
+                "vehicle.$.year": req.body.year,
+                "vehicle.$.daily_driving": req.body.daily_driving,
+                "vehicle.$.unit": req.body.unit
+            }
+        }).then(() => {
+            res.status(status.OK).json(
+                {
+                    message: "User Vehicle Detail Update Successfully",
+                    status: true,
+                    code: 200,
+                    statusCode: 1
+                }
+            )
+        }).catch((error) => {
+
+            console.log("error::", error);
+
+            res.status(status.INTERNAL_SERVER_ERROR).json(
+                {
+                    message: "Somthing Went Wrong",
+                    status: false,
+                    code: 501,
+                    statusCode: 0
+                }
+            )
+        })
+
+    } catch (error) {
+        console.log("error::", error);
+
         res.status(status.INTERNAL_SERVER_ERROR).json(
             {
                 message: "Somthing Went Wrong",
