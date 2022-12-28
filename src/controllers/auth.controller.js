@@ -459,7 +459,6 @@ exports.userLogout = async (req, res, next) => {
     }
 }
 
-
 exports.userUpdate = async (req, res) => {
     try {
 

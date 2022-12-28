@@ -13,8 +13,10 @@ app.use('/images', express.static('images'));
 // ---------- Define Routes Here ---------- //
 const authRouter = require("./routes/auth.routes");
 const chatRouter = require("./routes/chat.routes");
+const eventRouter = require("./routes/event.routes");
 
 app.use("/auth", authRouter);
 app.use("/chat", chatRouter);
+app.use("/event", eventRouter);
 
 module.exports = app;

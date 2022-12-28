@@ -74,7 +74,7 @@
 			"response": []
 		},
 		{
-			"name": "all_user (https://driverrapp.herokuapp.com/auth/all-user)",
+			"name": "User List (https://driverrapp.herokuapp.com/auth/all-user)",
 			"request": {
 				"method": "GET",
 				"header": [],
@@ -105,7 +105,7 @@
 			"response": []
 		},
 		{
-			"name": "User Profile ()",
+			"name": "User Profile (139.59.88.204:5000/auth/user-profile/63aad2e29a91e00c552fcd20)",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -114,24 +114,21 @@
 				"header": [],
 				"body": {
 					"mode": "urlencoded",
-					"urlencoded": [
-						{
-							"key": "id",
-							"value": "63aa9346612002dbd951aae4",
-							"type": "text"
-						}
-					]
+					"urlencoded": []
 				},
 				"url": {
-					"raw": "localhost:5000/auth/user-profile/63aa9346612002dbd951aae4",
+					"raw": "139.59.88.204:5000/auth/user-profile/63aad2e29a91e00c552fcd20",
 					"host": [
-						"localhost"
+						"139",
+						"59",
+						"88",
+						"204"
 					],
 					"port": "5000",
 					"path": [
 						"auth",
 						"user-profile",
-						"63aa9346612002dbd951aae4"
+						"63aad2e29a91e00c552fcd20"
 					]
 				}
 			},
@@ -210,6 +207,90 @@
 				"header": [],
 				"url": {
 					"raw": ""
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Update (139.59.88.204:5000/auth/update-user/63abe8bc624e8360a44eb0e9)",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "username",
+							"value": "testInUpdate",
+							"type": "text"
+						},
+						{
+							"key": "profile",
+							"type": "file",
+							"src": []
+						}
+					]
+				},
+				"url": {
+					"raw": "139.59.88.204:5000/auth/update-user/63abe8bc624e8360a44eb0e9",
+					"host": [
+						"139",
+						"59",
+						"88",
+						"204"
+					],
+					"port": "5000",
+					"path": [
+						"auth",
+						"update-user",
+						"63abe8bc624e8360a44eb0e9"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "userVehicleUpdateData (139.59.88.204:5000/auth/update/vehicle-data/63abe8b4624e8360a44eb0e3/2)",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"model\": \"Shine\", \n    \"trim\":\"awfdrth\",\n    \"year\":\"2019\",\n    \"daily_driving\":\"40\",\n    \"unit\":\"km\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "139.59.88.204:5000/auth/update/vehicle-data/63abe8b4624e8360a44eb0e3/2",
+					"host": [
+						"139",
+						"59",
+						"88",
+						"204"
+					],
+					"port": "5000",
+					"path": [
+						"auth",
+						"update",
+						"vehicle-data",
+						"63abe8b4624e8360a44eb0e3",
+						"2"
+					],
+					"query": [
+						{
+							"key": "page",
+							"value": "1",
+							"disabled": true
+						},
+						{
+							"key": "limit",
+							"value": "2",
+							"disabled": true
+						}
+					]
 				}
 			},
 			"response": []
