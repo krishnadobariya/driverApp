@@ -1,0 +1,13 @@
+- Socket : joinUser
+{
+    "user_id": "63abe8ae624e8360a44eb0e0"
+}
+
+
+- Socket : chat
+{
+    "receiver_id": "63abe8ae624e8360a44eb0e0",
+    "sender_id": "63aad2e29a91e00c552fcd20",
+    "message": "Hello"
+}
+- emit : chatReceive

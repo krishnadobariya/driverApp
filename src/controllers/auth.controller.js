@@ -186,15 +186,20 @@ exports.login = async (req, res) => {
 exports.all_user = async (req, res) => {
     try {
 
-        let userId = req.body.user_id;
-        const page = parseInt(req.query.page)
-        const limit = parseInt(req.query.limit)
+        let userId = req.params.userId;
+        const page = parseInt(req.query.page);
+        const limit = parseInt(req.query.limit);
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
 
-        const getAllData = await authModel.find({ _id: { $ne: userId }, vehicleType: req.body.vehicle_type }).skip(startIndex).limit(endIndex).select('-__v');
-
+        const getAllData = await authModel.find({
+            _id: {
+                $ne: userId
+            },
+            vehicleType: req.body.vehicle_type
+        }).skip(startIndex).limit(endIndex).select('-__v');
         console.log("getAllData", getAllData);
+
         const chatRoomId = [];
         for (const getChatRoomId of getAllData) {
 
@@ -324,6 +329,97 @@ exports.all_user = async (req, res) => {
     }
 }
 
+exports.userList = async (req, res) => {
+    try {
+
+        let userId = req.params.id;
+        let vehicleType = req.body.vehicle_type;
+        let page = parseInt(req.query.page);
+        let limit = parseInt(req.params.limit);
+
+        // --- for pagination --- //
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
+
+        // --- get user whithout user that id pass --- //
+
+        const getUser = await authModel.find({
+            _id: { $ne: userId }
+        }).skip(startIndex).limit(endIndex).select('-__v');
+        const vehicleDetails = [];
+        
+        for (const userDetails of getUser) {
+
+            var finalChatId = "";
+            finalChatId = await chatRoomModel.find(
+                {
+                    user1: userDetails._id,
+                    user2: userId,
+                }
+            );
+
+            if (finalChatId.length == 0) {
+                finalChatId = await chatRoomModel.find(
+                    {
+                        user2: userDetails._id,
+                        user1: userId,
+                    }
+                );
+
+            }
+            else {
+
+            }
+
+            for (const vehicleData of userDetails.vehicle) {
+
+                if (vehicleData.vehicle_type == vehicleType) {
+                    const response = {
+                        profile: userDetails.profile,
+                        userName: userDetails.username,
+                        email: userDetails.email,
+                        phone: `${userDetails.country_code}${userDetails.phone_number}`,
+                        chatRoomId: finalChatId[0] ? finalChatId[0]._id : "",
+                        vehicleImageId: vehicleData.vehicle_img_id,
+                        model: vehicleData.model,
+                        type: vehicleData.vehicle_type,
+                        year: vehicleData.year,
+                        trim: vehicleData.trim,
+                        dailyDriving: vehicleData.daily_driving,
+                        unit: vehicleData.unit
+                    }
+                    vehicleDetails.push(response)
+                }
+            }
+        }
+
+        res.status(status.OK).json(
+            {
+                message: "Get User Detail Successfully",
+                status: true,
+                code: 200,
+                statusCode: 1,
+                data: vehicleDetails
+            }
+        )
+
+
+    } catch (error) {
+
+        console.log("userList-Error:", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
+
 exports.userProfile = async (req, res) => {
     try {
         const getUserData = await authModel.findOne(
@@ -331,7 +427,7 @@ exports.userProfile = async (req, res) => {
                 _id: req.params.id
             }
         );
-        
+
 
         res.status(status.OK).json(
             {
