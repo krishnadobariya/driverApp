@@ -49,6 +49,13 @@ exports.registration = async (req, res) => {
                 gender: req.body.gender,
                 password: req.body.password,
                 fcm_token: req.body.fcm_token,
+                location: {
+                    type: "Point",
+                    coordinates: [
+                        parseFloat(req.body.longitude),
+                        parseFloat(req.body.latitude),
+                    ],
+                },
                 vehicle: req.body.vehicle
             });
             const saveData = await authData.save();
@@ -66,6 +73,7 @@ exports.registration = async (req, res) => {
                 gender: saveData.gender,
                 password: saveData.password,
                 fcm_token: saveData.fcm_token,
+                location: saveData.location,
                 vehicle: saveData.vehicle
             }
 
@@ -571,6 +579,77 @@ exports.userVehicleUpdateData = async (req, res) => {
                 status: false,
                 code: 501,
                 statusCode: 0
+            }
+        )
+    }
+}
+
+exports.addImage = async (req, res) => {
+    try {
+
+        let userId = req.params.id;
+
+        const cloudinaryImageUploadMethod = async file => {
+            return new Promise(resolve => {
+                cloudinary.uploader.upload(file, (err, res) => {
+                    if (err) return err
+                    resolve({
+                        res: res.secure_url
+                    })
+                }
+                )
+            })
+        }
+
+        const urls = []
+        const files = req.files;
+
+        for (const file of files) {
+            const { path } = file
+            console.log("path::", path);
+
+            const newPath = await cloudinaryImageUploadMethod(path)
+            urls.push(newPath)
+        }
+
+        const ImageUpdat = await authModel.findByIdAndUpdate({ _id: userId }, {
+            $set: {
+                profile: urls
+            }
+        }, {
+            new: true,
+            useFindAndModify: false
+        }).then((resp) => {
+            console.log("Res:;", resp);
+            res.status(status.OK).json(
+                {
+                    message: "User Detail Update Successfully",
+                    status: true,
+                    code: 200,
+                    statusCode: 1
+                }
+            )
+        }).catch((err) => {
+            res.status(status.ACCEPTED).json(
+                {
+                    message: "Image Not Uploaded",
+                    status: false,
+                    code: 500,
+                    statusCode: 0,
+                    error: err.message
+                }
+            )
+        })
+
+    } catch (error) {
+        console.log("Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
             }
         )
     }
