@@ -10,28 +10,28 @@ exports.registration = async (req, res) => {
 
         let email = req.body.email;
 
-        const cloudinaryImageUploadMethod = async file => {
-            return new Promise(resolve => {
-                cloudinary.uploader.upload(file, (err, res) => {
-                    if (err) return err
-                    resolve({
-                        res: res.secure_url
-                    })
-                }
-                )
-            })
-        }
+        // const cloudinaryImageUploadMethod = async file => {
+        //     return new Promise(resolve => {
+        //         cloudinary.uploader.upload(file, (err, res) => {
+        //             if (err) return err
+        //             resolve({
+        //                 res: res.secure_url
+        //             })
+        //         }
+        //         )
+        //     })
+        // }
 
-        const urls = []
-        const files = req.files;
+        // const urls = []
+        // const files = req.files;
 
-        for (const file of files) {
-            const { path } = file
-            console.log("path::", path);
+        // for (const file of files) {
+        //     const { path } = file
+        //     console.log("path::", path);
 
-            const newPath = await cloudinaryImageUploadMethod(path)
-            urls.push(newPath)
-        }
+        //     const newPath = await cloudinaryImageUploadMethod(path)
+        //     urls.push(newPath)
+        // }
 
         const getData = await authModel.find({ email: email });
 
@@ -40,7 +40,7 @@ exports.registration = async (req, res) => {
 
             // --- User's Basic Details Inserting Here --- //
             const authData = authModel({
-                profile: urls,
+                profile: "https://res.cloudinary.com/tcloud/image/upload/v1672232275/yd0hfjeh13jtb511cf4p.jpg",
                 username: req.body.username,
                 email: req.body.email,
                 country_code: req.body.country_code,

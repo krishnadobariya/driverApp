@@ -13,7 +13,8 @@ const {
     userVehicleUpdateData
 } = require("../controllers/auth.controller");
 
-router.post("/register", upload.array('profile'), registration);
+// router.post("/register", upload.array('profile'), registration);
+router.post("/register", registration);
 router.post("/login", login);
 router.get("/user-profile/:id", userProfile);
 router.get("/all-user/:id", userList);
