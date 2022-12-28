@@ -4,7 +4,6 @@ const upload = require("../utils/multer.photo");
 const {
     registration,
     login,
-    all_user,
     userList,
     userProfile,
     getLatLong,
