@@ -40,7 +40,9 @@ exports.registration = async (req, res) => {
 
             // --- User's Basic Details Inserting Here --- //
             const authData = authModel({
-                profile: "https://res.cloudinary.com/tcloud/image/upload/v1672232275/yd0hfjeh13jtb511cf4p.jpg",
+                profile: [{
+                    res: "https://res.cloudinary.com/tcloud/image/upload/v1672232275/yd0hfjeh13jtb511cf4p.jpg"
+                }],
                 username: req.body.username,
                 email: req.body.email,
                 country_code: req.body.country_code,
@@ -235,8 +237,9 @@ exports.userList = async (req, res) => {
             for (const vehicleData of userDetails.vehicle) {
 
                 if (vehicleData.vehicle_type == vehicleType) {
+                    console.log("userDetails.profile[0]::", userDetails.profile[0]);
                     const response = {
-                        profile: userDetails.profile,
+                        profile: userDetails.profile[0] ? userDetails.profile[0].res : "",
                         userName: userDetails.username,
                         email: userDetails.email,
                         phone: `${userDetails.country_code}${userDetails.phone_number}`,
