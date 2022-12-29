@@ -488,9 +488,9 @@ function socket(io) {
 
             let userId = arg.user_id;
             let eventId = arg.event_id;
+            console.log("Arg-Data", userId, eventId);
 
             const getUserData = await authModel.findOne({ _id: userId });
-            console.log("getUserData::", getUserData);
 
             const registerData = new joinEvent({
                 user_id: userId,
@@ -501,7 +501,6 @@ function socket(io) {
                 user_gender: getUserData.gender
             })
             const saveData = await registerData.save();
-            console.log("saveData::", saveData);
 
         })
 
