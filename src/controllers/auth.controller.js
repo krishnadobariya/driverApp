@@ -143,18 +143,16 @@ exports.login = async (req, res) => {
                     user_id: getData[0]._id,
                     profile: getData[0].profile[0].res,
                     username: getData[0].username,
-                    age: getData[0].age,
-                    sex: getData[0].sex,
-                    vehicleType: getData[0].vehicleType,
-                    vehicleSubType: getData[0].vehicleSubType,
-                    dailyKM: getData[0].dailyKM,
                     email: getData[0].email,
-                    number: getData[0].number,
+                    country_code: getData[0].country_code,
+                    phone_number: getData[0].phone_number,
+                    age: getData[0].age,
+                    gender: getData[0].gender,
                     password: getData[0].password,
-                    model: getData[0].model ? getData[0].model : "",
-                    year: getData[0].year ? getData[0].year : "",
-                    trim: getData[0].trim,
-                    fcm_token: getData[0].fcm_token ? getData[0].fcm_token : ""
+                    fcm_token: getData[0].fcm_token,
+                    longitude: getData[0].location.coordinates[0],
+                    latitude: getData[0].location.coordinates[1],
+                    vehicle: getData[0].vehicle
                 }
 
                 res.status(status.OK).json(
@@ -290,17 +288,48 @@ exports.userProfile = async (req, res) => {
                 _id: req.params.id
             }
         );
+        console.log("userProfile:::", getUserData);
 
+        if (getUserData == null) {
 
-        res.status(status.OK).json(
-            {
-                message: "Get User Profile Data",
-                status: true,
-                code: 200,
-                statusCode: 1,
-                data: getUserData
+            res.status(status.NOT_FOUND).json(
+                {
+                    message: "Data Not Exist",
+                    status: false,
+                    code: 404,
+                    statusCode: 0
+                }
+            )
+
+        } else {
+
+            const response = {
+                user_id: getUserData._id,
+                profile: getUserData.profile[0] ? getUserData.profile[0].res : "",
+                username: getUserData.username,
+                email: getUserData.email,
+                country_code: getUserData.country_code,
+                phone_number: getUserData.phone_number,
+                age: getUserData.age,
+                gender: getUserData.gender,
+                password: getUserData.password,
+                fcm_token: getUserData.fcm_token,
+                longitude: getUserData.location.coordinates[0],
+                latitude: getUserData.location.coordinates[1],
+                vehicle: getUserData.vehicle
             }
-        )
+
+            res.status(status.OK).json(
+                {
+                    message: "Get User Profile Data",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: response
+                }
+            )
+
+        }
 
     } catch (error) {
         console.log("Error:", error);
@@ -641,6 +670,34 @@ exports.addImage = async (req, res) => {
                 }
             )
         })
+
+        const getUserData = await authModel.findOne({ _id: userId });
+
+        const response = {
+            user_id: getUserData._id,
+            profile: getUserData.profile[0] ? getUserData.profile[0].res : "",
+            username: getUserData.username,
+            email: getUserData.email,
+            country_code: getUserData.country_code,
+            phone_number: getUserData.phone_number,
+            age: getUserData.age,
+            gender: getUserData.gender,
+            password: getUserData.password,
+            fcm_token: getUserData.fcm_token,
+            longitude: getUserData.location.coordinates[0],
+            latitude: getUserData.location.coordinates[1],
+            vehicle: getUserData.vehicle
+        }
+
+        res.status(status.OK).json(
+            {
+                message: "User Detail Update Successfully",
+                status: true,
+                code: 200,
+                statusCode: 1,
+                data: response
+            }
+        )
 
     } catch (error) {
         console.log("Error::", error);
