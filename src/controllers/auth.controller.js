@@ -73,7 +73,8 @@ exports.registration = async (req, res) => {
                 gender: saveData.gender,
                 password: saveData.password,
                 fcm_token: saveData.fcm_token,
-                location: saveData.location,
+                longitude: saveData.location.coordinates[0],
+                latitude: saveData.location.coordinates[1],
                 vehicle: saveData.vehicle
             }
 

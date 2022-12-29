@@ -13,7 +13,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"username\": \"test1\",\n    \"email\": \"test15@gmail.com\",\n    \"country_code\": \"+91\",\n    \"phone_number\": \"9876543210\",\n    \"age\": \"20\",\n    \"gender\": \"male\",\n    \"password\": \"123\",\n    \"fcm_token\": \"kasdhfdiuahKBAUDHsandliae\",\n    \"vehicle\": [\n        {\n            \"vehicle_img_id\": \"63aa904fca104dd60f252724\",\n            \"vehicle_type\": \"1\",\n            \"model\": \"BMW\",\n            \"trim\": \"gsrthgrf\",\n            \"year\": \"2019\",\n            \"daily_driving\": 20,\n            \"unit\": \"km\"\n        },\n        {\n            \"vehicle_img_id\": \"63aa904fca104dd60f252724\",\n            \"vehicle_type\": \"2\",\n            \"model\": \"Spendor\",\n            \"trim\": \"gsrthgrfwewdwef\",\n            \"year\": \"2018\",\n            \"daily_driving\": 35,\n            \"unit\": \"km\"\n        }\n    ] \n}",
+					"raw": "{\n    \"username\": \"test1\",\n    \"email\": \"test29@gmail.com\",\n    \"country_code\": \"+91\",\n    \"phone_number\": \"9876543210\",\n    \"age\": \"20\",\n    \"gender\": \"male\",\n    \"password\": \"123\",\n    \"fcm_token\": \"kasdhfdiuahKBAUDHsandliae\",\n    \"longitude\": \"70.758972\",\n    \"latitude\": \"22.214027\",\n    \"vehicle\": [\n        {\n            \"vehicle_img_id\": \"63aa904fca104dd60f252724\",\n            \"vehicle_type\": \"1\",\n            \"model\": \"BMW\",\n            \"trim\": \"gsrthgrf\",\n            \"year\": \"2019\",\n            \"daily_driving\": 20,\n            \"unit\": \"km\"\n        },\n        {\n            \"vehicle_img_id\": \"63aa904fca104dd60f252724\",\n            \"vehicle_type\": \"2\",\n            \"model\": \"Spendor\",\n            \"trim\": \"gsrthgrfwewdwef\",\n            \"year\": \"2018\",\n            \"daily_driving\": 35,\n            \"unit\": \"km\"\n        }\n    ] \n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -21,12 +21,9 @@
 					}
 				},
 				"url": {
-					"raw": "139.59.88.204:5000/auth/register",
+					"raw": "localhost:5000/auth/register",
 					"host": [
-						"139",
-						"59",
-						"88",
-						"204"
+						"localhost"
 					],
 					"port": "5000",
 					"path": [
@@ -38,7 +35,37 @@
 			"response": []
 		},
 		{
-			"name": "login (https://driverrapp.herokuapp.com/auth/login)",
+			"name": "Add Image",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "profile",
+							"type": "file",
+							"src": "/home/kurm/Pictures/Wallpapers/images.png"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:5000/auth/add-image/63ac5c1ae50afaabf2841a96",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"auth",
+						"add-image",
+						"63ac5c1ae50afaabf2841a96"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login (139.59.88.204:5000/auth/login)",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -58,13 +85,14 @@
 					]
 				},
 				"url": {
-					"raw": "https://driverrapp.herokuapp.com/auth/login",
-					"protocol": "https",
+					"raw": "139.59.88.204:5000/auth/login",
 					"host": [
-						"driverrapp",
-						"herokuapp",
-						"com"
+						"139",
+						"59",
+						"88",
+						"204"
 					],
+					"port": "5000",
 					"path": [
 						"auth",
 						"login"
@@ -74,30 +102,45 @@
 			"response": []
 		},
 		{
-			"name": "User List (https://driverrapp.herokuapp.com/auth/all-user)",
+			"name": "User List (139.59.88.204:5000/auth/all-user)",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"method": "GET",
 				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "vehicle_type",
+							"value": "1",
+							"type": "text"
+						}
+					]
+				},
 				"url": {
-					"raw": "localhost:5000/auth/all-user",
+					"raw": "139.59.88.204:5000/auth/all-user/63abe8ae624e8360a44eb0e0?page=1&limit=5",
 					"host": [
-						"localhost"
+						"139",
+						"59",
+						"88",
+						"204"
 					],
 					"port": "5000",
 					"path": [
 						"auth",
-						"all-user"
+						"all-user",
+						"63abe8ae624e8360a44eb0e0"
 					],
 					"query": [
 						{
 							"key": "page",
-							"value": "1",
-							"disabled": true
+							"value": "1"
 						},
 						{
 							"key": "limit",
-							"value": "2",
-							"disabled": true
+							"value": "5"
 						}
 					]
 				}
@@ -117,7 +160,7 @@
 					"urlencoded": []
 				},
 				"url": {
-					"raw": "139.59.88.204:5000/auth/user-profile/63aad2e29a91e00c552fcd20",
+					"raw": "139.59.88.204:5000/auth/user-profile/63abe864fc95b035845bb949",
 					"host": [
 						"139",
 						"59",
@@ -128,14 +171,14 @@
 					"path": [
 						"auth",
 						"user-profile",
-						"63aad2e29a91e00c552fcd20"
+						"63abe864fc95b035845bb949"
 					]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "getAllChatData (https://driverrapp.herokuapp.com/chat/get-all-chat)",
+			"name": "getAllChatData (139.59.88.204:5000/chat/get-all-chat)",
 			"protocolProfileBehavior": {
 				"disableBodyPruning": true
 			},
@@ -290,6 +333,52 @@
 							"value": "2",
 							"disabled": true
 						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add Event (139.59.88.204:5000/event/ada/:id)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "139.59.88.204:5000/event/add/63ac5c1ae50afaabf2841a96",
+					"host": [
+						"139",
+						"59",
+						"88",
+						"204"
+					],
+					"port": "5000",
+					"path": [
+						"event",
+						"add",
+						"63ac5c1ae50afaabf2841a96"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Event List",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/event/list",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"event",
+						"list"
 					]
 				}
 			},
