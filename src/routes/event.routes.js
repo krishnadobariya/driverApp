@@ -7,6 +7,6 @@ const {
 } = require("../controllers/event.controller");
 
 router.post("/add/:id", upload.array('profile'), addEvent);
-router.get("/list", eventList);
+router.post("/list/:user_id", eventList);
 
 module.exports = router;

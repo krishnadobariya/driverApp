@@ -30,6 +30,10 @@
         type: String,
         required: true
     },
+    vehicle_type: {
+        type: String,
+        required: true
+    },
     location: {
         type: Object,
         default: {

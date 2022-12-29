@@ -55,6 +55,7 @@ exports.addEvent = async (req, res) => {
                 name: req.body.name,
                 date: req.body.date,
                 time: req.body.time,
+                vehicle_type: req.body.vehicle_type,
                 location: {
                     type: "Point",
                     coordinates: [
@@ -75,6 +76,7 @@ exports.addEvent = async (req, res) => {
                 name: saveData.name,
                 date: saveData.date,
                 time: saveData.time,
+                vehicle_type: saveData.vehicle_type,
                 longitude: saveData.location.coordinates[0],
                 latitude: saveData.location.coordinates[1],
                 address: saveData.address,
@@ -111,33 +113,74 @@ exports.addEvent = async (req, res) => {
 exports.eventList = async (req, res) => {
     try {
 
+        // --- For Pagination Portion --- //
         let page = parseInt(req.query.page);
         let size = parseInt(req.query.size);
 
         const startIndex = (page - 1) * size;
         const endIndex = page * size;
 
-        const getEventData = await Event.find().skip(startIndex).limit(endIndex);
+        let vehicleType = req.body.vehicle_type;
+        let userId = req.params.user_id;
+        console.log("vehicleType:;", req.body.vehicle_type);
+
+        const getEventData = await Event.find({ vehicle_type: vehicleType }).skip(startIndex).limit(endIndex);
+        console.log("getEventData::", getEventData);
         const eventDetails = [];
         for (const getUser of getEventData) {
-            
-            const getJoinUser = await joinEvent.find({ event_id:getUser._id}).count();
 
-            const response = {
-                user_id: getUser.user_id,
-                username: getUser.username,
-                user_profile: getUser.user_profile[0] ? getUser.user_profile[0].res : "",
-                event_photo: getUser.event_photo[0] ? getUser.event_photo[0].res : "",
-                name: getUser.name,
-                date: getUser.data,
-                time: getUser.time,
-                longitude: getUser.location.coordinates[0],
-                latitude: getUser.location.coordinates[1],
-                address: getUser.address,
-                about: getUser.about,
-                join_user: getJoinUser
+            const getJoinUser = await joinEvent.find({ event_id: getUser._id }).count();
+            const userIsJoin = await joinEvent.findOne({
+                event_id: getUser._id,
+                user_id: userId
+            });
+            console.log("eventId:;", getUser._id);
+            console.log("userIds::", userId);
+            console.log("userIsJoin::", userIsJoin);
+
+            if (userIsJoin == null) {
+
+                const response = {
+                    user_id: getUser.user_id,
+                    username: getUser.username,
+                    user_profile: getUser.user_profile[0] ? getUser.user_profile[0].res : "",
+                    event_photo: getUser.event_photo[0] ? getUser.event_photo[0].res : "",
+                    name: getUser.name,
+                    date: getUser.data,
+                    time: getUser.time,
+                    vehicle_type: getUser.vehicle_type,
+                    longitude: getUser.location.coordinates[0],
+                    latitude: getUser.location.coordinates[1],
+                    address: getUser.address,
+                    about: getUser.about,
+                    isJoin: false,
+                    join_user: getJoinUser
+                }
+                eventDetails.push(response)
+
+            } else {
+
+                const response = {
+                    user_id: getUser.user_id,
+                    username: getUser.username,
+                    user_profile: getUser.user_profile[0] ? getUser.user_profile[0].res : "",
+                    event_photo: getUser.event_photo[0] ? getUser.event_photo[0].res : "",
+                    name: getUser.name,
+                    date: getUser.data,
+                    time: getUser.time,
+                    vehicle_type: getUser.vehicle_type,
+                    longitude: getUser.location.coordinates[0],
+                    latitude: getUser.location.coordinates[1],
+                    address: getUser.address,
+                    about: getUser.about,
+                    isJoin: true,
+                    join_user: getJoinUser
+                }
+                eventDetails.push(response)
+
             }
-            eventDetails.push(response)
+
+
 
         }
 

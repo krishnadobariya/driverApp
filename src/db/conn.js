@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-mongoose.connect("mongodb+srv://driverApp:driverApp@cluster0.kod8wg5.mongodb.net/?retryWrites=true&w=majority")
+mongoose.connect("mongodb://localhost:27017/cityRiders")
 .then(() => {
     console.log("Database Connected..")
 })
@@ -9,4 +9,4 @@ mongoose.connect("mongodb+srv://driverApp:driverApp@cluster0.kod8wg5.mongodb.net
 })
 
 // mongodb+srv://driverApp:driverApp@cluster0.kod8wg5.mongodb.net/?retryWrites=true&w=majority
-// mongodb://localhost:27017/cityRiders
+// mongodb://localhost:27017/cityRiders5876

@@ -491,12 +491,13 @@ function socket(io) {
             console.log("Arg-Data", userId, eventId);
 
             const getUserData = await authModel.findOne({ _id: userId });
+            console.log("getUserData::", getUserData);
 
             const registerData = new joinEvent({
                 user_id: userId,
                 event_id: eventId,
                 username: getUserData.username,
-                user_profile: getUserData.profile[0] ? getUserData.profile[0] : "",
+                user_profile: getUserData.profile[0] ? getUserData.profile[0].res : "",
                 user_age: getUserData.age,
                 user_gender: getUserData.gender
             })
