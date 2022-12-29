@@ -2,6 +2,7 @@ const chatRoom = require("./models/chatRoom.model");
 const chatModel = require("./models/chat.model");
 const authModel = require("../models/auth.model");
 const Notification = require("../helper/firebaseHelper");
+const joinEvent = require("../models/joinEvent.model")
 const mongoose = require("mongoose");
 
 function socket(io) {
@@ -90,11 +91,11 @@ function socket(io) {
 
                         io.to(userRoom).emit("chatReceive", response)
 
-                       
-                        if(findUserForNotiy.fcm_token){
+
+                        if (findUserForNotiy.fcm_token) {
                             const title = "city-rides Notification";
                             const body = `${arg.sender_id} send request to `;
-    
+
                             const text = arg.message;
                             const sendBy = arg.sender_id;
                             const registrationToken = findUserForNotiy.fcm_token
@@ -130,10 +131,10 @@ function socket(io) {
 
                         io.to(userRoom).emit("chatReceive", response)
 
-                        if(findUserForNotiy.fcm_token){
+                        if (findUserForNotiy.fcm_token) {
                             const title = "city-rides Notification";
                             const body = `${arg.sender_id} send request to `;
-    
+
                             const text = arg.message;
                             const sendBy = arg.sender_id;
                             const registrationToken = findUserForNotiy.fcm_token
@@ -202,22 +203,22 @@ function socket(io) {
 
                             io.to(userRoom).emit("chatReceive", response)
 
-                        if(findUserForNotiy.fcm_token){
-                            const title = "city-rides Notification";
-                            const body = `${arg.sender_id} send request to `;
-    
-                            const text = arg.message;
-                            const sendBy = arg.sender_id;
-                            const registrationToken = findUserForNotiy.fcm_token
-                            Notification.sendPushNotificationFCM(
-                                registrationToken,
-                                title,
-                                body,
-                                text,
-                                sendBy,
-                                true
-                            );
-                        }
+                            if (findUserForNotiy.fcm_token) {
+                                const title = "city-rides Notification";
+                                const body = `${arg.sender_id} send request to `;
+
+                                const text = arg.message;
+                                const sendBy = arg.sender_id;
+                                const registrationToken = findUserForNotiy.fcm_token
+                                Notification.sendPushNotificationFCM(
+                                    registrationToken,
+                                    title,
+                                    body,
+                                    text,
+                                    sendBy,
+                                    true
+                                );
+                            }
 
                         } else {
 
@@ -254,22 +255,22 @@ function socket(io) {
 
                             io.to(userRoom).emit("chatReceive", response)
 
-                        if(findUserForNotiy.fcm_token){
-                            const title = "city-rides Notification";
-                            const body = `${arg.sender_id} send request to `;
-    
-                            const text = arg.message;
-                            const sendBy = arg.sender_id;
-                            const registrationToken = findUserForNotiy.fcm_token
-                            Notification.sendPushNotificationFCM(
-                                registrationToken,
-                                title,
-                                body,
-                                text,
-                                sendBy,
-                                true
-                            );
-                        }
+                            if (findUserForNotiy.fcm_token) {
+                                const title = "city-rides Notification";
+                                const body = `${arg.sender_id} send request to `;
+
+                                const text = arg.message;
+                                const sendBy = arg.sender_id;
+                                const registrationToken = findUserForNotiy.fcm_token
+                                Notification.sendPushNotificationFCM(
+                                    registrationToken,
+                                    title,
+                                    body,
+                                    text,
+                                    sendBy,
+                                    true
+                                );
+                            }
 
                         }
 
@@ -305,22 +306,22 @@ function socket(io) {
 
                             io.to(userRoom).emit("chatReceive", response)
 
-                        if(findUserForNotiy.fcm_token){
-                            const title = "city-rides Notification";
-                            const body = `${arg.sender_id} send request to `;
-    
-                            const text = arg.message;
-                            const sendBy = arg.sender_id;
-                            const registrationToken = findUserForNotiy.fcm_token
-                            Notification.sendPushNotificationFCM(
-                                registrationToken,
-                                title,
-                                body,
-                                text,
-                                sendBy,
-                                true
-                            );
-                        }
+                            if (findUserForNotiy.fcm_token) {
+                                const title = "city-rides Notification";
+                                const body = `${arg.sender_id} send request to `;
+
+                                const text = arg.message;
+                                const sendBy = arg.sender_id;
+                                const registrationToken = findUserForNotiy.fcm_token
+                                Notification.sendPushNotificationFCM(
+                                    registrationToken,
+                                    title,
+                                    body,
+                                    text,
+                                    sendBy,
+                                    true
+                                );
+                            }
 
                         } else {
 
@@ -357,22 +358,22 @@ function socket(io) {
 
                             io.to(userRoom).emit("chatReceive", response)
 
-                        if(findUserForNotiy.fcm_token){
-                            const title = "city-rides Notification";
-                            const body = `${arg.sender_id} send request to `;
-    
-                            const text = arg.message;
-                            const sendBy = arg.sender_id;
-                            const registrationToken = findUserForNotiy.fcm_token
-                            Notification.sendPushNotificationFCM(
-                                registrationToken,
-                                title,
-                                body,
-                                text,
-                                sendBy,
-                                true
-                            );
-                        }
+                            if (findUserForNotiy.fcm_token) {
+                                const title = "city-rides Notification";
+                                const body = `${arg.sender_id} send request to `;
+
+                                const text = arg.message;
+                                const sendBy = arg.sender_id;
+                                const registrationToken = findUserForNotiy.fcm_token
+                                Notification.sendPushNotificationFCM(
+                                    registrationToken,
+                                    title,
+                                    body,
+                                    text,
+                                    sendBy,
+                                    true
+                                );
+                            }
 
                         }
 
@@ -443,45 +444,67 @@ function socket(io) {
 
         // ----- updateLatLong ----- //
 
-        socket.on("updateLatLong" , async(arg) => {
-           
-          
+        socket.on("updateLatLong", async (arg) => {
+
+
             const userId = await authModel.findOne({
-                _id : arg.user_id
+                _id: arg.user_id
             })
 
             console.log(userId);
 
-            if(userId){
-             
-                    await authModel.updateOne({
-                        _id : arg.user_id
-                    },{
-                        $set: {
-                            location: {
-                                type: "Point",
-                                coordinates: [
-                                    parseFloat(arg.longitude),
-                                    parseFloat(arg.latitude),
-                                ],
-                            },
-                        }
-                    })
-                    const data = {
-                        user_id : arg.user_id,
-                        longitude: arg.longitude,
-                        latitude: arg.latitude
+            if (userId) {
+
+                await authModel.updateOne({
+                    _id: arg.user_id
+                }, {
+                    $set: {
+                        location: {
+                            type: "Point",
+                            coordinates: [
+                                parseFloat(arg.longitude),
+                                parseFloat(arg.latitude),
+                            ],
+                        },
                     }
-                    io.emit("updateLatLongSuccess", data)
-            }else{
+                })
+                const data = {
+                    user_id: arg.user_id,
+                    longitude: arg.longitude,
+                    latitude: arg.latitude
+                }
+                io.emit("updateLatLongSuccess", data)
+            } else {
                 io.emit("updateLatLongSuccess", "User Not Found!")
             }
 
-            
+
 
         })
 
         // ----- End readUnread ----- //
+
+        socket.on("isJoin", async (arg) => {
+
+            let userId = arg.user_id;
+            let eventId = arg.event_id;
+
+            const getUserData = await authModel.findOne({ _id: userId });
+            console.log("getUserData::", getUserData);
+
+            const registerData = new joinEvent({
+                user_id: userId,
+                event_id: eventId,
+                username: getUserData.username,
+                user_profile: getUserData.profile[0] ? getUserData.profile[0] : "",
+                user_age: getUserData.age,
+                user_gender: getUserData.gender
+            })
+            const saveData = await registerData.save();
+            console.log("saveData::", saveData);
+
+        })
+
     })
 
 }

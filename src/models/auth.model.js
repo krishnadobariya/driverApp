@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 const { array } = require("../utils/multer.photo");
-const ObjectId = mongoose.Types.ObjectId;
-
 
 const authSchema = mongoose.Schema({
     profile: {

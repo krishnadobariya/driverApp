@@ -1,5 +1,6 @@
 const Event = require("../models/event.model");
 const authModel = require("../models/auth.model");
+const joinEvent = require("../models/joinEvent.model");
 const cloudinary = require("../utils/cloudinary.utils");
 const status = require("http-status");
 
@@ -34,7 +35,7 @@ exports.addEvent = async (req, res) => {
         console.log("getUserData::", getUserData);
 
         if (getUserData == null) {
-            
+
             res.status(status.NOT_FOUND).json(
                 {
                     message: "Data Not Exist",
@@ -69,7 +70,7 @@ exports.addEvent = async (req, res) => {
             const response = {
                 user_id: saveData.user_id,
                 username: saveData.username,
-                user_profile: saveData.user_profile,
+                user_profile: saveData.user_profile[0] ? saveData.user_profile[0].res : "",
                 event_photo: saveData.event_photo[0] ? saveData.event_photo[0].res : "",
                 name: saveData.name,
                 date: saveData.date,
@@ -79,7 +80,7 @@ exports.addEvent = async (req, res) => {
                 address: saveData.address,
                 about: saveData.about
             }
-    
+
             res.status(status.CREATED).json(
                 {
                     message: "Insert Event Data Successfully",
@@ -92,7 +93,7 @@ exports.addEvent = async (req, res) => {
 
         }
 
-        
+
 
     } catch (error) {
         console.log("addEvent-Error::", error);
@@ -117,6 +118,28 @@ exports.eventList = async (req, res) => {
         const endIndex = page * size;
 
         const getEventData = await Event.find().skip(startIndex).limit(endIndex);
+        const eventDetails = [];
+        for (const getUser of getEventData) {
+            
+            const getJoinUser = await joinEvent.find({ event_id:getUser._id}).count();
+
+            const response = {
+                user_id: getUser.user_id,
+                username: getUser.username,
+                user_profile: getUser.user_profile[0] ? getUser.user_profile[0].res : "",
+                event_photo: getUser.event_photo[0] ? getUser.event_photo[0].res : "",
+                name: getUser.name,
+                date: getUser.data,
+                time: getUser.time,
+                longitude: getUser.location.coordinates[0],
+                latitude: getUser.location.coordinates[1],
+                address: getUser.address,
+                about: getUser.about,
+                join_user: getJoinUser
+            }
+            eventDetails.push(response)
+
+        }
 
         res.status(status.OK).json(
             {
@@ -124,7 +147,7 @@ exports.eventList = async (req, res) => {
                 status: true,
                 code: 200,
                 statusCode: 1,
-                data: getEventData
+                data: eventDetails
             }
         )
 
