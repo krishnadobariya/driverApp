@@ -663,26 +663,6 @@ exports.addImage = async (req, res) => {
         }, {
             new: true,
             useFindAndModify: false
-        }).then((resp) => {
-            console.log("Res:;", resp);
-            res.status(status.OK).json(
-                {
-                    message: "User Detail Update Successfully",
-                    status: true,
-                    code: 200,
-                    statusCode: 1
-                }
-            )
-        }).catch((err) => {
-            res.status(status.ACCEPTED).json(
-                {
-                    message: "Image Not Uploaded",
-                    status: false,
-                    code: 500,
-                    statusCode: 0,
-                    error: err.message
-                }
-            )
         })
 
         const getUserData = await authModel.findOne({ _id: userId });
