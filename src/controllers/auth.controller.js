@@ -3,6 +3,7 @@ const authModel = require("../models/auth.model");
 const chatRoomModel = require("../webSocket/models/chatRoom.model");
 const chatModel = require("../webSocket/models/chat.model");
 const cloudinary = require("../utils/cloudinary.utils");
+const { mailService } = require("../services/email.service");
 const status = require("http-status");
 
 exports.registration = async (req, res) => {
@@ -713,5 +714,164 @@ exports.addImage = async (req, res) => {
                 error: error.message
             }
         )
+    }
+}
+
+exports.changePassword = async (req, res) => {
+    try {
+
+        let userId = req.params.id;
+
+        const oldPassword = req.body.old_password;
+        const newPassword = req.body.new_password;
+        const confirmPassword = req.body.confirm_password;
+
+        const getUser = await authModel.findOne({ _id: userId });
+        console.log("getUser::", getUser);
+
+        if (getUser == null) {
+
+            res.status(status.NOT_FOUND).json(
+                {
+                    message: "Data Not Exist",
+                    status: false,
+                    code: 404,
+                    statusCode: 0
+                }
+            )
+
+        } else {
+
+            if (getUser.password == oldPassword) {
+
+                if (newPassword == confirmPassword) {
+
+                    const updatePassword = await authModel.updateOne({
+                        _id: userId
+                    }, {
+                        $set: {
+                            password: newPassword
+                        }
+                    })
+
+                    res.status(status.OK).json(
+                        {
+                            message: "Password has been updated successfully",
+                            status: true,
+                            code: 200,
+                            statusCode: 1,
+                            data: userId
+                        }
+                    )
+
+                } else {
+
+                    res.status(status.UNAUTHORIZED).json(
+                        {
+                            message: "New password Or Confirm Password doest not match",
+                            status: false,
+                            code: 404,
+                            statusCode: 0
+                        }
+                    )
+
+                }
+
+            } else {
+
+                res.status(status.UNAUTHORIZED).json(
+                    {
+                        message: "Old password does not match with exist password",
+                        status: false,
+                        code: 404,
+                        statusCode: 0
+                    }
+                )
+
+            }
+
+        }
+
+
+
+    } catch (error) {
+
+        console.log("Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
+
+
+exports.forgetPassword = async (req, res) => {
+    try {
+
+        const email = req.body.email;
+        const findUser = await authModel.findOne({ email: email });
+        console.log("findUser::", findUser);
+
+        if (findUser == null) {
+
+            res.status(status.NOT_FOUND).json(
+                {
+                    message: "Data Not Exist",
+                    status: false,
+                    code: 404,
+                    statusCode: 0
+                }
+            )
+
+        } else {
+
+            var createPass = '';
+            var str = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890@#$%&';
+
+            for (let i = 0; i < 6; i++) {
+                var char = Math.floor(Math.random() * str.length + 1)
+                createPass += str.charAt(char)
+            }
+            console.log("createPass::", createPass);
+
+            // --- content for mail --- //
+            let sub = 'Reset Your Password'
+            let html = `<h3>Hello User, <br/> You forget you password, Don't worry Here your new password <u> ${createPass} </u></h3>
+            <p>If you didn't request for a new password. Then you can safely ignore this email.</p><br/>
+            <h4>Thank You</h4>`
+
+            await mailService(findUser.email, sub, html)
+
+            res.status(status.OK).json(
+                {
+                    message: "Your new password has been sent on your register mail",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: findUser.email
+                }
+            )
+
+        }
+
+    } catch (error) {
+
+        console.log("forgetPassword-Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
     }
 }

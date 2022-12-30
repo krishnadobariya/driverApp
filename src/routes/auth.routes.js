@@ -11,7 +11,9 @@ const {
     getUserInfo,
     userLogout,
     userUpdate,
-    userVehicleUpdateData
+    userVehicleUpdateData,
+    changePassword,
+    forgetPassword,
 } = require("../controllers/auth.controller");
 
 // router.post("/register", upload.array('profile'), registration);
@@ -25,6 +27,8 @@ router.get("/get-user-info", getUserInfo);
 router.get("/logout/:id", userLogout);
 router.put("/update-user/:id", upload.array('profile'), userUpdate);
 router.put("/update/vehicle-data/:id/:type", userVehicleUpdateData);
+router.post("/change-password/:id", changePassword);
+router.post("/forget-password", forgetPassword);
 
 module.exports = router;
 
