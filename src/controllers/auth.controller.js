@@ -235,16 +235,11 @@ exports.userList = async (req, res) => {
 
             }
 
+            const arrVehicleData = [];
             for (const vehicleData of userDetails.vehicle) {
 
                 if (vehicleData.vehicle_type == vehicleType) {
-                    console.log("userDetails.profile[0]::", userDetails.profile[0]);
                     const response = {
-                        profile: userDetails.profile[0] ? userDetails.profile[0].res : "",
-                        userName: userDetails.username,
-                        email: userDetails.email,
-                        phone: `${userDetails.country_code}${userDetails.phone_number}`,
-                        chatRoomId: finalChatId[0] ? finalChatId[0]._id : "",
                         vehicleImageId: vehicleData.vehicle_img_id,
                         model: vehicleData.model,
                         type: vehicleData.vehicle_type,
@@ -253,9 +248,18 @@ exports.userList = async (req, res) => {
                         dailyDriving: vehicleData.daily_driving,
                         unit: vehicleData.unit
                     }
-                    vehicleDetails.push(response)
+                    arrVehicleData.push(response);
                 }
             }
+            const response = {
+                profile: userDetails.profile,
+                userName: userDetails.username,
+                email: userDetails.email,
+                phone: `${userDetails.country_code}${userDetails.phone_number}`,
+                chatRoomId: finalChatId[0] ? finalChatId[0]._id : "",
+                vehicles: arrVehicleData
+            }
+            vehicleDetails.push(response)
         }
 
         res.status(status.OK).json(
