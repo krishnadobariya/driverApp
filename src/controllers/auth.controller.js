@@ -209,9 +209,10 @@ exports.userList = async (req, res) => {
 
         const getUser = await authModel.find({
             _id: { $ne: userId }
-        }).skip(startIndex).limit(endIndex).select('-__v');
-        const vehicleDetails = [];
+        }).skip(startIndex).limit(endIndex).select('-__v').sort({ createdAt: -1 });
+        console.log("getUser::", getUser);
 
+        const vehicleDetails = [];
         for (const userDetails of getUser) {
 
             var finalChatId = "";
@@ -236,9 +237,11 @@ exports.userList = async (req, res) => {
             }
 
             const arrVehicleData = [];
+            var isVehicleData = false;
             for (const vehicleData of userDetails.vehicle) {
 
                 if (vehicleData.vehicle_type == vehicleType) {
+                    isVehicleData = true;
                     const response = {
                         vehicleImageId: vehicleData.vehicle_img_id,
                         model: vehicleData.model,
@@ -251,15 +254,17 @@ exports.userList = async (req, res) => {
                     arrVehicleData.push(response);
                 }
             }
-            const response = {
-                profile: userDetails.profile,
-                userName: userDetails.username,
-                email: userDetails.email,
-                phone: `${userDetails.country_code}${userDetails.phone_number}`,
-                chatRoomId: finalChatId[0] ? finalChatId[0]._id : "",
-                vehicles: arrVehicleData
+            if (isVehicleData) {
+                const response = {
+                    profile: userDetails.profile,
+                    userName: userDetails.username,
+                    email: userDetails.email,
+                    phone: `${userDetails.country_code}${userDetails.phone_number}`,
+                    chatRoomId: finalChatId[0] ? finalChatId[0]._id : "",
+                    vehicles: arrVehicleData
+                }
+                vehicleDetails.push(response)
             }
-            vehicleDetails.push(response)
         }
 
         res.status(status.OK).json(
@@ -288,6 +293,7 @@ exports.userList = async (req, res) => {
 
     }
 }
+
 
 exports.userProfile = async (req, res) => {
     try {

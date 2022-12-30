@@ -1,7 +1,7 @@
- const mongoose = require("mongoose");
- const ObjectId = mongoose.Types.ObjectId;
-  
- const eventSchema = mongoose.Schema({
+const mongoose = require("mongoose");
+const ObjectId = mongoose.Types.ObjectId;
+
+const eventSchema = mongoose.Schema({
     user_id: {
         type: ObjectId,
         required: true
@@ -44,14 +44,16 @@
     },
     address: {
         type: String,
-        required: true 
+        required: true
     },
     about: {
         type: String,
         required: true
     }
- }, {
-     collection: 'events'
- });
- 
- module.exports = mongoose.model('events', eventSchema);
+}, {
+    timestamps: true
+}, {
+    collection: 'events'
+});
+
+module.exports = mongoose.model('events', eventSchema);

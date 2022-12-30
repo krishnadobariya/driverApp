@@ -124,7 +124,7 @@ exports.eventList = async (req, res) => {
         let userId = req.params.user_id;
         console.log("vehicleType:;", req.body.vehicle_type);
 
-        const getEventData = await Event.find({ vehicle_type: vehicleType }).skip(startIndex).limit(endIndex);
+        const getEventData = await Event.find({ vehicle_type: vehicleType }).skip(startIndex).limit(endIndex).sort({ createdAt: -1 });
         console.log("getEventData::", getEventData);
         const eventDetails = [];
         for (const getUser of getEventData) {
@@ -133,7 +133,7 @@ exports.eventList = async (req, res) => {
             const userIsJoin = await joinEvent.findOne({
                 event_id: getUser._id,
                 user_id: userId
-            });
+            }).sort({ createdAt: -1 });
             console.log("eventId:;", getUser._id);
             console.log("userIds::", userId);
             console.log("userIsJoin::", userIsJoin);
@@ -203,6 +203,32 @@ exports.eventList = async (req, res) => {
                 code: 500,
                 statusCode: 0,
                 error: error.message
+            }
+        )
+    }
+}
+
+exports.eventDemo = async (req, res) => {
+    try {
+        const getEventData = await Event.find().sort({ createdAt: -1 })
+
+        res.status(status.OK).json(
+            {
+                message: "User Vehicle Detail Update Successfully",
+                status: true,
+                code: 200,
+                statusCode: 1,
+                data: getEventData
+            }
+        )
+
+    } catch (error) {
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Somthing Went Wrong",
+                status: false,
+                code: 501,
+                statusCode: 0
             }
         )
     }

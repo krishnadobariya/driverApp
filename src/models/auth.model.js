@@ -46,9 +46,11 @@ const authSchema = mongoose.Schema({
         required: true
     },
     vehicle: {
-        type : Array,
+        type: Array,
         required: true
     }
+}, {
+    timestamps: true
 }, {
     collection: 'auth'
 });
