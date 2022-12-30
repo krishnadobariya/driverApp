@@ -14,9 +14,11 @@ app.use('/images', express.static('images'));
 const authRouter = require("./routes/auth.routes");
 const chatRouter = require("./routes/chat.routes");
 const eventRouter = require("./routes/event.routes");
+const blogRouter = require("./routes/blog.routes");
 
 app.use("/auth", authRouter);
 app.use("/chat", chatRouter);
 app.use("/event", eventRouter);
+app.use("/blog",blogRouter)
 
 module.exports = app;
