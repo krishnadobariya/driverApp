@@ -6,6 +6,14 @@ const blogSchema = mongoose.Schema({
         type: ObjectId,
         required: true
     },
+    username: {
+        type: String,
+        required: true
+    },
+    user_profile: {
+      type: String,
+      required: true  
+    },
     thumbnail: {
         type: Array,
     },

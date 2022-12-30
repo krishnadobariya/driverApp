@@ -7,7 +7,7 @@ const {
 } = require("../controllers/blog.controller");
 
 router.post("/add/:id", upload.array('thumbnail'), addBlog);
-router.get("/list", blogList)
+router.post("/list", blogList)
 
 
 module.exports = router;
