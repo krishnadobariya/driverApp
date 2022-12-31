@@ -3,8 +3,9 @@ const authModel = require("../models/auth.model");
 const Blog = require("../models/blog.model");
 const cloudinary = require("../utils/cloudinary.utils");
 const status = require("http-status");
+const blogModel = require("../models/blog.model");
+const likeModel = require("../models/like.model");
 const ObjectId = mongoose.Types.ObjectId
-
 
 
 exports.addBlog = async (req, res) => {
@@ -86,7 +87,6 @@ exports.addBlog = async (req, res) => {
         )
     }
 }
-
 
 
 exports.blogList = async (req, res) => {
@@ -261,5 +261,161 @@ exports.blogList = async (req, res) => {
                 error: error.message
             }
         )
+    }
+}
+
+
+exports.blogLikeDislike = async (req, res) => {
+    try {
+
+        let userId = req.params.user_id;
+        let blogId = req.params.blog_id;
+
+        const findBlog = await blogModel.findOne({
+            _id: blogId
+        })
+
+        const findUser = await authModel.findOne({
+            _id: userId
+        })
+
+        if (findBlog && findUser) {
+
+            const blogInLikeModel = await likeModel.findOne({
+                blogId: blogId
+            })
+
+            const reqUserInLikeModel = await likeModel.findOne({
+                "reqAuthId._id" : userId
+            })
+
+
+            if (req.query.like == 1) {
+
+                if(blogInLikeModel && reqUserInLikeModel){
+                    res.status(status.CONFLICT).json({
+                        message: "Already Liked Blog!",
+                        status: true,
+                        code: 409,
+                        statusCode: 1,
+                    })
+                }else if(blogInLikeModel){
+
+                    await blogModel.updateOne({
+                        _id : blogId
+                    }, {
+                        $inc :{
+                            like : 1
+                        }
+                    })
+
+                    await likeModel.updateOne({
+                        blogId : blogId
+                    }, {
+                        $push: {
+                            reqAuthId: {
+                                _id :userId 
+                            }
+                        }
+                    })
+
+                    res.status(status.OK).json({
+                        message: "Like added!",
+                        status: true,
+                        code: 200,
+                        statusCode: 1,
+                    })
+
+
+                }else{
+
+                    await blogModel.updateOne({
+                        _id : blogId
+                    }, {
+                        $inc :{
+                            like : 1
+                        }
+                    })
+
+                    const insertLike = new likeModel({
+                        authId : findBlog?.user_id,
+                        blogId: blogId,
+                        reqAuthId :{
+                            _id : userId
+                        }
+                    })
+                    await insertLike.save()
+
+                    res.status(status.OK).json({
+                        message: "Like added!",
+                        status: true,
+                        code: 200,
+                        statusCode: 1,
+                    })
+
+                }
+
+            } else if (req.query.like == 0) {
+                
+                if(blogInLikeModel && reqUserInLikeModel){
+
+                    await blogModel.updateOne({
+                        _id : blogId
+                    }, {
+                        $inc :{
+                            like : -1
+                        }
+                    })
+
+                    await likeModel.updateOne({
+                        blogId : blogId
+                    }, {
+                        $pull: {
+                            reqAuthId: {
+                                _id : userId
+                            }
+                        }
+                    })
+
+                    res.status(status.OK).json({
+                        message: "Dislike added!",
+                        status: true,
+                        code: 409,
+                        statusCode: 1,
+                    })
+                    
+                }else{
+
+                    res.status(status.OK).json({
+                        message: "Dislike added!",
+                        status: true,
+                        code: 409,
+                        statusCode: 1,
+                    })
+
+                }
+            }
+        } else {
+            res.status(status.NOT_FOUND).json({
+                message: "User Or Blog Not Found!",
+                status: true,
+                code: 404,
+                statusCode: 1,
+            })
+        }
+
+    } catch (error) {
+
+        console.log("Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
     }
 }

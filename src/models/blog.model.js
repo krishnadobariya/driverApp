@@ -11,8 +11,8 @@ const blogSchema = mongoose.Schema({
         required: true
     },
     user_profile: {
-      type: String,
-      required: true  
+        type: String,
+        required: true
     },
     thumbnail: {
         type: Array,
@@ -28,7 +28,11 @@ const blogSchema = mongoose.Schema({
     description: {
         type: String,
         required: true
-    }
+    },
+    like: {
+        type: Number,
+        default: 0
+    },
 }, {
     timestamps: true
 }, {
