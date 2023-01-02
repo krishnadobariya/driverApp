@@ -800,7 +800,7 @@ exports.getCommentList = async (req, res) => {
                     {
                         message: "Get Comment List Successfully",
                         status: true,
-                        code: 200,
+                        code: 200,                                     
                         statusCode: 1,
                         data: finalGetCommentData
                     }

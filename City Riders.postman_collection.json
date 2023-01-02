@@ -575,14 +575,15 @@
 					]
 				},
 				"url": {
-					"raw": "localhost:5000/blog/list",
+					"raw": "localhost:5000/blog/list/63ae8347ad6ae4296048bfeb",
 					"host": [
 						"localhost"
 					],
 					"port": "5000",
 					"path": [
 						"blog",
-						"list"
+						"list",
+						"63ae8347ad6ae4296048bfeb"
 					]
 				}
 			},
@@ -594,7 +595,7 @@
 				"method": "POST",
 				"header": [],
 				"url": {
-					"raw": "localhost:5000/blog/like-dislike/63ae8339ad6ae4296048bfe5/63aecd36bbea9c57de48ca36",
+					"raw": "localhost:5000/blog/like-dislike/63ae8343ad6ae4296048bfe8/63aecd36bbea9c57de48ca36?like=1",
 					"host": [
 						"localhost"
 					],
@@ -602,7 +603,63 @@
 					"path": [
 						"blog",
 						"like-dislike",
+						"63ae8343ad6ae4296048bfe8",
+						"63aecd36bbea9c57de48ca36"
+					],
+					"query": [
+						{
+							"key": "like",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "comment insert",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"text\" : \"good like!!\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:5000/blog/comment-add/63ae8339ad6ae4296048bfe5/63aecd36bbea9c57de48ca36",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"blog",
+						"comment-add",
 						"63ae8339ad6ae4296048bfe5",
+						"63aecd36bbea9c57de48ca36"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Comment List",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/blog/comment-get-list/63aecd36bbea9c57de48ca36",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"blog",
+						"comment-get-list",
 						"63aecd36bbea9c57de48ca36"
 					]
 				}

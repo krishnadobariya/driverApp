@@ -125,7 +125,7 @@ exports.eventList = async (req, res) => {
         console.log("vehicleType:;", req.body.vehicle_type);
 
         const getEventData = await Event.find({ vehicle_type: vehicleType }).skip(startIndex).limit(endIndex).sort({ createdAt: -1 });
-        console.log("getEventData::", getEventData);
+        // console.log("getEventData::", getEventData);
         const eventDetails = [];
         for (const getUser of getEventData) {
 
@@ -134,9 +134,8 @@ exports.eventList = async (req, res) => {
                 event_id: getUser._id,
                 user_id: userId
             }).sort({ createdAt: -1 });
-            console.log("eventId:;", getUser._id);
-            console.log("userIds::", userId);
-            console.log("userIsJoin::", userIsJoin);
+
+            console.log("getUser:------", getUser.date);
 
             if (userIsJoin == null) {
 
@@ -146,7 +145,7 @@ exports.eventList = async (req, res) => {
                     user_profile: getUser.user_profile[0] ? getUser.user_profile[0].res : "",
                     event_photo: getUser.event_photo[0] ? getUser.event_photo[0].res : "",
                     name: getUser.name,
-                    date: getUser.data,
+                    date: getUser.date,
                     time: getUser.time,
                     vehicle_type: getUser.vehicle_type,
                     longitude: getUser.location.coordinates[0],
