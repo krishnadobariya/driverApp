@@ -96,11 +96,11 @@ exports.blogList = async (req, res) => {
         let vehicleType = req.body.vehicle_type;
         let userId = req.params.id;
 
-        const allBlogData = await Blog.find({ 
+        const allBlogData = await Blog.find({
             user_id: {
-                $ne: userId 
+                $ne: userId
             },
-            category: vehicleType 
+            category: vehicleType
         }).sort({ createdAt: -1 });
 
         let blogInsertTime = [];
@@ -135,6 +135,7 @@ exports.blogList = async (req, res) => {
                         heading: getTime.heading,
                         description: getTime.description,
                         like: getTime.like,
+                        comment: getTime.comment,
                         isLike: true,
                         time: new Date(addingDate).toDateString()
                     }
@@ -150,6 +151,7 @@ exports.blogList = async (req, res) => {
                         heading: getTime.heading,
                         description: getTime.description,
                         like: getTime.like,
+                        comment: getTime.comment,
                         isLike: false,
                         time: new Date(addingDate).toDateString()
                     }
@@ -175,6 +177,7 @@ exports.blogList = async (req, res) => {
                         heading: getTime.heading,
                         description: getTime.description,
                         like: getTime.like,
+                        comment: getTime.comment,
                         isLike: true,
                         time: "4 Week Ago"
                     }
@@ -190,6 +193,7 @@ exports.blogList = async (req, res) => {
                         heading: getTime.heading,
                         description: getTime.description,
                         like: getTime.like,
+                        comment: getTime.comment,
                         isLike: false,
                         time: "4 Week Ago"
                     }
@@ -214,6 +218,7 @@ exports.blogList = async (req, res) => {
                         heading: getTime.heading,
                         description: getTime.description,
                         like: getTime.like,
+                        comment: getTime.comment,
                         isLike: true,
                         time: "3 Week Ago"
                     }
@@ -229,6 +234,7 @@ exports.blogList = async (req, res) => {
                         heading: getTime.heading,
                         description: getTime.description,
                         like: getTime.like,
+                        comment: getTime.comment,
                         isLike: false,
                         time: "3 Week Ago"
                     }
@@ -254,6 +260,7 @@ exports.blogList = async (req, res) => {
                         heading: getTime.heading,
                         description: getTime.description,
                         like: getTime.like,
+                        comment: getTime.comment,
                         isLike: true,
                         time: "2 Week Ago"
                     }
@@ -269,6 +276,7 @@ exports.blogList = async (req, res) => {
                         heading: getTime.heading,
                         description: getTime.description,
                         like: getTime.like,
+                        comment: getTime.comment,
                         isLike: false,
                         time: "2 Week Ago"
                     }
@@ -291,6 +299,7 @@ exports.blogList = async (req, res) => {
                         heading: getTime.heading,
                         description: getTime.description,
                         like: getTime.like,
+                        comment: getTime.comment,
                         isLike: true,
                         time: "1 Week Ago"
                     }
@@ -306,6 +315,7 @@ exports.blogList = async (req, res) => {
                         heading: getTime.heading,
                         description: getTime.description,
                         like: getTime.like,
+                        comment: getTime.comment,
                         isLike: false,
                         time: "1 Week Ago"
                     }
@@ -329,6 +339,7 @@ exports.blogList = async (req, res) => {
                         heading: getTime.heading,
                         description: getTime.description,
                         like: getTime.like,
+                        comment: getTime.comment,
                         isLike: true,
                         time: `${hours} Hours Ago`
                     }
@@ -344,20 +355,17 @@ exports.blogList = async (req, res) => {
                         heading: getTime.heading,
                         description: getTime.description,
                         like: getTime.like,
+                        comment: getTime.comment,
                         isLike: false,
                         time: `${hours} Hours Ago`
                     }
                     blogInsertTime.push(response);
                 }
-
             } else if (minutes > 0 && hours == 0) {
-
-
                 findUserInLikeModel = await likeModel.findOne({
                     blogId: getTime._id,
                     "reqAuthId._id": userId
                 })
-
                 if (findUserInLikeModel) {
                     const response = {
                         _id: getTime._id,
@@ -369,6 +377,7 @@ exports.blogList = async (req, res) => {
                         heading: getTime.heading,
                         description: getTime.description,
                         like: getTime.like,
+                        comment: getTime.comment,
                         isLike: true,
                         time: `${minutes} Minute Ago`,
                     }
@@ -384,19 +393,17 @@ exports.blogList = async (req, res) => {
                         heading: getTime.heading,
                         description: getTime.description,
                         like: getTime.like,
+                        comment: getTime.comment,
                         isLike: false,
                         time: `${minutes} Minute Ago`,
                     }
                     blogInsertTime.push(response);
                 }
-
-
             } else if (seconds > 0 && minutes == 0 && hours == 0 && days === 0) {
                 findUserInLikeModel = await likeModel.findOne({
                     blogId: getTime._id,
                     "reqAuthId._id": userId
                 })
-
                 if (findUserInLikeModel) {
                     const response = {
                         _id: getTime._id,
@@ -408,6 +415,7 @@ exports.blogList = async (req, res) => {
                         heading: getTime.heading,
                         description: getTime.description,
                         like: getTime.like,
+                        comment: getTime.comment,
                         isLike: true,
                         time: `${seconds} Seconds Ago`,
                     }
@@ -423,20 +431,17 @@ exports.blogList = async (req, res) => {
                         heading: getTime.heading,
                         description: getTime.description,
                         like: getTime.like,
+                        comment: getTime.comment,
                         isLike: false,
                         time: `${seconds} Seconds Ago`,
                     }
                     blogInsertTime.push(response);
                 }
-
-
             } else if (seconds == 0 && minutes == 0 && hours == 0 && days === 0) {
-
                 findUserInLikeModel = await likeModel.findOne({
                     blogId: getTime._id,
                     "reqAuthId._id": userId
                 })
-
                 if (findUserInLikeModel) {
                     const response = {
                         _id: getTime._id,
@@ -448,6 +453,7 @@ exports.blogList = async (req, res) => {
                         heading: getTime.heading,
                         description: getTime.description,
                         like: getTime.like,
+                        comment: getTime.comment,
                         isLike: true,
                         time: `Just Now`,
                     }
@@ -463,18 +469,14 @@ exports.blogList = async (req, res) => {
                         heading: getTime.heading,
                         description: getTime.description,
                         like: getTime.like,
+                        comment: getTime.comment,
                         isLike: false,
                         time: `Just Now`,
                     }
                     blogInsertTime.push(response);
                 }
-
-
-
             }
-
         }
-
         res.status(status.OK).json({
             message: "View All List Successfully",
             status: true,
@@ -482,7 +484,6 @@ exports.blogList = async (req, res) => {
             statusCode: 1,
             data: blogInsertTime
         })
-
     } catch (error) {
         console.log("Error::", error);
         res.status(status.INTERNAL_SERVER_ERROR).json(
@@ -898,3 +899,35 @@ exports.likedUser = async (req, res) => {
     }
 }
 
+// exports.myBlog = async (req, res) => {
+//     try {
+
+//         let userId = req.params.user_id;
+
+//         const getBlogData = await Blog.find({
+//             user_id: userId
+//         });
+
+//         for (const respSet of getBlogData) {
+            
+//             const resBlog = {
+
+//             }
+
+//         }
+
+//     } catch (error) {
+
+//         console.log("Error::", error);
+//         res.status(status.INTERNAL_SERVER_ERROR).json(
+//             {
+//                 message: "Something Went Wrong",
+//                 status: false,
+//                 code: 500,
+//                 statusCode: 0,
+//                 error: error.message
+//             }
+//         )
+
+//     }
+// }
