@@ -5,12 +5,12 @@ const {
     addEvent,
     eventList,
     eventAttendees,
-    eventDemo
+    myEvent
 } = require("../controllers/event.controller");
 
 router.post("/add/:id", upload.array('profile'), addEvent);
 router.post("/list/:user_id", eventList);
 router.post("/attendees/:id", eventAttendees);
-router.post("/demo", eventDemo);
+router.post("/my/:user_id", myEvent);
 
 module.exports = router;

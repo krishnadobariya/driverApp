@@ -3,6 +3,8 @@ const authModel = require("../models/auth.model");
 const joinEvent = require("../models/joinEvent.model");
 const cloudinary = require("../utils/cloudinary.utils");
 const status = require("http-status");
+// const ObjectId = mongoose.Types.ObjectId;
+
 
 exports.addEvent = async (req, res) => {
     try {
@@ -124,18 +126,24 @@ exports.eventList = async (req, res) => {
         let userId = req.params.user_id;
         console.log("vehicleType:;", req.body.vehicle_type);
 
-        const getEventData = await Event.find({ vehicle_type: vehicleType }).skip(startIndex).limit(endIndex).sort({ createdAt: -1 });
-        // console.log("getEventData::", getEventData);
+        const getEventData = await Event.find({
+            user_id: {
+                $ne: userId 
+            },
+            vehicle_type: vehicleType
+        }).skip(startIndex).limit(endIndex).sort({ createdAt: -1 });
+        console.log("getEventData::", getEventData);
+
         const eventDetails = [];
         for (const getUser of getEventData) {
 
             const getJoinUser = await joinEvent.find({ event_id: getUser._id }).count();
             const userIsJoin = await joinEvent.findOne({
+                user_id: userId,
                 event_id: getUser._id,
-                user_id: userId
             }).sort({ createdAt: -1 });
 
-            console.log("getUser:------", getUser.date);
+            // console.log("getUser:------", getUser);
 
             if (userIsJoin == null) {
 
@@ -260,21 +268,64 @@ exports.eventAttendees = async (req, res) => {
     }
 }
 
-exports.eventDemo = async (req, res) => {
+exports.myEvent = async (req, res) => {
     try {
-        const getEventData = await Event.find().sort({ createdAt: -1 })
 
-        res.status(status.OK).json(
-            {
-                message: "User Vehicle Detail Update Successfully",
-                status: true,
-                code: 200,
-                statusCode: 1,
-                data: getEventData
+        let userId = req.params.user_id;
+        let vehicleType = req.body.vehicle_type;
+
+        const getMyEvent = await Event.find({
+            user_id: userId,
+            vehicle_type: vehicleType
+        });
+
+        if (getMyEvent.length == 0) {
+            res.status(status.NOT_FOUND).json(
+                {
+                    message: "Data Not Exist",
+                    status: false,
+                    code: 404,
+                    statusCode: 0
+                }
+            )
+        } else {
+
+            const response = [];
+            for (const respSet of getMyEvent) {
+
+                const eventData = {
+                    event_id: respSet._id,
+                    user_id: respSet.user_id,
+                    username: respSet.username,
+                    user_profile: respSet.user_profile[0] ? respSet.user_profile[0].res : "",
+                    event_photo: respSet.event_photo[0] ? respSet.event_photo[0].res : "",
+                    name: respSet.name,
+                    date: respSet.date,
+                    time: respSet.time,
+                    vehicle_type: respSet.vehicle_type,
+                    longitude: respSet.location.coordinates[0],
+                    latitude: respSet.location.coordinates[1],
+                    address: respSet.address,
+                    about: respSet.about
+                }
+                response.push(eventData)
+
             }
-        )
+
+            res.status(status.OK).json(
+                {
+                    message: "GET MY ALL EVENT LIST SUCCESSFULLY",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: response
+                }
+            )
+
+        }
 
     } catch (error) {
+
         res.status(status.INTERNAL_SERVER_ERROR).json(
             {
                 message: "Somthing Went Wrong",
@@ -283,5 +334,6 @@ exports.eventDemo = async (req, res) => {
                 statusCode: 0
             }
         )
+
     }
 }
