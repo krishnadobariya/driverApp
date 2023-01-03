@@ -243,6 +243,8 @@ exports.blogList = async (req, res) => {
 
 
 
+                
+
             } else if (days > 7 && days < 14) {
                 findUserInLikeModel = await likeModel.findOne({
                     blogId: getTime._id,
