@@ -412,15 +412,18 @@
 					]
 				},
 				"url": {
-					"raw": "localhost:5000/event/list/63aad2e29a91e00c552fcd20",
+					"raw": "139.59.88.204:5000/event/list/63ae8339ad6ae4296048bfe5",
 					"host": [
-						"localhost"
+						"139",
+						"59",
+						"88",
+						"204"
 					],
 					"port": "5000",
 					"path": [
 						"event",
 						"list",
-						"63aad2e29a91e00c552fcd20"
+						"63ae8339ad6ae4296048bfe5"
 					]
 				}
 			},
@@ -661,6 +664,26 @@
 						"blog",
 						"comment-get-list",
 						"63aecd36bbea9c57de48ca36"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Event Attendees",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/event/attendees/63ae87b4d669b58fc823e7f1",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"event",
+						"attendees",
+						"63ae87b4d669b58fc823e7f1"
 					]
 				}
 			},

@@ -6,6 +6,7 @@ const status = require("http-status");
 const blogModel = require("../models/blog.model");
 const likeModel = require("../models/like.model");
 const commentModel = require("../models/comment.model");
+const { find } = require("../models/auth.model");
 const ObjectId = mongoose.Types.ObjectId
 
 
@@ -769,43 +770,43 @@ exports.getCommentList = async (req, res) => {
 
                 const getCommentOnBlog = [];
 
-                for(const getDataOfCOmmentAbout of findBlogInCommentModel.comment){
-                  
+                for (const getDataOfCOmmentAbout of findBlogInCommentModel.comment) {
+
                     const userFound = await authModel.findOne({
-                        _id : getDataOfCOmmentAbout.user_id
+                        _id: getDataOfCOmmentAbout.user_id
                     })
                     const response = {
-                        user_id : getDataOfCOmmentAbout.user_id,
-                        commentText : getDataOfCOmmentAbout.text,
-                        username : userFound?.username,
-                        profile : userFound?.profile[0]?.res
+                        user_id: getDataOfCOmmentAbout.user_id,
+                        commentText: getDataOfCOmmentAbout.text,
+                        username: userFound?.username,
+                        profile: userFound?.profile[0]?.res
                     }
                     getCommentOnBlog.push(response)
 
                 }
 
                 const findAthorProfile = await authModel.findOne({
-                    _id : findBlogInCommentModel.author_id
+                    _id: findBlogInCommentModel.author_id
                 })
 
                 const finalGetCommentData = {
-                    authorId : findBlogInCommentModel.author_id,
+                    authorId: findBlogInCommentModel.author_id,
                     blogId: findBlogInCommentModel.blog_id,
                     author_name: findAthorProfile?.username,
-                    author_profile : findAthorProfile?.profile[0]?.res,
-                    commentList : getCommentOnBlog
+                    author_profile: findAthorProfile?.profile[0]?.res,
+                    commentList: getCommentOnBlog
                 }
 
                 res.status(status.OK).json(
                     {
                         message: "Get Comment List Successfully",
                         status: true,
-                        code: 200,                                     
+                        code: 200,
                         statusCode: 1,
                         data: finalGetCommentData
                     }
                 )
-        
+
 
             } else {
                 res.status(status.NOT_FOUND).json(
@@ -814,10 +815,10 @@ exports.getCommentList = async (req, res) => {
                         status: true,
                         code: 404,
                         statusCode: 1,
-                        data:""
+                        data: ""
                     }
                 )
-        
+
             }
 
         } else {
@@ -842,5 +843,54 @@ exports.getCommentList = async (req, res) => {
             }
         )
 
+    }
+}
+
+exports.likedUser = async (req, res) => {
+    try {
+
+        let blogId = req.params.id;
+
+        const findBlogData = await likeModel.find({
+            blogId: blogId
+        });
+        console.log("findBlogData::", findBlogData[0].reqAuthId);
+
+        const response = [];
+        for (const getUSerData of findBlogData[0].reqAuthId) {
+            console.log("getUSerData::", getUSerData._id);
+            const findUserDetails = await authModel.findOne({
+                _id: getUSerData._id
+            })
+
+            const userData = {
+                profile: findUserDetails.profile[0] ? findUserDetails.profile[0].res : "",
+                username: findUserDetails.username,
+                email: findUserDetails.email
+            }
+            response.push(userData)
+        }
+
+        res.status(status.OK).json(
+            {
+                message: "Get Liked User Data List Successfully",
+                status: true,
+                code: 200,
+                statusCode: 1,
+                data: response
+            }
+        )
+
+    } catch (error) {
+        console.log("Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
     }
 }
