@@ -37,6 +37,11 @@ const authSchema = mongoose.Schema({
         },
         index: '2dsphere'
     },
+    status: {
+        type: String,
+        required: true,
+        default: "Active"
+    },
     password: {
         type: String,
         required: true

@@ -484,6 +484,7 @@ function socket(io) {
 
         // ----- End readUnread ----- //
 
+        // ----- isJoin ----- //
         socket.on("isJoin", async (arg) => {
 
             let userId = arg.user_id;
@@ -504,6 +505,24 @@ function socket(io) {
             const saveData = await registerData.save();
 
         })
+        // ----- isJoin ----- //
+
+        // ----- updateStatus ----- //
+        socket.on("updateStatus", async (arg) => {
+
+            let userId = arg.user_id;
+            let status = arg.status;
+
+            const updateStatus = await authModel.updateOne({
+                _id: userId
+            }, {
+                $set: {
+                    status: status
+                }
+            })
+
+        })
+        // ----- updateStatus ----- //
 
     })
 

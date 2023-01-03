@@ -21,7 +21,7 @@ router.post("/register", registration);
 router.post("/add-image/:id", upload.array('profile'), addImage)
 router.post("/login", login);
 router.get("/user-profile/:id", userProfile);
-router.get("/all-user/:id", userList);
+router.post("/all-user/:id", userList);
 router.get("/get-lat-long/:id", getLatLong);
 router.get("/get-user-info", getUserInfo);
 router.get("/logout/:id", userLogout);

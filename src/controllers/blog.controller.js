@@ -243,7 +243,7 @@ exports.blogList = async (req, res) => {
 
 
 
-                
+
 
             } else if (days > 7 && days < 14) {
                 findUserInLikeModel = await likeModel.findOne({
@@ -901,35 +901,76 @@ exports.likedUser = async (req, res) => {
     }
 }
 
-// exports.myBlog = async (req, res) => {
-//     try {
+exports.myBlog = async (req, res) => {
+    try {
 
-//         let userId = req.params.user_id;
+        let userId = req.params.user_id;
+        let category = req.body.category;
 
-//         const getBlogData = await Blog.find({
-//             user_id: userId
-//         });
+        const getBlogData = await Blog.find({
+            user_id: userId,
+            category: category
+        });
+        console.log("getBlogData::", getBlogData);
 
-//         for (const respSet of getBlogData) {
-            
-//             const resBlog = {
+        if (getBlogData.length == 0) {
 
-//             }
+            res.status(status.NOT_FOUND).json(
+                {
+                    message: "Data Not Exist",
+                    status: false,
+                    code: 404,
+                    statusCode: 0
+                }
+            )
 
-//         }
+        } else {
 
-//     } catch (error) {
+            const response = [];
+            for (const respSet of getBlogData) {
 
-//         console.log("Error::", error);
-//         res.status(status.INTERNAL_SERVER_ERROR).json(
-//             {
-//                 message: "Something Went Wrong",
-//                 status: false,
-//                 code: 500,
-//                 statusCode: 0,
-//                 error: error.message
-//             }
-//         )
+                const resBlog = {
+                    blog_id: respSet._id,
+                    userId: respSet.user_id,
+                    username: respSet.username,
+                    user_profile: respSet.user_profile,
+                    thumbnail: respSet.thumbnail[0] ? respSet.thumbnail[0].res : "",
+                    category: respSet.category,
+                    heading: respSet.heading,
+                    description: respSet.description,
+                    like: respSet.like,
+                    comment: respSet.comment,
+                    createdAt: respSet.createdAt,
+                    updatedAt: respSet.updatedAt
+                }
+                response.push(resBlog)
 
-//     }
-// }
+            }
+
+            res.status(status.OK).json(
+                {
+                    message: "GET MY ALL BLOG LIST SUCCESSFULLY",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: response
+                }
+            )
+
+        }
+
+    } catch (error) {
+
+        console.log("Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}

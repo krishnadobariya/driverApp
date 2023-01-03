@@ -78,6 +78,7 @@ exports.registration = async (req, res) => {
                 fcm_token: saveData.fcm_token,
                 longitude: saveData.location.coordinates[0],
                 latitude: saveData.location.coordinates[1],
+                status: saveData.status,
                 vehicle: saveData.vehicle
             }
 
@@ -208,7 +209,8 @@ exports.userList = async (req, res) => {
         // --- get user whithout user that id pass --- //
 
         const getUser = await authModel.find({
-            _id: { $ne: userId }
+            _id: { $ne: userId },
+            status: "Active"
         }).skip(startIndex).limit(endIndex).select('-__v').sort({ createdAt: -1 });
         console.log("getUser::", getUser);
 
@@ -256,7 +258,7 @@ exports.userList = async (req, res) => {
             }
             if (isVehicleData) {
                 const response = {
-                    profile: userDetails.profile,
+                    profile: userDetails.profile[0] ? userDetails.profile[0].res : "",
                     userName: userDetails.username,
                     email: userDetails.email,
                     phone: `${userDetails.country_code}${userDetails.phone_number}`,
