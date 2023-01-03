@@ -90,14 +90,18 @@ exports.addBlog = async (req, res) => {
     }
 }
 
-
 exports.blogList = async (req, res) => {
     try {
 
         let vehicleType = req.body.vehicle_type;
         let userId = req.params.id;
 
-        const allBlogData = await Blog.find({ category: vehicleType }).sort({ createdAt: -1 });
+        const allBlogData = await Blog.find({ 
+            user_id: {
+                $ne: userId 
+            },
+            category: vehicleType 
+        }).sort({ createdAt: -1 });
 
         let blogInsertTime = [];
         for (const getTime of allBlogData) {
@@ -492,7 +496,6 @@ exports.blogList = async (req, res) => {
         )
     }
 }
-
 
 exports.blogLikeDislike = async (req, res) => {
     try {
@@ -894,3 +897,4 @@ exports.likedUser = async (req, res) => {
         )
     }
 }
+
