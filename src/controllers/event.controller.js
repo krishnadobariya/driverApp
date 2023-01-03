@@ -207,6 +207,59 @@ exports.eventList = async (req, res) => {
     }
 }
 
+exports.eventAttendees = async (req, res) => {
+    try {
+
+        let event_id = req.params.id;
+        console.log("event_id::", event_id);
+
+        const findEvent = await joinEvent.find({
+            event_id: event_id
+        });
+        console.log("findEvent::", findEvent);
+
+        const response = [];
+        for (const getUser of findEvent) {
+
+            const findUserDetails = await authModel.findOne({
+                _id: getUser.user_id
+            });
+
+            const usrData = {
+                profile: findUserDetails.profile[0] ? findUserDetails.profile[0].res : "",
+                username: findUserDetails.username,
+                age: findUserDetails.age,
+                gender: findUserDetails.gender
+            }
+
+            response.push(usrData)
+
+        }
+
+        res.status(status.OK).json(
+            {
+                message: "Get All Event's User Details  Successfully",
+                status: true,
+                code: 200,
+                statusCode: 1,
+                data: response
+            }
+        )
+
+    } catch (error) {
+        console.log("userList-Error:", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+    }
+}
+
 exports.eventDemo = async (req, res) => {
     try {
         const getEventData = await Event.find().sort({ createdAt: -1 })
