@@ -42,7 +42,7 @@ exports.registration = async (req, res) => {
             // --- User's Basic Details Inserting Here --- //
             const authData = authModel({
                 profile: [{
-                    res: "https://res.cloudinary.com/tcloud/image/upload/v1672232275/yd0hfjeh13jtb511cf4p.jpg"
+                    res: "https://res.cloudinary.com/tcloud/image/upload/v1673262748/lcnbz5ch2domvf40jmta.png"
                 }],
                 username: req.body.username,
                 email: req.body.email,
@@ -295,7 +295,6 @@ exports.userList = async (req, res) => {
 
     }
 }
-
 
 exports.userProfile = async (req, res) => {
     try {
@@ -802,7 +801,6 @@ exports.changePassword = async (req, res) => {
     }
 }
 
-
 exports.forgetPassword = async (req, res) => {
     try {
 
@@ -839,6 +837,17 @@ exports.forgetPassword = async (req, res) => {
             <h4>Thank You</h4>`
 
             await mailService(findUser.email, sub, html)
+
+            console.log("findUser._id::::", findUser._id);
+            console.log("createPass::::", createPass);
+            
+            const updateUserPassword = await authModel.updateOne({
+                _id: findUser._id
+            }, {
+                $set: {
+                    password: createPass
+                }
+            });
 
             res.status(status.OK).json(
                 {

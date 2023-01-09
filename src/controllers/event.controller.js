@@ -296,7 +296,7 @@ exports.myEvent = async (req, res) => {
                 const getJoinUser = await joinEvent.find({ event_id: respSet._id }).count();
 
                 const eventData = {
-                    // event_id: respSet._id,
+                    event_id: respSet._id,
                     user_id: respSet.user_id,
                     username: respSet.username,
                     user_profile: respSet.user_profile[0] ? respSet.user_profile[0].res : "",

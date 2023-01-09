@@ -13,7 +13,7 @@
 				"header": [],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"username\": \"test1\",\n    \"email\": \"test34@gmail.com\",\n    \"country_code\": \"+91\",\n    \"phone_number\": \"9876543210\",\n    \"age\": \"20\",\n    \"gender\": \"male\",\n    \"password\": \"123\",\n    \"fcm_token\": \"kasdhfdiuahKBAUDHsandliae\",\n    \"longitude\": \"70.758972\",\n    \"latitude\": \"22.214027\",\n    \"vehicle\": [\n        {\n            \"vehicle_img_id\": \"63aa904fca104dd60f252724\",\n            \"vehicle_type\": \"1\",\n            \"model\": \"BMW\",\n            \"trim\": \"gsrthgrf\",\n            \"year\": \"2019\",\n            \"daily_driving\": 20,\n            \"unit\": \"km\"\n        },\n        {\n            \"vehicle_img_id\": \"63aa904fca104dd60f252724\",\n            \"vehicle_type\": \"2\",\n            \"model\": \"Spendor\",\n            \"trim\": \"gsrthgrfwewdwef\",\n            \"year\": \"2018\",\n            \"daily_driving\": 35,\n            \"unit\": \"km\"\n        }\n    ] \n}",
+					"raw": "{\n    \"username\": \"test1\",\n    \"email\": \"test37@gmail.com\",\n    \"country_code\": \"+91\",\n    \"phone_number\": \"9876543210\",\n    \"age\": \"20\",\n    \"gender\": \"male\",\n    \"password\": \"123\",\n    \"fcm_token\": \"kasdhfdiuahKBAUDHsandliae\",\n    \"longitude\": \"70.758972\",\n    \"latitude\": \"22.214027\",\n    \"vehicle\": [\n        {\n            \"vehicle_img_id\": \"63aa904fca104dd60f252724\",\n            \"vehicle_type\": \"1\",\n            \"model\": \"BMW\",\n            \"trim\": \"gsrthgrf\",\n            \"year\": \"2019\",\n            \"daily_driving\": 20,\n            \"unit\": \"km\"\n        },\n        {\n            \"vehicle_img_id\": \"63aa904fca104dd60f252724\",\n            \"vehicle_type\": \"2\",\n            \"model\": \"Spendor\",\n            \"trim\": \"gsrthgrfwewdwef\",\n            \"year\": \"2018\",\n            \"daily_driving\": 35,\n            \"unit\": \"km\"\n        }\n    ] \n}",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -424,7 +424,41 @@
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "Event List",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "vehicle_type",
+									"value": "2",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:5000/event/list/63ae8339ad6ae4296048bfe5",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"event",
+								"list",
+								"63ae8339ad6ae4296048bfe5"
+							]
+						}
+					},
+					"_postman_previewlanguage": "json",
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"message\": \"Get All Event Detail Successfully\",\n    \"status\": true,\n    \"code\": 200,\n    \"statusCode\": 1,\n    \"data\": [\n        {\n            \"user_id\": \"63ae8e7dcf146b1c502ba65d\",\n            \"username\": \"test002\",\n            \"user_profile\": \"https://res.cloudinary.com/tcloud/image/upload/v1672384127/ibqryvkxcspkph8vvg9v.jpg\",\n            \"event_photo\": \"https://res.cloudinary.com/tcloud/image/upload/v1672812483/mtdo7oaefijeg21gvaac.jpg\",\n            \"name\": \"test008\",\n            \"date\": \"04/01/2023\",\n            \"time\": \"11:00 PM\",\n            \"vehicle_type\": \"2\",\n            \"longitude\": 72.9060484,\n            \"latitude\": 21.2393813,\n            \"address\": \"Varacha Road, Radhe Krishna Raw House, Nana Varachha, Surat, Gujarat, India\",\n            \"about\": \"this is test event 008....\",\n            \"isJoin\": false,\n            \"join_user\": 0\n        },\n        {\n            \"user_id\": \"63ae8e7dcf146b1c502ba65d\",\n            \"username\": \"test002\",\n            \"user_profile\": \"https://res.cloudinary.com/tcloud/image/upload/v1672384127/ibqryvkxcspkph8vvg9v.jpg\",\n            \"event_photo\": \"https://res.cloudinary.com/tcloud/image/upload/v1672656964/mwc1aia51la5tckcueqt.jpg\",\n            \"name\": \"event 002\",\n            \"date\": \"02/01/2023\",\n            \"time\": \"1:00 AM\",\n            \"vehicle_type\": \"2\",\n            \"longitude\": 72.79330209999999,\n            \"latitude\": 21.1959098,\n            \"address\": \"Adajan, Surat, Gujarat, India\",\n            \"about\": \"this is test event...\",\n            \"isJoin\": false,\n            \"join_user\": 0\n        },\n        {\n            \"user_id\": \"63ae8e7dcf146b1c502ba65d\",\n            \"username\": \"test002\",\n            \"user_profile\": \"https://res.cloudinary.com/tcloud/image/upload/v1672384127/ibqryvkxcspkph8vvg9v.jpg\",\n            \"event_photo\": \"https://res.cloudinary.com/tcloud/image/upload/v1672649288/uqfzhciuka2ormypqvkw.jpg\",\n            \"name\": \"event test\",\n            \"date\": \"02/01/2023\",\n            \"time\": \"3:00 AM\",\n            \"vehicle_type\": \"2\",\n            \"longitude\": 72.83106070000001,\n            \"latitude\": 21.1702401,\n            \"address\": \"Surat, Gujarat, India\",\n            \"about\": \"this is test...\",\n            \"isJoin\": false,\n            \"join_user\": 0\n        }\n    ]\n}"
+				}
+			]
 		},
 		{
 			"name": "Chnage Password",
@@ -612,7 +646,7 @@
 					}
 				},
 				"url": {
-					"raw": "localhost:5000/blog/comment-add/63ae8339ad6ae4296048bfe5/63aecd36bbea9c57de48ca36",
+					"raw": "localhost:5000/blog/comment-add/63ae8339ad6ae4296048bfe5/63b415fddb757be6d5d1ae6f",
 					"host": [
 						"localhost"
 					],
@@ -621,7 +655,7 @@
 						"blog",
 						"comment-add",
 						"63ae8339ad6ae4296048bfe5",
-						"63aecd36bbea9c57de48ca36"
+						"63b415fddb757be6d5d1ae6f"
 					]
 				}
 			},
@@ -668,26 +702,6 @@
 			"response": []
 		},
 		{
-			"name": "Liked User",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": {
-					"raw": "localhost:5000/blog/liked-user/63aecd36bbea9c57de48ca36",
-					"host": [
-						"localhost"
-					],
-					"port": "5000",
-					"path": [
-						"blog",
-						"liked-user",
-						"63aecd36bbea9c57de48ca36"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "My Event",
 			"request": {
 				"method": "POST",
@@ -703,7 +717,7 @@
 					]
 				},
 				"url": {
-					"raw": "localhost:5000/event/my/63ae8339ad6ae4296048bfe5",
+					"raw": "localhost:5000/event/my/63ae8e7dcf146b1c502ba65d",
 					"host": [
 						"localhost"
 					],
@@ -711,11 +725,45 @@
 					"path": [
 						"event",
 						"my",
-						"63ae8339ad6ae4296048bfe5"
+						"63ae8e7dcf146b1c502ba65d"
 					]
 				}
 			},
-			"response": []
+			"response": [
+				{
+					"name": "My Event",
+					"originalRequest": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "vehicle_type",
+									"value": "2",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:5000/event/my/63ae8339ad6ae4296048bfe5",
+							"host": [
+								"localhost"
+							],
+							"port": "5000",
+							"path": [
+								"event",
+								"my",
+								"63ae8339ad6ae4296048bfe5"
+							]
+						}
+					},
+					"_postman_previewlanguage": "json",
+					"header": null,
+					"cookie": [],
+					"body": "{\n    \"message\": \"GET MY ALL EVENT LIST SUCCESSFULLY\",\n    \"status\": true,\n    \"code\": 200,\n    \"statusCode\": 1,\n    \"data\": [\n        {\n            \"user_id\": \"63ae8e7dcf146b1c502ba65d\",\n            \"username\": \"test002\",\n            \"user_profile\": \"https://res.cloudinary.com/tcloud/image/upload/v1672384127/ibqryvkxcspkph8vvg9v.jpg\",\n            \"event_photo\": \"https://res.cloudinary.com/tcloud/image/upload/v1672649288/uqfzhciuka2ormypqvkw.jpg\",\n            \"name\": \"event test\",\n            \"date\": \"02/01/2023\",\n            \"time\": \"3:00 AM\",\n            \"vehicle_type\": \"2\",\n            \"longitude\": 72.83106070000001,\n            \"latitude\": 21.1702401,\n            \"address\": \"Surat, Gujarat, India\",\n            \"about\": \"this is test...\",\n            \"isJoin\": true,\n            \"join_user\": 0\n        },\n        {\n            \"user_id\": \"63ae8e7dcf146b1c502ba65d\",\n            \"username\": \"test002\",\n            \"user_profile\": \"https://res.cloudinary.com/tcloud/image/upload/v1672384127/ibqryvkxcspkph8vvg9v.jpg\",\n            \"event_photo\": \"https://res.cloudinary.com/tcloud/image/upload/v1672656964/mwc1aia51la5tckcueqt.jpg\",\n            \"name\": \"event 002\",\n            \"date\": \"02/01/2023\",\n            \"time\": \"1:00 AM\",\n            \"vehicle_type\": \"2\",\n            \"longitude\": 72.79330209999999,\n            \"latitude\": 21.1959098,\n            \"address\": \"Adajan, Surat, Gujarat, India\",\n            \"about\": \"this is test event...\",\n            \"isJoin\": true,\n            \"join_user\": 0\n        },\n        {\n            \"user_id\": \"63ae8e7dcf146b1c502ba65d\",\n            \"username\": \"test002\",\n            \"user_profile\": \"https://res.cloudinary.com/tcloud/image/upload/v1672384127/ibqryvkxcspkph8vvg9v.jpg\",\n            \"event_photo\": \"https://res.cloudinary.com/tcloud/image/upload/v1672812483/mtdo7oaefijeg21gvaac.jpg\",\n            \"name\": \"test008\",\n            \"date\": \"04/01/2023\",\n            \"time\": \"11:00 PM\",\n            \"vehicle_type\": \"2\",\n            \"longitude\": 72.9060484,\n            \"latitude\": 21.2393813,\n            \"address\": \"Varacha Road, Radhe Krishna Raw House, Nana Varachha, Surat, Gujarat, India\",\n            \"about\": \"this is test event 008....\",\n            \"isJoin\": true,\n            \"join_user\": 0\n        }\n    ]\n}"
+				}
+			]
 		},
 		{
 			"name": "My Blog",
@@ -733,15 +781,38 @@
 					]
 				},
 				"url": {
-					"raw": "localhost:5000/blog/my/63ae8339ad6ae4296048bfe5",
+					"raw": "139.59.88.204:5000/blog/my/63ae8339ad6ae4296048bfe5",
 					"host": [
-						"localhost"
+						"139",
+						"59",
+						"88",
+						"204"
 					],
 					"port": "5000",
 					"path": [
 						"blog",
 						"my",
 						"63ae8339ad6ae4296048bfe5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Liked User List",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/blog/liked-user/63aecd36bbea9c57de48ca36",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"blog",
+						"liked-user",
+						"63aecd36bbea9c57de48ca36"
 					]
 				}
 			},

@@ -1114,7 +1114,7 @@ exports.myBlog = async (req, res) => {
                         blogInsertTime.push(response);
                     }
 
-                } else if (condition) {
+                } else if (days > 0 && days < 7) {
 
                     var findUserInLikeModel = await likeModel.findOne({
                         blogId: respSet._id,
