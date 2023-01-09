@@ -243,8 +243,6 @@ exports.blogList = async (req, res) => {
 
 
 
-
-
             } else if (days > 7 && days < 14) {
                 findUserInLikeModel = await likeModel.findOne({
                     blogId: getTime._id,
@@ -780,9 +778,11 @@ exports.getCommentList = async (req, res) => {
 
                     const userFound = await authModel.findOne({
                         _id: getDataOfCOmmentAbout.user_id
-                    })
+                    });
+                    console.log("userFound::", userFound);
                     const response = {
                         user_id: getDataOfCOmmentAbout.user_id,
+                        email: userFound.email,
                         commentText: getDataOfCOmmentAbout.text,
                         username: userFound?.username,
                         profile: userFound?.profile[0]?.res
@@ -926,39 +926,415 @@ exports.myBlog = async (req, res) => {
 
         } else {
 
+
             const response = [];
+            const blogInsertTime = [];
             for (const respSet of getBlogData) {
 
-                const resBlog = {
-                    blog_id: respSet._id,
-                    userId: respSet.user_id,
-                    username: respSet.username,
-                    user_profile: respSet.user_profile,
-                    thumbnail: respSet.thumbnail[0] ? respSet.thumbnail[0].res : "",
-                    category: respSet.category,
-                    heading: respSet.heading,
-                    description: respSet.description,
-                    like: respSet.like,
-                    comment: respSet.comment,
-                    createdAt: respSet.createdAt,
-                    updatedAt: respSet.updatedAt
+                var now = new Date();
+                var addingDate = new Date(respSet.createdAt);
+                var sec_num = (now - addingDate) / 1000;
+                var days = Math.floor(sec_num / (3600 * 24));
+                var hours = Math.floor((sec_num - (days * (3600 * 24))) / 3600);
+                var minutes = Math.floor((sec_num - (days * (3600 * 24)) - (hours * 3600)) / 60);
+                var seconds = Math.floor(sec_num - (days * (3600 * 24)) - (hours * 3600) - (minutes * 60));
+
+                if (hours < 10) { hours = "0" + hours; }
+                if (minutes < 10) { minutes = "0" + minutes; }
+                if (seconds < 10) { seconds = "0" + seconds; }
+
+                console.log("addingDate:", addingDate);
+                console.log("sec_num:", sec_num);
+                console.log("days:", days);
+                console.log("hours:", hours);
+                console.log("minutes:", minutes);
+                console.log("seconds:", seconds);
+
+                if (days > 28) {
+
+                    var findUserInLikeModel = await likeModel.findOne({
+                        blogId: respSet._id,
+                        "reqAuthId._id": userId
+                    })
+
+                    if (findUserInLikeModel) {
+                        const response = {
+                            _id: respSet._id,
+                            userId: respSet.user_id,
+                            username: respSet.username,
+                            user_profile: respSet.user_profile,
+                            thumbnail: respSet.thumbnail[0] ? respSet.thumbnail[0].res : "",
+                            category: respSet.category,
+                            heading: respSet.heading,
+                            description: respSet.description,
+                            like: respSet.like,
+                            comment: respSet.comment,
+                            isLike: true,
+                            time: new Date(addingDate).toDateString()
+                        }
+                        blogInsertTime.push(response);
+                    } else {
+                        const response = {
+                            _id: respSet._id,
+                            userId: respSet.user_id,
+                            username: respSet.username,
+                            user_profile: respSet.user_profile,
+                            thumbnail: respSet.thumbnail[0] ? respSet.thumbnail[0].res : "",
+                            category: respSet.category,
+                            heading: respSet.heading,
+                            description: respSet.description,
+                            like: respSet.like,
+                            comment: respSet.comment,
+                            isLike: false,
+                            time: new Date(addingDate).toDateString()
+                        }
+                        blogInsertTime.push(response);
+                    }
+
+                } else if (days > 21 && days < 28) {
+
+                    var findUserInLikeModel = await likeModel.findOne({
+                        blogId: respSet._id,
+                        "reqAuthId._id": userId
+                    })
+
+                    if (findUserInLikeModel) {
+                        const response = {
+                            _id: respSet._id,
+                            userId: respSet.user_id,
+                            username: respSet.username,
+                            user_profile: respSet.user_profile,
+                            thumbnail: respSet.thumbnail[0] ? respSet.thumbnail[0].res : "",
+                            category: respSet.category,
+                            heading: respSet.heading,
+                            description: respSet.description,
+                            like: respSet.like,
+                            comment: respSet.comment,
+                            isLike: true,
+                            time: "4 Week Ago"
+                        }
+                        blogInsertTime.push(response);
+                    } else {
+                        const response = {
+                            _id: respSet._id,
+                            userId: respSet.user_id,
+                            username: respSet.username,
+                            user_profile: respSet.user_profile,
+                            thumbnail: respSet.thumbnail[0] ? respSet.thumbnail[0].res : "",
+                            category: respSet.category,
+                            heading: respSet.heading,
+                            description: respSet.description,
+                            like: respSet.like,
+                            comment: respSet.comment,
+                            isLike: false,
+                            time: "4 Week Ago"
+                        }
+                        blogInsertTime.push(response);
+                    }
+
+                } else if (days > 14 && days < 21) {
+
+                    var findUserInLikeModel = await likeModel.findOne({
+                        blogId: respSet._id,
+                        "reqAuthId._id": userId
+                    })
+
+                    if (findUserInLikeModel) {
+                        const response = {
+                            _id: respSet._id,
+                            userId: respSet.user_id,
+                            username: respSet.username,
+                            user_profile: respSet.user_profile,
+                            thumbnail: respSet.thumbnail[0] ? respSet.thumbnail[0].res : "",
+                            category: respSet.category,
+                            heading: respSet.heading,
+                            description: respSet.description,
+                            like: respSet.like,
+                            comment: respSet.comment,
+                            isLike: true,
+                            time: "3 Week Ago"
+                        }
+                        blogInsertTime.push(response);
+                    } else {
+                        const response = {
+                            _id: respSet._id,
+                            userId: respSet.user_id,
+                            username: respSet.username,
+                            user_profile: respSet.user_profile,
+                            thumbnail: respSet.thumbnail[0] ? respSet.thumbnail[0].res : "",
+                            category: respSet.category,
+                            heading: respSet.heading,
+                            description: respSet.description,
+                            like: respSet.like,
+                            comment: respSet.comment,
+                            isLike: false,
+                            time: "3 Week Ago"
+                        }
+                        blogInsertTime.push(response);
+                    }
+
+                } else if (days > 7 && days < 14) {
+
+                    var findUserInLikeModel = await likeModel.findOne({
+                        blogId: respSet._id,
+                        "reqAuthId._id": userId
+                    })
+
+                    if (findUserInLikeModel) {
+                        const response = {
+                            _id: respSet._id,
+                            userId: respSet.user_id,
+                            username: respSet.username,
+                            user_profile: respSet.user_profile,
+                            thumbnail: respSet.thumbnail[0] ? respSet.thumbnail[0].res : "",
+                            category: respSet.category,
+                            heading: respSet.heading,
+                            description: respSet.description,
+                            like: respSet.like,
+                            comment: respSet.comment,
+                            isLike: true,
+                            time: "2 Week Ago"
+                        }
+                        blogInsertTime.push(response);
+                    } else {
+                        const response = {
+                            _id: respSet._id,
+                            userId: respSet.user_id,
+                            username: respSet.username,
+                            user_profile: respSet.user_profile,
+                            thumbnail: respSet.thumbnail[0] ? respSet.thumbnail[0].res : "",
+                            category: respSet.category,
+                            heading: respSet.heading,
+                            description: respSet.description,
+                            like: respSet.like,
+                            comment: respSet.comment,
+                            isLike: false,
+                            time: "2 Week Ago"
+                        }
+                        blogInsertTime.push(response);
+                    }
+
+                } else if (condition) {
+
+                    var findUserInLikeModel = await likeModel.findOne({
+                        blogId: respSet._id,
+                        "reqAuthId._id": userId
+                    })
+
+                    if (findUserInLikeModel) {
+                        const response = {
+                            _id: respSet._id,
+                            userId: respSet.user_id,
+                            username: respSet.username,
+                            user_profile: respSet.user_profile,
+                            thumbnail: respSet.thumbnail[0] ? respSet.thumbnail[0].res : "",
+                            category: respSet.category,
+                            heading: respSet.heading,
+                            description: respSet.description,
+                            like: respSet.like,
+                            comment: respSet.comment,
+                            isLike: true,
+                            time: "1 Week Ago"
+                        }
+                        blogInsertTime.push(response);
+                    } else {
+                        const response = {
+                            _id: respSet._id,
+                            userId: respSet.user_id,
+                            username: respSet.username,
+                            user_profile: respSet.user_profile,
+                            thumbnail: respSet.thumbnail[0] ? respSet.thumbnail[0].res : "",
+                            category: respSet.category,
+                            heading: respSet.heading,
+                            description: respSet.description,
+                            like: respSet.like,
+                            comment: respSet.comment,
+                            isLike: false,
+                            time: "1 Week Ago"
+                        }
+                        blogInsertTime.push(response);
+                    }
+
+                } else if (hours > 0 && days == 0) {
+
+                    var findUserInLikeModel = await likeModel.findOne({
+                        blogId: respSet._id,
+                        "reqAuthId._id": userId
+                    })
+
+                    if (findUserInLikeModel) {
+                        const response = {
+                            _id: respSet._id,
+                            userId: respSet.user_id,
+                            username: respSet.username,
+                            user_profile: respSet.user_profile,
+                            thumbnail: respSet.thumbnail[0] ? respSet.thumbnail[0].res : "",
+                            category: respSet.category,
+                            heading: respSet.heading,
+                            description: respSet.description,
+                            like: respSet.like,
+                            comment: respSet.comment,
+                            isLike: true,
+                            time: `${hours} Hours Ago`
+                        }
+                        blogInsertTime.push(response);
+                    } else {
+                        const response = {
+                            _id: respSet._id,
+                            userId: respSet.user_id,
+                            username: respSet.username,
+                            user_profile: respSet.user_profile,
+                            thumbnail: respSet.thumbnail[0] ? respSet.thumbnail[0].res : "",
+                            category: respSet.category,
+                            heading: respSet.heading,
+                            description: respSet.description,
+                            like: respSet.like,
+                            comment: respSet.comment,
+                            isLike: false,
+                            time: `${hours} Hours Ago`
+                        }
+                        blogInsertTime.push(response);
+                    }
+
+                } else if (minutes > 0 && hours == 0) {
+
+                    var findUserInLikeModel = await likeModel.findOne({
+                        blogId: respSet._id,
+                        "reqAuthId._id": userId
+                    })
+
+                    if (findUserInLikeModel) {
+                        const response = {
+                            _id: respSet._id,
+                            userId: respSet.user_id,
+                            username: respSet.username,
+                            user_profile: respSet.user_profile,
+                            thumbnail: respSet.thumbnail[0] ? respSet.thumbnail[0].res : "",
+                            category: respSet.category,
+                            heading: respSet.heading,
+                            description: respSet.description,
+                            like: respSet.like,
+                            comment: respSet.comment,
+                            isLike: true,
+                            time: `${minutes} Minute Ago`,
+                        }
+                        blogInsertTime.push(response);
+                    } else {
+                        const response = {
+                            _id: respSet._id,
+                            userId: respSet.user_id,
+                            username: respSet.username,
+                            user_profile: respSet.user_profile,
+                            thumbnail: respSet.thumbnail[0] ? respSet.thumbnail[0].res : "",
+                            category: respSet.category,
+                            heading: respSet.heading,
+                            description: respSet.description,
+                            like: respSet.like,
+                            comment: respSet.comment,
+                            isLike: false,
+                            time: `${minutes} Minute Ago`,
+                        }
+                        blogInsertTime.push(response);
+
+                    }
+
+                } else if (seconds > 0 && minutes == 0 && hours == 0 && days === 0) {
+
+                    var findUserInLikeModel = await likeModel.findOne({
+                        blogId: respSet._id,
+                        "reqAuthId._id": userId
+                    })
+
+                    if (findUserInLikeModel) {
+                        const response = {
+                            _id: respSet._id,
+                            userId: respSet.user_id,
+                            username: respSet.username,
+                            user_profile: respSet.user_profile,
+                            thumbnail: respSet.thumbnail[0] ? respSet.thumbnail[0].res : "",
+                            category: respSet.category,
+                            heading: respSet.heading,
+                            description: respSet.description,
+                            like: respSet.like,
+                            comment: respSet.comment,
+                            isLike: true,
+                            time: `${seconds} Seconds Ago`,
+                        }
+                        blogInsertTime.push(response);
+                    } else {
+                        const response = {
+                            _id: respSet._id,
+                            userId: respSet.user_id,
+                            username: respSet.username,
+                            user_profile: respSet.user_profile,
+                            thumbnail: respSet.thumbnail[0] ? respSet.thumbnail[0].res : "",
+                            category: respSet.category,
+                            heading: respSet.heading,
+                            description: respSet.description,
+                            like: respSet.like,
+                            comment: respSet.comment,
+                            isLike: false,
+                            time: `${seconds} Seconds Ago`,
+                        }
+                        blogInsertTime.push(response);
+                    }
+
+                } else if (seconds == 0 && minutes == 0 && hours == 0 && days === 0) {
+
+                    var findUserInLikeModel = await likeModel.findOne({
+                        blogId: respSet._id,
+                        "reqAuthId._id": userId
+                    })
+
+                    if (findUserInLikeModel) {
+                        const response = {
+                            _id: respSet._id,
+                            userId: respSet.user_id,
+                            username: respSet.username,
+                            user_profile: respSet.user_profile,
+                            thumbnail: respSet.thumbnail[0] ? respSet.thumbnail[0].res : "",
+                            category: respSet.category,
+                            heading: respSet.heading,
+                            description: respSet.description,
+                            like: respSet.like,
+                            comment: respSet.comment,
+                            isLike: true,
+                            time: `Just Now`,
+                        }
+                        blogInsertTime.push(response);
+                    } else {
+                        const response = {
+                            _id: respSet._id,
+                            userId: respSet.user_id,
+                            username: respSet.username,
+                            user_profile: respSet.user_profile,
+                            thumbnail: respSet.thumbnail[0] ? respSet.thumbnail[0].res : "",
+                            category: respSet.category,
+                            heading: respSet.heading,
+                            description: respSet.description,
+                            like: respSet.like,
+                            comment: respSet.comment,
+                            isLike: false,
+                            time: `Just Now`,
+                        }
+                        blogInsertTime.push(response);
+                    }
+
                 }
-                response.push(resBlog)
+
+                res.status(status.OK).json(
+                    {
+                        message: "GET MY ALL BLOG LIST SUCCESSFULLY",
+                        status: true,
+                        code: 200,
+                        statusCode: 1,
+                        data: blogInsertTime
+                    }
+                )
 
             }
 
-            res.status(status.OK).json(
-                {
-                    message: "GET MY ALL BLOG LIST SUCCESSFULLY",
-                    status: true,
-                    code: 200,
-                    statusCode: 1,
-                    data: response
-                }
-            )
-
         }
-
     } catch (error) {
 
         console.log("Error::", error);

@@ -412,12 +412,9 @@
 					]
 				},
 				"url": {
-					"raw": "139.59.88.204:5000/event/list/63ae8339ad6ae4296048bfe5",
+					"raw": "localhost:5000/event/list/63ae8339ad6ae4296048bfe5",
 					"host": [
-						"139",
-						"59",
-						"88",
-						"204"
+						"localhost"
 					],
 					"port": "5000",
 					"path": [
@@ -493,25 +490,6 @@
 					"path": [
 						"auth",
 						"forget-password"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Demo API",
-			"request": {
-				"method": "POST",
-				"header": [],
-				"url": {
-					"raw": "localhost:5000/event/demo",
-					"host": [
-						"localhost"
-					],
-					"port": "5000",
-					"path": [
-						"event",
-						"demo"
 					]
 				}
 			},
@@ -684,6 +662,86 @@
 						"event",
 						"attendees",
 						"63ae87b4d669b58fc823e7f1"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Liked User",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/blog/liked-user/63aecd36bbea9c57de48ca36",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"blog",
+						"liked-user",
+						"63aecd36bbea9c57de48ca36"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "My Event",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "vehicle_type",
+							"value": "2",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:5000/event/my/63ae8339ad6ae4296048bfe5",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"event",
+						"my",
+						"63ae8339ad6ae4296048bfe5"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "My Blog",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "category",
+							"value": "1",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "localhost:5000/blog/my/63ae8339ad6ae4296048bfe5",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"blog",
+						"my",
+						"63ae8339ad6ae4296048bfe5"
 					]
 				}
 			},
