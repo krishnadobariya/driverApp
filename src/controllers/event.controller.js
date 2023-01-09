@@ -124,7 +124,7 @@ exports.eventList = async (req, res) => {
 
         let vehicleType = req.body.vehicle_type;
         let userId = req.params.user_id;
-        console.log("vehicleType:;", req.body.vehicle_type);
+        // console.log("vehicleType:;", req.body.vehicle_type);
 
         const getEventData = await Event.find({
             user_id: {
@@ -143,7 +143,11 @@ exports.eventList = async (req, res) => {
                 event_id: getUser._id,
             }).sort({ createdAt: -1 });
 
-            // console.log("getUser:------", getUser);
+            console.log("userId::", userId);
+            console.log("eventId::", getUser._id);
+
+            console.log("userIsJoin:---------", userIsJoin);
+            // console.log("getUser:----------", getUser);
 
             if (userIsJoin == null) {
 
@@ -170,6 +174,7 @@ exports.eventList = async (req, res) => {
 
                 const response = {
                     user_id: getUser.user_id,
+                    event_id: getUser._id,
                     username: getUser.username,
                     user_profile: getUser.user_profile[0] ? getUser.user_profile[0].res : "",
                     event_photo: getUser.event_photo[0] ? getUser.event_photo[0].res : "",
