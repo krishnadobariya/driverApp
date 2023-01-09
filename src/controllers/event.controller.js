@@ -149,6 +149,7 @@ exports.eventList = async (req, res) => {
 
                 const response = {
                     user_id: getUser.user_id,
+                    event_id: getUser._id,
                     username: getUser.username,
                     user_profile: getUser.user_profile[0] ? getUser.user_profile[0].res : "",
                     event_photo: getUser.event_photo[0] ? getUser.event_photo[0].res : "",
