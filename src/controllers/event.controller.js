@@ -128,7 +128,7 @@ exports.eventList = async (req, res) => {
 
         const getEventData = await Event.find({
             user_id: {
-                $ne: userId 
+                $ne: userId
             },
             vehicle_type: vehicleType
         }).skip(startIndex).limit(endIndex).sort({ createdAt: -1 });
@@ -293,8 +293,10 @@ exports.myEvent = async (req, res) => {
             const response = [];
             for (const respSet of getMyEvent) {
 
+                const getJoinUser = await joinEvent.find({ event_id: respSet._id }).count();
+
                 const eventData = {
-                    event_id: respSet._id,
+                    // event_id: respSet._id,
                     user_id: respSet.user_id,
                     username: respSet.username,
                     user_profile: respSet.user_profile[0] ? respSet.user_profile[0].res : "",
@@ -306,7 +308,9 @@ exports.myEvent = async (req, res) => {
                     longitude: respSet.location.coordinates[0],
                     latitude: respSet.location.coordinates[1],
                     address: respSet.address,
-                    about: respSet.about
+                    about: respSet.about,
+                    isJoin: true,
+                    join_user: getJoinUser
                 }
                 response.push(eventData)
 
