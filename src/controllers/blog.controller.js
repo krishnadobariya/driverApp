@@ -103,387 +103,400 @@ exports.blogList = async (req, res) => {
             category: vehicleType
         }).sort({ createdAt: -1 });
 
-        let blogInsertTime = [];
-        for (const getTime of allBlogData) {
-
-            var now = new Date();
-            var addingDate = new Date(getTime.createdAt);
-            var sec_num = (now - addingDate) / 1000;
-            var days = Math.floor(sec_num / (3600 * 24));
-            var hours = Math.floor((sec_num - (days * (3600 * 24))) / 3600);
-            var minutes = Math.floor((sec_num - (days * (3600 * 24)) - (hours * 3600)) / 60);
-            var seconds = Math.floor(sec_num - (days * (3600 * 24)) - (hours * 3600) - (minutes * 60));
-
-            if (hours < 10) { hours = "0" + hours; }
-            if (minutes < 10) { minutes = "0" + minutes; }
-            if (seconds < 10) { seconds = "0" + seconds; }
-
-            if (days > 28) {
-                findUserInLikeModel = await likeModel.findOne({
-                    blogId: getTime._id,
-                    "reqAuthId._id": userId
-                })
-
-                if (findUserInLikeModel) {
-                    const response = {
-                        _id: getTime._id,
-                        userId: getTime.user_id,
-                        username: getTime.username,
-                        user_profile: getTime.user_profile,
-                        thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
-                        category: getTime.category,
-                        heading: getTime.heading,
-                        description: getTime.description,
-                        like: getTime.like,
-                        comment: getTime.comment,
-                        isLike: true,
-                        time: new Date(addingDate).toDateString()
-                    }
-                    blogInsertTime.push(response);
-                } else {
-                    const response = {
-                        _id: getTime._id,
-                        userId: getTime.user_id,
-                        username: getTime.username,
-                        user_profile: getTime.user_profile,
-                        thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
-                        category: getTime.category,
-                        heading: getTime.heading,
-                        description: getTime.description,
-                        like: getTime.like,
-                        comment: getTime.comment,
-                        isLike: false,
-                        time: new Date(addingDate).toDateString()
-                    }
-                    blogInsertTime.push(response);
+        if (allBlogData.length == 0) {
+            res.status(status.NOT_FOUND).json(
+                {
+                    message: "Data Not Exist",
+                    status: false,
+                    code: 404,
+                    statusCode: 0,
+                    data: []
                 }
+            )
+        } else {
+            let blogInsertTime = [];
+            for (const getTime of allBlogData) {
+
+                var now = new Date();
+                var addingDate = new Date(getTime.createdAt);
+                var sec_num = (now - addingDate) / 1000;
+                var days = Math.floor(sec_num / (3600 * 24));
+                var hours = Math.floor((sec_num - (days * (3600 * 24))) / 3600);
+                var minutes = Math.floor((sec_num - (days * (3600 * 24)) - (hours * 3600)) / 60);
+                var seconds = Math.floor(sec_num - (days * (3600 * 24)) - (hours * 3600) - (minutes * 60));
+
+                if (hours < 10) { hours = "0" + hours; }
+                if (minutes < 10) { minutes = "0" + minutes; }
+                if (seconds < 10) { seconds = "0" + seconds; }
+
+                if (days > 28) {
+                    findUserInLikeModel = await likeModel.findOne({
+                        blogId: getTime._id,
+                        "reqAuthId._id": userId
+                    })
+
+                    if (findUserInLikeModel) {
+                        const response = {
+                            _id: getTime._id,
+                            userId: getTime.user_id,
+                            username: getTime.username,
+                            user_profile: getTime.user_profile,
+                            thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
+                            category: getTime.category,
+                            heading: getTime.heading,
+                            description: getTime.description,
+                            like: getTime.like,
+                            comment: getTime.comment,
+                            isLike: true,
+                            time: new Date(addingDate).toDateString()
+                        }
+                        blogInsertTime.push(response);
+                    } else {
+                        const response = {
+                            _id: getTime._id,
+                            userId: getTime.user_id,
+                            username: getTime.username,
+                            user_profile: getTime.user_profile,
+                            thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
+                            category: getTime.category,
+                            heading: getTime.heading,
+                            description: getTime.description,
+                            like: getTime.like,
+                            comment: getTime.comment,
+                            isLike: false,
+                            time: new Date(addingDate).toDateString()
+                        }
+                        blogInsertTime.push(response);
+                    }
 
 
-            } else if (days > 21 && days < 28) {
+                } else if (days > 21 && days < 28) {
 
-                findUserInLikeModel = await likeModel.findOne({
-                    blogId: getTime._id,
-                    "reqAuthId._id": userId
-                })
+                    findUserInLikeModel = await likeModel.findOne({
+                        blogId: getTime._id,
+                        "reqAuthId._id": userId
+                    })
 
-                if (findUserInLikeModel) {
-                    const response = {
-                        _id: getTime._id,
-                        userId: getTime.user_id,
-                        username: getTime.username,
-                        user_profile: getTime.user_profile,
-                        thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
-                        category: getTime.category,
-                        heading: getTime.heading,
-                        description: getTime.description,
-                        like: getTime.like,
-                        comment: getTime.comment,
-                        isLike: true,
-                        time: "4 Week Ago"
+                    if (findUserInLikeModel) {
+                        const response = {
+                            _id: getTime._id,
+                            userId: getTime.user_id,
+                            username: getTime.username,
+                            user_profile: getTime.user_profile,
+                            thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
+                            category: getTime.category,
+                            heading: getTime.heading,
+                            description: getTime.description,
+                            like: getTime.like,
+                            comment: getTime.comment,
+                            isLike: true,
+                            time: "4 Week Ago"
+                        }
+                        blogInsertTime.push(response);
+                    } else {
+                        const response = {
+                            _id: getTime._id,
+                            userId: getTime.user_id,
+                            username: getTime.username,
+                            user_profile: getTime.user_profile,
+                            thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
+                            category: getTime.category,
+                            heading: getTime.heading,
+                            description: getTime.description,
+                            like: getTime.like,
+                            comment: getTime.comment,
+                            isLike: false,
+                            time: "4 Week Ago"
+                        }
+                        blogInsertTime.push(response);
                     }
-                    blogInsertTime.push(response);
-                } else {
-                    const response = {
-                        _id: getTime._id,
-                        userId: getTime.user_id,
-                        username: getTime.username,
-                        user_profile: getTime.user_profile,
-                        thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
-                        category: getTime.category,
-                        heading: getTime.heading,
-                        description: getTime.description,
-                        like: getTime.like,
-                        comment: getTime.comment,
-                        isLike: false,
-                        time: "4 Week Ago"
-                    }
-                    blogInsertTime.push(response);
-                }
-
-
-            } else if (days > 14 && days < 21) {
-                findUserInLikeModel = await likeModel.findOne({
-                    blogId: getTime._id,
-                    "reqAuthId._id": userId
-                })
-
-                if (findUserInLikeModel) {
-                    const response = {
-                        _id: getTime._id,
-                        userId: getTime.user_id,
-                        username: getTime.username,
-                        user_profile: getTime.user_profile,
-                        thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
-                        category: getTime.category,
-                        heading: getTime.heading,
-                        description: getTime.description,
-                        like: getTime.like,
-                        comment: getTime.comment,
-                        isLike: true,
-                        time: "3 Week Ago"
-                    }
-                    blogInsertTime.push(response);
-                } else {
-                    const response = {
-                        _id: getTime._id,
-                        userId: getTime.user_id,
-                        username: getTime.username,
-                        user_profile: getTime.user_profile,
-                        thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
-                        category: getTime.category,
-                        heading: getTime.heading,
-                        description: getTime.description,
-                        like: getTime.like,
-                        comment: getTime.comment,
-                        isLike: false,
-                        time: "3 Week Ago"
-                    }
-                    blogInsertTime.push(response);
-                }
 
 
+                } else if (days > 14 && days < 21) {
+                    findUserInLikeModel = await likeModel.findOne({
+                        blogId: getTime._id,
+                        "reqAuthId._id": userId
+                    })
 
-            } else if (days > 7 && days < 14) {
-                findUserInLikeModel = await likeModel.findOne({
-                    blogId: getTime._id,
-                    "reqAuthId._id": userId
-                })
+                    if (findUserInLikeModel) {
+                        const response = {
+                            _id: getTime._id,
+                            userId: getTime.user_id,
+                            username: getTime.username,
+                            user_profile: getTime.user_profile,
+                            thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
+                            category: getTime.category,
+                            heading: getTime.heading,
+                            description: getTime.description,
+                            like: getTime.like,
+                            comment: getTime.comment,
+                            isLike: true,
+                            time: "3 Week Ago"
+                        }
+                        blogInsertTime.push(response);
+                    } else {
+                        const response = {
+                            _id: getTime._id,
+                            userId: getTime.user_id,
+                            username: getTime.username,
+                            user_profile: getTime.user_profile,
+                            thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
+                            category: getTime.category,
+                            heading: getTime.heading,
+                            description: getTime.description,
+                            like: getTime.like,
+                            comment: getTime.comment,
+                            isLike: false,
+                            time: "3 Week Ago"
+                        }
+                        blogInsertTime.push(response);
+                    }
 
-                if (findUserInLikeModel) {
-                    const response = {
-                        _id: getTime._id,
-                        userId: getTime.user_id,
-                        username: getTime.username,
-                        user_profile: getTime.user_profile,
-                        thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
-                        category: getTime.category,
-                        heading: getTime.heading,
-                        description: getTime.description,
-                        like: getTime.like,
-                        comment: getTime.comment,
-                        isLike: true,
-                        time: "2 Week Ago"
-                    }
-                    blogInsertTime.push(response);
-                } else {
-                    const response = {
-                        _id: getTime._id,
-                        userId: getTime.user_id,
-                        username: getTime.username,
-                        user_profile: getTime.user_profile,
-                        thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
-                        category: getTime.category,
-                        heading: getTime.heading,
-                        description: getTime.description,
-                        like: getTime.like,
-                        comment: getTime.comment,
-                        isLike: false,
-                        time: "2 Week Ago"
-                    }
-                    blogInsertTime.push(response);
-                }
-            } else if (days > 0 && days < 7) {
-                findUserInLikeModel = await likeModel.findOne({
-                    blogId: getTime._id,
-                    "reqAuthId._id": userId
-                })
 
-                if (findUserInLikeModel) {
-                    const response = {
-                        _id: getTime._id,
-                        userId: getTime.user_id,
-                        username: getTime.username,
-                        user_profile: getTime.user_profile,
-                        thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
-                        category: getTime.category,
-                        heading: getTime.heading,
-                        description: getTime.description,
-                        like: getTime.like,
-                        comment: getTime.comment,
-                        isLike: true,
-                        time: "1 Week Ago"
-                    }
-                    blogInsertTime.push(response);
-                } else {
-                    const response = {
-                        _id: getTime._id,
-                        userId: getTime.user_id,
-                        username: getTime.username,
-                        user_profile: getTime.user_profile,
-                        thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
-                        category: getTime.category,
-                        heading: getTime.heading,
-                        description: getTime.description,
-                        like: getTime.like,
-                        comment: getTime.comment,
-                        isLike: false,
-                        time: "1 Week Ago"
-                    }
-                    blogInsertTime.push(response);
-                }
 
-            } else if (hours > 0 && days == 0) {
-                findUserInLikeModel = await likeModel.findOne({
-                    blogId: getTime._id,
-                    "reqAuthId._id": userId
-                })
+                } else if (days > 7 && days < 14) {
+                    findUserInLikeModel = await likeModel.findOne({
+                        blogId: getTime._id,
+                        "reqAuthId._id": userId
+                    })
 
-                if (findUserInLikeModel) {
-                    const response = {
-                        _id: getTime._id,
-                        userId: getTime.user_id,
-                        username: getTime.username,
-                        user_profile: getTime.user_profile,
-                        thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
-                        category: getTime.category,
-                        heading: getTime.heading,
-                        description: getTime.description,
-                        like: getTime.like,
-                        comment: getTime.comment,
-                        isLike: true,
-                        time: `${hours} Hours Ago`
+                    if (findUserInLikeModel) {
+                        const response = {
+                            _id: getTime._id,
+                            userId: getTime.user_id,
+                            username: getTime.username,
+                            user_profile: getTime.user_profile,
+                            thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
+                            category: getTime.category,
+                            heading: getTime.heading,
+                            description: getTime.description,
+                            like: getTime.like,
+                            comment: getTime.comment,
+                            isLike: true,
+                            time: "2 Week Ago"
+                        }
+                        blogInsertTime.push(response);
+                    } else {
+                        const response = {
+                            _id: getTime._id,
+                            userId: getTime.user_id,
+                            username: getTime.username,
+                            user_profile: getTime.user_profile,
+                            thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
+                            category: getTime.category,
+                            heading: getTime.heading,
+                            description: getTime.description,
+                            like: getTime.like,
+                            comment: getTime.comment,
+                            isLike: false,
+                            time: "2 Week Ago"
+                        }
+                        blogInsertTime.push(response);
                     }
-                    blogInsertTime.push(response);
-                } else {
-                    const response = {
-                        _id: getTime._id,
-                        userId: getTime.user_id,
-                        username: getTime.username,
-                        user_profile: getTime.user_profile,
-                        thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
-                        category: getTime.category,
-                        heading: getTime.heading,
-                        description: getTime.description,
-                        like: getTime.like,
-                        comment: getTime.comment,
-                        isLike: false,
-                        time: `${hours} Hours Ago`
+                } else if (days > 0 && days < 7) {
+                    findUserInLikeModel = await likeModel.findOne({
+                        blogId: getTime._id,
+                        "reqAuthId._id": userId
+                    })
+
+                    if (findUserInLikeModel) {
+                        const response = {
+                            _id: getTime._id,
+                            userId: getTime.user_id,
+                            username: getTime.username,
+                            user_profile: getTime.user_profile,
+                            thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
+                            category: getTime.category,
+                            heading: getTime.heading,
+                            description: getTime.description,
+                            like: getTime.like,
+                            comment: getTime.comment,
+                            isLike: true,
+                            time: "1 Week Ago"
+                        }
+                        blogInsertTime.push(response);
+                    } else {
+                        const response = {
+                            _id: getTime._id,
+                            userId: getTime.user_id,
+                            username: getTime.username,
+                            user_profile: getTime.user_profile,
+                            thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
+                            category: getTime.category,
+                            heading: getTime.heading,
+                            description: getTime.description,
+                            like: getTime.like,
+                            comment: getTime.comment,
+                            isLike: false,
+                            time: "1 Week Ago"
+                        }
+                        blogInsertTime.push(response);
                     }
-                    blogInsertTime.push(response);
-                }
-            } else if (minutes > 0 && hours == 0) {
-                findUserInLikeModel = await likeModel.findOne({
-                    blogId: getTime._id,
-                    "reqAuthId._id": userId
-                })
-                if (findUserInLikeModel) {
-                    const response = {
-                        _id: getTime._id,
-                        userId: getTime.user_id,
-                        username: getTime.username,
-                        user_profile: getTime.user_profile,
-                        thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
-                        category: getTime.category,
-                        heading: getTime.heading,
-                        description: getTime.description,
-                        like: getTime.like,
-                        comment: getTime.comment,
-                        isLike: true,
-                        time: `${minutes} Minute Ago`,
+
+                } else if (hours > 0 && days == 0) {
+                    findUserInLikeModel = await likeModel.findOne({
+                        blogId: getTime._id,
+                        "reqAuthId._id": userId
+                    })
+
+                    if (findUserInLikeModel) {
+                        const response = {
+                            _id: getTime._id,
+                            userId: getTime.user_id,
+                            username: getTime.username,
+                            user_profile: getTime.user_profile,
+                            thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
+                            category: getTime.category,
+                            heading: getTime.heading,
+                            description: getTime.description,
+                            like: getTime.like,
+                            comment: getTime.comment,
+                            isLike: true,
+                            time: `${hours} Hours Ago`
+                        }
+                        blogInsertTime.push(response);
+                    } else {
+                        const response = {
+                            _id: getTime._id,
+                            userId: getTime.user_id,
+                            username: getTime.username,
+                            user_profile: getTime.user_profile,
+                            thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
+                            category: getTime.category,
+                            heading: getTime.heading,
+                            description: getTime.description,
+                            like: getTime.like,
+                            comment: getTime.comment,
+                            isLike: false,
+                            time: `${hours} Hours Ago`
+                        }
+                        blogInsertTime.push(response);
                     }
-                    blogInsertTime.push(response);
-                } else {
-                    const response = {
-                        _id: getTime._id,
-                        userId: getTime.user_id,
-                        username: getTime.username,
-                        user_profile: getTime.user_profile,
-                        thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
-                        category: getTime.category,
-                        heading: getTime.heading,
-                        description: getTime.description,
-                        like: getTime.like,
-                        comment: getTime.comment,
-                        isLike: false,
-                        time: `${minutes} Minute Ago`,
+                } else if (minutes > 0 && hours == 0) {
+                    findUserInLikeModel = await likeModel.findOne({
+                        blogId: getTime._id,
+                        "reqAuthId._id": userId
+                    })
+                    if (findUserInLikeModel) {
+                        const response = {
+                            _id: getTime._id,
+                            userId: getTime.user_id,
+                            username: getTime.username,
+                            user_profile: getTime.user_profile,
+                            thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
+                            category: getTime.category,
+                            heading: getTime.heading,
+                            description: getTime.description,
+                            like: getTime.like,
+                            comment: getTime.comment,
+                            isLike: true,
+                            time: `${minutes} Minute Ago`,
+                        }
+                        blogInsertTime.push(response);
+                    } else {
+                        const response = {
+                            _id: getTime._id,
+                            userId: getTime.user_id,
+                            username: getTime.username,
+                            user_profile: getTime.user_profile,
+                            thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
+                            category: getTime.category,
+                            heading: getTime.heading,
+                            description: getTime.description,
+                            like: getTime.like,
+                            comment: getTime.comment,
+                            isLike: false,
+                            time: `${minutes} Minute Ago`,
+                        }
+                        blogInsertTime.push(response);
                     }
-                    blogInsertTime.push(response);
-                }
-            } else if (seconds > 0 && minutes == 0 && hours == 0 && days === 0) {
-                findUserInLikeModel = await likeModel.findOne({
-                    blogId: getTime._id,
-                    "reqAuthId._id": userId
-                })
-                if (findUserInLikeModel) {
-                    const response = {
-                        _id: getTime._id,
-                        userId: getTime.user_id,
-                        username: getTime.username,
-                        user_profile: getTime.user_profile,
-                        thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
-                        category: getTime.category,
-                        heading: getTime.heading,
-                        description: getTime.description,
-                        like: getTime.like,
-                        comment: getTime.comment,
-                        isLike: true,
-                        time: `${seconds} Seconds Ago`,
+                } else if (seconds > 0 && minutes == 0 && hours == 0 && days === 0) {
+                    findUserInLikeModel = await likeModel.findOne({
+                        blogId: getTime._id,
+                        "reqAuthId._id": userId
+                    })
+                    if (findUserInLikeModel) {
+                        const response = {
+                            _id: getTime._id,
+                            userId: getTime.user_id,
+                            username: getTime.username,
+                            user_profile: getTime.user_profile,
+                            thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
+                            category: getTime.category,
+                            heading: getTime.heading,
+                            description: getTime.description,
+                            like: getTime.like,
+                            comment: getTime.comment,
+                            isLike: true,
+                            time: `${seconds} Seconds Ago`,
+                        }
+                        blogInsertTime.push(response);
+                    } else {
+                        const response = {
+                            _id: getTime._id,
+                            userId: getTime.user_id,
+                            username: getTime.username,
+                            user_profile: getTime.user_profile,
+                            thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
+                            category: getTime.category,
+                            heading: getTime.heading,
+                            description: getTime.description,
+                            like: getTime.like,
+                            comment: getTime.comment,
+                            isLike: false,
+                            time: `${seconds} Seconds Ago`,
+                        }
+                        blogInsertTime.push(response);
                     }
-                    blogInsertTime.push(response);
-                } else {
-                    const response = {
-                        _id: getTime._id,
-                        userId: getTime.user_id,
-                        username: getTime.username,
-                        user_profile: getTime.user_profile,
-                        thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
-                        category: getTime.category,
-                        heading: getTime.heading,
-                        description: getTime.description,
-                        like: getTime.like,
-                        comment: getTime.comment,
-                        isLike: false,
-                        time: `${seconds} Seconds Ago`,
+                } else if (seconds == 0 && minutes == 0 && hours == 0 && days === 0) {
+                    findUserInLikeModel = await likeModel.findOne({
+                        blogId: getTime._id,
+                        "reqAuthId._id": userId
+                    })
+                    if (findUserInLikeModel) {
+                        const response = {
+                            _id: getTime._id,
+                            userId: getTime.user_id,
+                            username: getTime.username,
+                            user_profile: getTime.user_profile,
+                            thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
+                            category: getTime.category,
+                            heading: getTime.heading,
+                            description: getTime.description,
+                            like: getTime.like,
+                            comment: getTime.comment,
+                            isLike: true,
+                            time: `Just Now`,
+                        }
+                        blogInsertTime.push(response);
+                    } else {
+                        const response = {
+                            _id: getTime._id,
+                            userId: getTime.user_id,
+                            username: getTime.username,
+                            user_profile: getTime.user_profile,
+                            thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
+                            category: getTime.category,
+                            heading: getTime.heading,
+                            description: getTime.description,
+                            like: getTime.like,
+                            comment: getTime.comment,
+                            isLike: false,
+                            time: `Just Now`,
+                        }
+                        blogInsertTime.push(response);
                     }
-                    blogInsertTime.push(response);
-                }
-            } else if (seconds == 0 && minutes == 0 && hours == 0 && days === 0) {
-                findUserInLikeModel = await likeModel.findOne({
-                    blogId: getTime._id,
-                    "reqAuthId._id": userId
-                })
-                if (findUserInLikeModel) {
-                    const response = {
-                        _id: getTime._id,
-                        userId: getTime.user_id,
-                        username: getTime.username,
-                        user_profile: getTime.user_profile,
-                        thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
-                        category: getTime.category,
-                        heading: getTime.heading,
-                        description: getTime.description,
-                        like: getTime.like,
-                        comment: getTime.comment,
-                        isLike: true,
-                        time: `Just Now`,
-                    }
-                    blogInsertTime.push(response);
-                } else {
-                    const response = {
-                        _id: getTime._id,
-                        userId: getTime.user_id,
-                        username: getTime.username,
-                        user_profile: getTime.user_profile,
-                        thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
-                        category: getTime.category,
-                        heading: getTime.heading,
-                        description: getTime.description,
-                        like: getTime.like,
-                        comment: getTime.comment,
-                        isLike: false,
-                        time: `Just Now`,
-                    }
-                    blogInsertTime.push(response);
                 }
             }
+            res.status(status.OK).json({
+                message: "View All List Successfully",
+                status: true,
+                code: 200,
+                statusCode: 1,
+                data: blogInsertTime
+            })
         }
-        res.status(status.OK).json({
-            message: "View All List Successfully",
-            status: true,
-            code: 200,
-            statusCode: 1,
-            data: blogInsertTime
-        })
+
     } catch (error) {
         console.log("Error::", error);
         res.status(status.INTERNAL_SERVER_ERROR).json(
@@ -828,11 +841,13 @@ exports.getCommentList = async (req, res) => {
             }
 
         } else {
+
             res.status(status.NOT_FOUND).json({
                 message: "Blog Not Found!",
-                status: true,
+                status: false,
                 code: 404,
-                statusCode: 1,
+                statusCode: 0,
+                data: []
             })
         }
 
@@ -862,30 +877,43 @@ exports.likedUser = async (req, res) => {
         });
         console.log("findBlogData::", findBlogData[0].reqAuthId);
 
-        const response = [];
-        for (const getUSerData of findBlogData[0].reqAuthId) {
-            console.log("getUSerData::", getUSerData._id);
-            const findUserDetails = await authModel.findOne({
-                _id: getUSerData._id
+        if (findBlogData.length == 0) {
+            res.status(status.NOT_FOUND).json({
+                message: "Liked user Not Found!",
+                status: false,
+                code: 404,
+                statusCode: 0,
+                data: []
             })
+        } else {
 
-            const userData = {
-                profile: findUserDetails.profile[0] ? findUserDetails.profile[0].res : "",
-                username: findUserDetails.username,
-                email: findUserDetails.email
+            const response = [];
+            for (const getUSerData of findBlogData[0].reqAuthId) {
+                console.log("getUSerData::", getUSerData._id);
+                const findUserDetails = await authModel.findOne({
+                    _id: getUSerData._id
+                })
+
+                const userData = {
+                    user_id: getUSerData._id,
+                    profile: findUserDetails.profile[0] ? findUserDetails.profile[0].res : "",
+                    username: findUserDetails.username,
+                    email: findUserDetails.email
+                }
+                response.push(userData)
             }
-            response.push(userData)
+
+            res.status(status.OK).json(
+                {
+                    message: "Get Liked User Data List Successfully",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: response
+                }
+            )
+
         }
-
-        res.status(status.OK).json(
-            {
-                message: "Get Liked User Data List Successfully",
-                status: true,
-                code: 200,
-                statusCode: 1,
-                data: response
-            }
-        )
 
     } catch (error) {
         console.log("Error::", error);

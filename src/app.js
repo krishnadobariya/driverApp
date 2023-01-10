@@ -19,6 +19,7 @@ const blogRouter = require("./routes/blog.routes");
 app.use("/auth", authRouter);
 app.use("/chat", chatRouter);
 app.use("/event", eventRouter);
-app.use("/blog",blogRouter)
+app.use("/blog",blogRouter);
+
 
 module.exports = app;

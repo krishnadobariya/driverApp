@@ -134,66 +134,78 @@ exports.eventList = async (req, res) => {
         }).skip(startIndex).limit(endIndex).sort({ createdAt: -1 });
         console.log("getEventData::", getEventData);
 
-        const eventDetails = [];
-        for (const getUser of getEventData) {
-
-            const getJoinUser = await joinEvent.find({ event_id: getUser._id }).count();
-            const userIsJoin = await joinEvent.findOne({
-                user_id: userId,
-                event_id: getUser._id,
-            }).sort({ createdAt: -1 });
-
-            console.log("userId::", userId);
-            console.log("eventId::", getUser._id);
-
-            console.log("userIsJoin:---------", userIsJoin);
-            // console.log("getUser:----------", getUser);
-
-            if (userIsJoin == null) {
-
-                const response = {
-                    user_id: getUser.user_id,
-                    event_id: getUser._id,
-                    username: getUser.username,
-                    user_profile: getUser.user_profile[0] ? getUser.user_profile[0].res : "",
-                    event_photo: getUser.event_photo[0] ? getUser.event_photo[0].res : "",
-                    name: getUser.name,
-                    date: getUser.date,
-                    time: getUser.time,
-                    vehicle_type: getUser.vehicle_type,
-                    longitude: getUser.location.coordinates[0],
-                    latitude: getUser.location.coordinates[1],
-                    address: getUser.address,
-                    about: getUser.about,
-                    isJoin: false,
-                    join_user: getJoinUser
+        if (getEventData.length == 0) {
+            res.status(status.NOT_FOUND).json(
+                {
+                    message: "Data Not Exist",
+                    status: false,
+                    code: 404,
+                    statusCode: 0,
+                    data: []
                 }
-                eventDetails.push(response)
+            )
+        } else {
 
-            } else {
+            const eventDetails = [];
+            for (const getUser of getEventData) {
 
-                const response = {
-                    user_id: getUser.user_id,
+                const getJoinUser = await joinEvent.find({ event_id: getUser._id }).count();
+                const userIsJoin = await joinEvent.findOne({
+                    user_id: userId,
                     event_id: getUser._id,
-                    username: getUser.username,
-                    user_profile: getUser.user_profile[0] ? getUser.user_profile[0].res : "",
-                    event_photo: getUser.event_photo[0] ? getUser.event_photo[0].res : "",
-                    name: getUser.name,
-                    date: getUser.data,
-                    time: getUser.time,
-                    vehicle_type: getUser.vehicle_type,
-                    longitude: getUser.location.coordinates[0],
-                    latitude: getUser.location.coordinates[1],
-                    address: getUser.address,
-                    about: getUser.about,
-                    isJoin: true,
-                    join_user: getJoinUser
+                }).sort({ createdAt: -1 });
+
+                console.log("userId::", userId);
+                console.log("eventId::", getUser._id);
+
+                console.log("userIsJoin:---------", userIsJoin);
+                // console.log("getUser:----------", getUser);
+
+                if (userIsJoin == null) {
+
+                    const response = {
+                        user_id: getUser.user_id,
+                        event_id: getUser._id,
+                        username: getUser.username,
+                        user_profile: getUser.user_profile[0] ? getUser.user_profile[0].res : "",
+                        event_photo: getUser.event_photo[0] ? getUser.event_photo[0].res : "",
+                        name: getUser.name,
+                        date: getUser.date,
+                        time: getUser.time,
+                        vehicle_type: getUser.vehicle_type,
+                        longitude: getUser.location.coordinates[0],
+                        latitude: getUser.location.coordinates[1],
+                        address: getUser.address,
+                        about: getUser.about,
+                        isJoin: false,
+                        join_user: getJoinUser
+                    }
+                    eventDetails.push(response)
+
+                } else {
+
+                    const response = {
+                        user_id: getUser.user_id,
+                        event_id: getUser._id,
+                        username: getUser.username,
+                        user_profile: getUser.user_profile[0] ? getUser.user_profile[0].res : "",
+                        event_photo: getUser.event_photo[0] ? getUser.event_photo[0].res : "",
+                        name: getUser.name,
+                        date: getUser.data,
+                        time: getUser.time,
+                        vehicle_type: getUser.vehicle_type,
+                        longitude: getUser.location.coordinates[0],
+                        latitude: getUser.location.coordinates[1],
+                        address: getUser.address,
+                        about: getUser.about,
+                        isJoin: true,
+                        join_user: getJoinUser
+                    }
+                    eventDetails.push(response)
+
                 }
-                eventDetails.push(response)
 
             }
-
-
 
         }
 

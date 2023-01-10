@@ -214,72 +214,84 @@ exports.userList = async (req, res) => {
         }).skip(startIndex).limit(endIndex).select('-__v').sort({ createdAt: -1 });
         console.log("getUser::", getUser);
 
-        const vehicleDetails = [];
-        for (const userDetails of getUser) {
-
-            var finalChatId = "";
-            finalChatId = await chatRoomModel.find(
+        if (getUser.length == 0) {
+            res.status(status.NOT_FOUND).json(
                 {
-                    user1: userDetails._id,
-                    user2: userId,
+                    message: "Data Not Exist",
+                    status: false,
+                    code: 404,
+                    statusCode: 0,
+                    data: []
                 }
-            );
+            )
+        } else {
 
-            if (finalChatId.length == 0) {
+            const vehicleDetails = [];
+            for (const userDetails of getUser) {
+
+                var finalChatId = "";
                 finalChatId = await chatRoomModel.find(
                     {
-                        user2: userDetails._id,
-                        user1: userId,
+                        user1: userDetails._id,
+                        user2: userId,
                     }
                 );
 
-            }
-            else {
+                if (finalChatId.length == 0) {
+                    finalChatId = await chatRoomModel.find(
+                        {
+                            user2: userDetails._id,
+                            user1: userId,
+                        }
+                    );
 
-            }
+                }
+                else {
 
-            const arrVehicleData = [];
-            var isVehicleData = false;
-            for (const vehicleData of userDetails.vehicle) {
+                }
 
-                if (vehicleData.vehicle_type == vehicleType) {
-                    isVehicleData = true;
-                    const response = {
-                        vehicleImageId: vehicleData.vehicle_img_id,
-                        model: vehicleData.model,
-                        type: vehicleData.vehicle_type,
-                        year: vehicleData.year,
-                        trim: vehicleData.trim,
-                        dailyDriving: vehicleData.daily_driving,
-                        unit: vehicleData.unit
+                const arrVehicleData = [];
+                var isVehicleData = false;
+                for (const vehicleData of userDetails.vehicle) {
+
+                    if (vehicleData.vehicle_type == vehicleType) {
+                        isVehicleData = true;
+                        const response = {
+                            vehicleImageId: vehicleData.vehicle_img_id,
+                            model: vehicleData.model,
+                            type: vehicleData.vehicle_type,
+                            year: vehicleData.year,
+                            trim: vehicleData.trim,
+                            dailyDriving: vehicleData.daily_driving,
+                            unit: vehicleData.unit
+                        }
+                        arrVehicleData.push(response);
                     }
-                    arrVehicleData.push(response);
+                }
+                if (isVehicleData) {
+                    const response = {
+                        profile: userDetails.profile[0] ? userDetails.profile[0].res : "",
+                        userName: userDetails.username,
+                        email: userDetails.email,
+                        phone: `${userDetails.country_code}${userDetails.phone_number}`,
+                        chatRoomId: finalChatId[0] ? finalChatId[0]._id : "",
+                        vehicles: arrVehicleData
+                    }
+                    vehicleDetails.push(response)
                 }
             }
-            if (isVehicleData) {
-                const response = {
-                    profile: userDetails.profile[0] ? userDetails.profile[0].res : "",
-                    userName: userDetails.username,
-                    email: userDetails.email,
-                    phone: `${userDetails.country_code}${userDetails.phone_number}`,
-                    chatRoomId: finalChatId[0] ? finalChatId[0]._id : "",
-                    vehicles: arrVehicleData
+
+            res.status(status.OK).json(
+                {
+                    message: "Get User Detail Successfully",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: vehicleDetails
                 }
-                vehicleDetails.push(response)
-            }
+            )
+
         }
-
-        res.status(status.OK).json(
-            {
-                message: "Get User Detail Successfully",
-                status: true,
-                code: 200,
-                statusCode: 1,
-                data: vehicleDetails
-            }
-        )
-
-
     } catch (error) {
 
         console.log("userList-Error:", error);
@@ -840,7 +852,7 @@ exports.forgetPassword = async (req, res) => {
 
             console.log("findUser._id::::", findUser._id);
             console.log("createPass::::", createPass);
-            
+
             const updateUserPassword = await authModel.updateOne({
                 _id: findUser._id
             }, {
