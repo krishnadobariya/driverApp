@@ -218,9 +218,9 @@ exports.userList = async (req, res) => {
             res.status(status.NOT_FOUND).json(
                 {
                     message: "Data Not Exist",
-                    status: false,
-                    code: 404,
-                    statusCode: 0,
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
                     data: []
                 }
             )

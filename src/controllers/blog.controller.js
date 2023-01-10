@@ -47,7 +47,8 @@ exports.addBlog = async (req, res) => {
                     message: "Data Not Exist",
                     status: false,
                     code: 404,
-                    statusCode: 0
+                    statusCode: 0,
+                    data: []
                 }
             )
 
@@ -104,15 +105,17 @@ exports.blogList = async (req, res) => {
         }).sort({ createdAt: -1 });
 
         if (allBlogData.length == 0) {
+
             res.status(status.NOT_FOUND).json(
                 {
                     message: "Data Not Exist",
-                    status: false,
-                    code: 404,
-                    statusCode: 0,
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
                     data: []
                 }
             )
+
         } else {
             let blogInsertTime = [];
             for (const getTime of allBlogData) {
@@ -642,12 +645,15 @@ exports.blogLikeDislike = async (req, res) => {
                 }
             }
         } else {
+
             res.status(status.NOT_FOUND).json({
                 message: "User Or Blog Not Found!",
                 status: true,
                 code: 404,
                 statusCode: 1,
+                data: []
             })
+
         }
 
     } catch (error) {
@@ -834,7 +840,7 @@ exports.getCommentList = async (req, res) => {
                         status: true,
                         code: 404,
                         statusCode: 1,
-                        data: ""
+                        data: []
                     }
                 )
 
@@ -844,9 +850,9 @@ exports.getCommentList = async (req, res) => {
 
             res.status(status.NOT_FOUND).json({
                 message: "Blog Not Found!",
-                status: false,
-                code: 404,
-                statusCode: 0,
+                status: true,
+                code: 200,
+                statusCode: 1,
                 data: []
             })
         }
@@ -878,13 +884,15 @@ exports.likedUser = async (req, res) => {
         console.log("findBlogData::", findBlogData[0].reqAuthId);
 
         if (findBlogData.length == 0) {
+
             res.status(status.NOT_FOUND).json({
                 message: "Liked user Not Found!",
-                status: false,
-                code: 404,
-                statusCode: 0,
+                status: true,
+                code: 200,
+                statusCode: 1,
                 data: []
             })
+
         } else {
 
             const response = [];
@@ -946,9 +954,9 @@ exports.myBlog = async (req, res) => {
             res.status(status.NOT_FOUND).json(
                 {
                     message: "Data Not Exist",
-                    status: false,
-                    code: 404,
-                    statusCode: 0,
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
                     data: []
                 }
             )

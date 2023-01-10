@@ -138,9 +138,9 @@ exports.eventList = async (req, res) => {
             res.status(status.NOT_FOUND).json(
                 {
                     message: "Data Not Exist",
-                    status: false,
-                    code: 404,
-                    statusCode: 0,
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
                     data: []
                 }
             )
@@ -244,6 +244,12 @@ exports.eventAttendees = async (req, res) => {
         });
         console.log("findEvent::", findEvent);
 
+        if (findEvent.length == 0) {
+            
+        } else {
+            
+        }
+
         const response = [];
         for (const getUser of findEvent) {
 
@@ -301,9 +307,9 @@ exports.myEvent = async (req, res) => {
             res.status(status.NOT_FOUND).json(
                 {
                     message: "Data Not Exist",
-                    status: false,
-                    code: 404,
-                    statusCode: 0,
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
                     data: []
                 }
             )
