@@ -303,7 +303,8 @@ exports.myEvent = async (req, res) => {
                     message: "Data Not Exist",
                     status: false,
                     code: 404,
-                    statusCode: 0
+                    statusCode: 0,
+                    data: []
                 }
             )
         } else {
