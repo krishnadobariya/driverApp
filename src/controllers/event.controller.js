@@ -207,17 +207,17 @@ exports.eventList = async (req, res) => {
 
             }
 
-        }
+            res.status(status.OK).json(
+                {
+                    message: "Get All Event Detail Successfully",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: eventDetails
+                }
+            )
 
-        res.status(status.OK).json(
-            {
-                message: "Get All Event Detail Successfully",
-                status: true,
-                code: 200,
-                statusCode: 1,
-                data: eventDetails
-            }
-        )
+        }
 
     } catch (error) {
         console.log("userList-Error:", error);
@@ -245,9 +245,9 @@ exports.eventAttendees = async (req, res) => {
         console.log("findEvent::", findEvent);
 
         if (findEvent.length == 0) {
-            
+
         } else {
-            
+
         }
 
         const response = [];
