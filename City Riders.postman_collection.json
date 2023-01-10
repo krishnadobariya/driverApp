@@ -45,7 +45,7 @@
 						{
 							"key": "profile",
 							"type": "file",
-							"src": "/home/kurm/Pictures/Wallpapers/download.jpeg"
+							"src": "/home/kurm/Downloads/user.png"
 						}
 					]
 				},
@@ -406,21 +406,24 @@
 					"urlencoded": [
 						{
 							"key": "vehicle_type",
-							"value": "2",
+							"value": "1",
 							"type": "text"
 						}
 					]
 				},
 				"url": {
-					"raw": "localhost:5000/event/list/63ae8339ad6ae4296048bfe5",
+					"raw": "139.59.88.204:5000/event/list/63ae8e7dcf146b1c502ba65d",
 					"host": [
-						"localhost"
+						"139",
+						"59",
+						"88",
+						"204"
 					],
 					"port": "5000",
 					"path": [
 						"event",
 						"list",
-						"63ae8339ad6ae4296048bfe5"
+						"63ae8e7dcf146b1c502ba65d"
 					]
 				}
 			},
@@ -510,7 +513,7 @@
 					"urlencoded": [
 						{
 							"key": "email",
-							"value": "harvi.5876@gmail.com",
+							"value": "trunal.work@gmail.com",
 							"type": "text"
 						}
 					]
@@ -717,9 +720,12 @@
 					]
 				},
 				"url": {
-					"raw": "localhost:5000/event/my/63ae8e7dcf146b1c502ba65d",
+					"raw": "139.59.88.204:5000/event/my/63ae8e7dcf146b1c502ba65d",
 					"host": [
-						"localhost"
+						"139",
+						"59",
+						"88",
+						"204"
 					],
 					"port": "5000",
 					"path": [
@@ -766,7 +772,7 @@
 			]
 		},
 		{
-			"name": "My Blog",
+			"name": "My Blog (139.59.88.204:5000/blog/my/63ae8e7dcf146b1c502ba65d)",
 			"request": {
 				"method": "POST",
 				"header": [],
@@ -781,18 +787,15 @@
 					]
 				},
 				"url": {
-					"raw": "139.59.88.204:5000/blog/my/63ae8339ad6ae4296048bfe5",
+					"raw": "localhost:5000/blog/my/63ae8e7dcf146b1c502ba65d",
 					"host": [
-						"139",
-						"59",
-						"88",
-						"204"
+						"localhost"
 					],
 					"port": "5000",
 					"path": [
 						"blog",
 						"my",
-						"63ae8339ad6ae4296048bfe5"
+						"63ae8e7dcf146b1c502ba65d"
 					]
 				}
 			},
@@ -813,6 +816,46 @@
 						"blog",
 						"liked-user",
 						"63aecd36bbea9c57de48ca36"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Event Delete API",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/event/delete/63b29d6ab8b320000641d695",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"event",
+						"delete",
+						"63b29d6ab8b320000641d695"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Blog Delete API",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "localhost:5000/blog/delete/63aed24855c4fc47ac9b3db5",
+					"host": [
+						"localhost"
+					],
+					"port": "5000",
+					"path": [
+						"blog",
+						"delete",
+						"63aed24855c4fc47ac9b3db5"
 					]
 				}
 			},

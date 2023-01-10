@@ -1350,3 +1350,35 @@ exports.myBlog = async (req, res) => {
 
     }
 }
+
+exports.deleteBlog = async (req, res) => {
+    try {
+
+        const blogId = req.params.blog_id;
+
+        const deleteBlogData = await Blog.deleteOne({
+            _id: blogId
+        });
+
+        res.status(status.OK).json(
+            {
+                message: "Blog Delete Successfully",
+                status: true,
+                code: 200,
+                statusCode: 1,
+            }
+        )
+
+    } catch (error) {
+
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Somthing Went Wrong",
+                status: false,
+                code: 501,
+                statusCode: 0
+            }
+        )
+
+    }
+}

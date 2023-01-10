@@ -347,3 +347,35 @@ exports.myEvent = async (req, res) => {
 
     }
 }
+
+exports.deleteEvent = async (req, res) => {
+    try {
+
+        const eventId = req.params.event_id;
+
+        const deleteEventData = await Event.deleteOne({
+            _id: eventId
+        });
+
+        res.status(status.OK).json(
+            {
+                message: "Event Delete Successfully",
+                status: true,
+                code: 200,
+                statusCode: 1,
+            }
+        )
+
+    } catch (error) {
+
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Somthing Went Wrong",
+                status: false,
+                code: 501,
+                statusCode: 0
+            }
+        )
+
+    }
+}
