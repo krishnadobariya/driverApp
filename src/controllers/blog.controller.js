@@ -136,7 +136,8 @@ exports.blogList = async (req, res) => {
                     findUserInLikeModel = await likeModel.findOne({
                         blogId: getTime._id,
                         "reqAuthId._id": userId
-                    })
+                    });
+                    console.log("findUserInLikeModel9::", findUserInLikeModel);
 
                     if (findUserInLikeModel) {
                         const response = {
@@ -179,6 +180,7 @@ exports.blogList = async (req, res) => {
                         blogId: getTime._id,
                         "reqAuthId._id": userId
                     })
+                    console.log("findUserInLikeModel8::", findUserInLikeModel);
 
                     if (findUserInLikeModel) {
                         const response = {
@@ -220,6 +222,7 @@ exports.blogList = async (req, res) => {
                         blogId: getTime._id,
                         "reqAuthId._id": userId
                     })
+                    console.log("findUserInLikeModel7::", findUserInLikeModel);
 
                     if (findUserInLikeModel) {
                         const response = {
@@ -262,6 +265,7 @@ exports.blogList = async (req, res) => {
                         blogId: getTime._id,
                         "reqAuthId._id": userId
                     })
+                    console.log("findUserInLikeModel6::", findUserInLikeModel);
 
                     if (findUserInLikeModel) {
                         const response = {
@@ -301,6 +305,7 @@ exports.blogList = async (req, res) => {
                         blogId: getTime._id,
                         "reqAuthId._id": userId
                     })
+                    console.log("findUserInLikeModel5::", findUserInLikeModel);
 
                     if (findUserInLikeModel) {
                         const response = {
@@ -341,6 +346,7 @@ exports.blogList = async (req, res) => {
                         blogId: getTime._id,
                         "reqAuthId._id": userId
                     })
+                    console.log("findUserInLikeModel4::", findUserInLikeModel);
 
                     if (findUserInLikeModel) {
                         const response = {
@@ -380,6 +386,8 @@ exports.blogList = async (req, res) => {
                         blogId: getTime._id,
                         "reqAuthId._id": userId
                     })
+                    console.log("findUserInLikeModel3::", findUserInLikeModel);
+
                     if (findUserInLikeModel) {
                         const response = {
                             _id: getTime._id,
@@ -418,6 +426,8 @@ exports.blogList = async (req, res) => {
                         blogId: getTime._id,
                         "reqAuthId._id": userId
                     })
+                    console.log("findUserInLikeModel2::", findUserInLikeModel);
+
                     if (findUserInLikeModel) {
                         const response = {
                             _id: getTime._id,
@@ -456,6 +466,8 @@ exports.blogList = async (req, res) => {
                         blogId: getTime._id,
                         "reqAuthId._id": userId
                     })
+                    console.log("findUserInLikeModel::", findUserInLikeModel);
+
                     if (findUserInLikeModel) {
                         const response = {
                             _id: getTime._id,
@@ -627,6 +639,11 @@ exports.blogLikeDislike = async (req, res) => {
                             }
                         }
                     })
+
+                    const deleteLikedUser = await likeModel.deleteOne({
+                        blogId: blogId
+                    });
+                    console.log("deleteLikedUser::---", deleteLikedUser);
 
                     res.status(status.OK).json({
                         message: "Dislike added!",

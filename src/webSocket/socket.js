@@ -543,7 +543,6 @@ function socket(io) {
                 io.emit("getStatus", 0)
             }
 
-
         })
         // ----- End userStatus ----- //
 
