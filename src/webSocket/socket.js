@@ -507,7 +507,7 @@ function socket(io) {
 
         })
         // ----- isJoin ----- //5876
-        
+
 
         // ----- updateStatus ----- //
         socket.on("updateStatus", async (arg) => {
@@ -524,7 +524,28 @@ function socket(io) {
             })
 
         })
-        // ----- updateStatus ----- //
+        // ----- End updateStatus ----- //
+
+
+        // ----- userStatus ----- //
+        socket.on("userStatus", async (arg) => {
+
+            let userId = arg.user_id;
+
+            const findUserData = await authModel.findOne({
+                _id: userId
+            });
+            console.log("findUserData::", findUserData);
+
+            if (findUserData.status == 'Active') {
+                io.emit("getStatus", 1)
+            } else {
+                io.emit("getStatus", 0)
+            }
+
+
+        })
+        // ----- End userStatus ----- //
 
     })
 
