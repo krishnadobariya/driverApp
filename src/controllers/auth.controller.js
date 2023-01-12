@@ -270,6 +270,7 @@ exports.userList = async (req, res) => {
                 }
                 if (isVehicleData) {
                     const response = {
+                        user_id: userDetails._id,
                         profile: userDetails.profile[0] ? userDetails.profile[0].res : "",
                         userName: userDetails.username,
                         email: userDetails.email,
@@ -317,6 +318,11 @@ exports.userProfile = async (req, res) => {
         );
         console.log("userProfile:::", getUserData);
 
+        const profile_id = getUserData._id;
+        const user_id = req.params.user_id;
+
+        console.log("Ids:::::", profile_id, user_id);
+
         if (getUserData == null) {
 
             res.status(status.NOT_FOUND).json(
@@ -324,14 +330,27 @@ exports.userProfile = async (req, res) => {
                     message: "Data Not Exist",
                     status: false,
                     code: 404,
-                    statusCode: 0
+                    statusCode: 0,
+                    data: []
                 }
             )
 
         } else {
+            
+            var getChatRoom = "";
+            getChatRoom = await chatRoomModel.find({
+                user1: profile_id,
+                user2: user_id
+            });
+
+            getChatRoom = await chatRoomModel.find({ 
+                user1: user_id,
+                user2: profile_id
+            });
 
             const response = {
                 user_id: getUserData._id,
+                chatRoomId: getChatRoom[0] ? getChatRoom[0]._id : "",
                 profile: getUserData.profile[0] ? getUserData.profile[0].res : "",
                 username: getUserData.username,
                 email: getUserData.email,

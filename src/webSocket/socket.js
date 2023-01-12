@@ -407,6 +407,7 @@ function socket(io) {
             } else {
 
                 for (const getSenderChat of findChatRoom.chat) {
+                    console.log("");
 
                     const updateReadValue = await chatModel.updateOne(
                         {

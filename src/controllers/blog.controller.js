@@ -522,11 +522,11 @@ exports.blogLikeDislike = async (req, res) => {
 
         const findBlog = await blogModel.findOne({
             _id: blogId
-        })
+        });
 
         const findUser = await authModel.findOne({
             _id: userId
-        })
+        });
 
         if (findBlog && findUser) {
 
@@ -542,12 +542,14 @@ exports.blogLikeDislike = async (req, res) => {
             if (req.query.like == 1) {
 
                 if (blogInLikeModel && reqUserInLikeModel) {
+
                     res.status(status.CONFLICT).json({
                         message: "Already Liked Blog!",
                         status: true,
                         code: 409,
                         statusCode: 1,
                     })
+
                 } else if (blogInLikeModel) {
 
                     await blogModel.updateOne({

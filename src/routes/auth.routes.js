@@ -20,7 +20,7 @@ const {
 router.post("/register", registration);
 router.post("/add-image/:id", upload.array('profile'), addImage)
 router.post("/login", login);
-router.get("/user-profile/:id", userProfile);
+router.get("/user-profile/:id/:user_id", userProfile);
 router.post("/all-user/:id", userList);
 router.get("/get-lat-long/:id", getLatLong);
 router.get("/get-user-info", getUserInfo);

@@ -1,13 +1,21 @@
 - Socket : joinUser
 {
-    "user_id": "63abe8ae624e8360a44eb0e0"
+    "user_id": "63ae8debcf146b1c502ba640"
 }
 
 
 - Socket : chat
 {
-    "receiver_id": "63abe8ae624e8360a44eb0e0",
-    "sender_id": "63aad2e29a91e00c552fcd20",
-    "message": "Hello"
+    "sender_id": "63ae8347ad6ae4296048bfeb",
+    "receiver_id": "63ae8debcf146b1c502ba640",
+    "message": "Hello!"
 }
 - emit : chatReceive
+
+
+- Socket : readUnread
+{
+    "chat_room_id": "63be8071c2a0c9ce3862d74f",
+    "sender_id": "63ae8debcf146b1c502ba640"
+}
+- emit : readChat
