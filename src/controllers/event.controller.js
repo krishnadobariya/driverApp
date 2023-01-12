@@ -192,7 +192,7 @@ exports.eventList = async (req, res) => {
                         user_profile: getUser.user_profile[0] ? getUser.user_profile[0].res : "",
                         event_photo: getUser.event_photo[0] ? getUser.event_photo[0].res : "",
                         name: getUser.name,
-                        date: getUser.data,
+                        date: getUser.date,
                         time: getUser.time,
                         vehicle_type: getUser.vehicle_type,
                         longitude: getUser.location.coordinates[0],
