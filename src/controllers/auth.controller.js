@@ -337,16 +337,32 @@ exports.userProfile = async (req, res) => {
 
         } else {
             
+            // var getChatRoom = "";
+            // getChatRoom = await chatRoomModel.find({
+            //     user1: profile_id,
+            //     user2: user_id
+            // });
+
+            // getChatRoom = await chatRoomModel.find({ 
+            //     user1: user_id,
+            //     user2: profile_id
+            // });
+
             var getChatRoom = "";
             getChatRoom = await chatRoomModel.find({
                 user1: profile_id,
-                user2: user_id
+                user2: user_id,
             });
 
-            getChatRoom = await chatRoomModel.find({ 
-                user1: user_id,
-                user2: profile_id
-            });
+            if (getChatRoom.length == 0) {
+                getChatRoom = await chatRoomModel.find({
+                    user2: user_id,
+                    user1: profile_id,
+                });
+            }
+            else {
+
+            }
 
             const response = {
                 user_id: getUserData._id,
