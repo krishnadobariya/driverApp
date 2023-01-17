@@ -356,8 +356,8 @@ exports.userProfile = async (req, res) => {
 
             if (getChatRoom.length == 0) {
                 getChatRoom = await chatRoomModel.find({
-                    user2: user_id,
-                    user1: profile_id,
+                    user1: user_id,
+                    user2: profile_id,
                 });
             }
             else {
