@@ -1378,17 +1378,17 @@ exports.myBlog = async (req, res) => {
 
                 }
 
-                res.status(status.OK).json(
-                    {
-                        message: "GET MY ALL BLOG LIST SUCCESSFULLY",
-                        status: true,
-                        code: 200,
-                        statusCode: 1,
-                        data: blogInsertTime
-                    }
-                )
-
             }
+
+            res.status(status.OK).json(
+                {
+                    message: "GET MY ALL BLOG LIST SUCCESSFULLY",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: blogInsertTime
+                }
+            )
 
         }
     } catch (error) {
