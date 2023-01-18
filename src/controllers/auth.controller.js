@@ -336,7 +336,7 @@ exports.userProfile = async (req, res) => {
             )
 
         } else {
-            
+
             // var getChatRoom = "";
             // getChatRoom = await chatRoomModel.find({
             //     user1: profile_id,
@@ -625,14 +625,58 @@ exports.userUpdate = async (req, res) => {
 
 }
 
+exports.updateUserVehicleData = async (req, res) => {
+    try {
+
+        const updateData = await authModel.findOneAndUpdate(
+            {
+                _id: req.params.id
+            },
+            {
+                $set: {
+                    vehicle: req.body.vehicle
+                }
+            }
+        ).then(() => {
+            res.status(status.OK).json({
+                message: "User Vehicle Detail Update Successfully",
+                status: true,
+                code: 200,
+                statusCode: 1
+            })
+        }).catch((err) => {
+            res.status(status.INTERNAL_SERVER_ERROR).json(
+                {
+                    message: "Somthing Went Wrong data not updated",
+                    status: false,
+                    code: 501,
+                    statusCode: 0
+                }
+            )
+        })
+
+    } catch (error) {
+
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Somthing Went Wrong",
+                status: false,
+                code: 501,
+                statusCode: 0
+            }
+        )
+
+    }
+}
+
 exports.userVehicleUpdateData = async (req, res) => {
     try {
 
         const updateVehicleData = await authModel.findOneAndUpdate({
             _id: req.params.id,
-            "vehicle.vehicle_type": req.params.type
         }, {
             $set: {
+                "vehicle.$.vehicle_type": req.body.type,
                 "vehicle.$.model": req.body.model,
                 "vehicle.$.trim": req.body.trim,
                 "vehicle.$.year": req.body.year,

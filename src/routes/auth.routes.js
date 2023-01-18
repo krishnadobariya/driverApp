@@ -12,6 +12,7 @@ const {
     userLogout,
     userUpdate,
     userVehicleUpdateData,
+    updateUserVehicleData,
     changePassword,
     forgetPassword,
 } = require("../controllers/auth.controller");
@@ -26,7 +27,8 @@ router.get("/get-lat-long/:id", getLatLong);
 router.get("/get-user-info", getUserInfo);
 router.get("/logout/:id", userLogout);
 router.put("/update-user/:id", upload.array('profile'), userUpdate);
-router.put("/update/vehicle-data/:id/:type", userVehicleUpdateData);
+router.put("/update/vehicle-/old/:id/:type", userVehicleUpdateData);
+router.put("/update/vehicle-data/:id", updateUserVehicleData);
 router.post("/change-password/:id", changePassword);
 router.post("/forget-password", forgetPassword);
 
