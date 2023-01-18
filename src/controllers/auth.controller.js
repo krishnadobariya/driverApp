@@ -451,7 +451,14 @@ exports.getUserInfo = async (req, res) => {
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
 
-        const getAllData = await authModel.find().skip(startIndex).limit(endIndex).select('-__v');
+        // const getAllData = await authModel.find().skip(startIndex).limit(endIndex).select('-__v');
+
+        const getAllData = await authModel.find({
+            _id: {
+                $ne: userId
+            },
+            status: "Active"
+        }).skip(startIndex).limit(endIndex).select('-__v').sort({ createdAt: -1 });
 
         const userInfoList = [];
         for (const userInfo of getAllData) {
