@@ -195,7 +195,7 @@ exports.blogList = async (req, res) => {
                             like: getTime.like,
                             comment: getTime.comment,
                             isLike: true,
-                            time: "4 Week Ago"
+                            time: "3 Week Ago"
                         }
                         blogInsertTime.push(response);
                     } else {
@@ -211,7 +211,7 @@ exports.blogList = async (req, res) => {
                             like: getTime.like,
                             comment: getTime.comment,
                             isLike: false,
-                            time: "4 Week Ago"
+                            time: "3 Week Ago"
                         }
                         blogInsertTime.push(response);
                     }
@@ -237,7 +237,7 @@ exports.blogList = async (req, res) => {
                             like: getTime.like,
                             comment: getTime.comment,
                             isLike: true,
-                            time: "3 Week Ago"
+                            time: "2 Week Ago"
                         }
                         blogInsertTime.push(response);
                     } else {
@@ -253,7 +253,7 @@ exports.blogList = async (req, res) => {
                             like: getTime.like,
                             comment: getTime.comment,
                             isLike: false,
-                            time: "3 Week Ago"
+                            time: "2 Week Ago"
                         }
                         blogInsertTime.push(response);
                     }
@@ -280,7 +280,7 @@ exports.blogList = async (req, res) => {
                             like: getTime.like,
                             comment: getTime.comment,
                             isLike: true,
-                            time: "2 Week Ago"
+                            time: "1 Week Ago"
                         }
                         blogInsertTime.push(response);
                     } else {
@@ -296,7 +296,7 @@ exports.blogList = async (req, res) => {
                             like: getTime.like,
                             comment: getTime.comment,
                             isLike: false,
-                            time: "2 Week Ago"
+                            time: "1 Week Ago"
                         }
                         blogInsertTime.push(response);
                     }
@@ -320,7 +320,7 @@ exports.blogList = async (req, res) => {
                             like: getTime.like,
                             comment: getTime.comment,
                             isLike: true,
-                            time: "1 Week Ago"
+                            time: days == 1 ? `${days} day ago` : `${days} days ago`,
                         }
                         blogInsertTime.push(response);
                     } else {
@@ -336,7 +336,7 @@ exports.blogList = async (req, res) => {
                             like: getTime.like,
                             comment: getTime.comment,
                             isLike: false,
-                            time: "1 Week Ago"
+                            time: days == 1 ? `${days} day ago` : `${days} days ago`,
                         }
                         blogInsertTime.push(response);
                     }
@@ -361,7 +361,7 @@ exports.blogList = async (req, res) => {
                             like: getTime.like,
                             comment: getTime.comment,
                             isLike: true,
-                            time: `${hours} Hours Ago`
+                            time: hours == 1 ? `${hours} hour ago` : `${hours} hours ago`,
                         }
                         blogInsertTime.push(response);
                     } else {
@@ -377,7 +377,7 @@ exports.blogList = async (req, res) => {
                             like: getTime.like,
                             comment: getTime.comment,
                             isLike: false,
-                            time: `${hours} Hours Ago`
+                            time: hours == 1 ? `${hours} hour ago` : `${hours} hours ago`,
                         }
                         blogInsertTime.push(response);
                     }
@@ -401,7 +401,7 @@ exports.blogList = async (req, res) => {
                             like: getTime.like,
                             comment: getTime.comment,
                             isLike: true,
-                            time: `${minutes} Minute Ago`,
+                            time: minutes == 1 ? `${minutes} minute ago` : `${minutes} minutes ago`,
                         }
                         blogInsertTime.push(response);
                     } else {
@@ -417,7 +417,7 @@ exports.blogList = async (req, res) => {
                             like: getTime.like,
                             comment: getTime.comment,
                             isLike: false,
-                            time: `${minutes} Minute Ago`,
+                            time: minutes == 1 ? `${minutes} minute ago` : `${minutes} minutes ago`,
                         }
                         blogInsertTime.push(response);
                     }
@@ -441,7 +441,7 @@ exports.blogList = async (req, res) => {
                             like: getTime.like,
                             comment: getTime.comment,
                             isLike: true,
-                            time: `${seconds} Seconds Ago`,
+                            time: seconds == 1 ? `${seconds} second ago` : `${seconds} seconds ago`,
                         }
                         blogInsertTime.push(response);
                     } else {
@@ -457,7 +457,7 @@ exports.blogList = async (req, res) => {
                             like: getTime.like,
                             comment: getTime.comment,
                             isLike: false,
-                            time: `${seconds} Seconds Ago`,
+                            time: seconds == 1 ? `${seconds} second ago` : `${seconds} seconds ago`,
                         }
                         blogInsertTime.push(response);
                     }
@@ -1067,7 +1067,7 @@ exports.myBlog = async (req, res) => {
                             like: respSet.like,
                             comment: respSet.comment,
                             isLike: true,
-                            time: "4 Week Ago"
+                            time: "3 Week Ago"
                         }
                         blogInsertTime.push(response);
                     } else {
@@ -1083,7 +1083,7 @@ exports.myBlog = async (req, res) => {
                             like: respSet.like,
                             comment: respSet.comment,
                             isLike: false,
-                            time: "4 Week Ago"
+                            time: "3 Week Ago"
                         }
                         blogInsertTime.push(response);
                     }
@@ -1108,7 +1108,7 @@ exports.myBlog = async (req, res) => {
                             like: respSet.like,
                             comment: respSet.comment,
                             isLike: true,
-                            time: "3 Week Ago"
+                            time: "2 Week Ago"
                         }
                         blogInsertTime.push(response);
                     } else {
@@ -1124,7 +1124,7 @@ exports.myBlog = async (req, res) => {
                             like: respSet.like,
                             comment: respSet.comment,
                             isLike: false,
-                            time: "3 Week Ago"
+                            time: "2 Week Ago"
                         }
                         blogInsertTime.push(response);
                     }
@@ -1149,7 +1149,7 @@ exports.myBlog = async (req, res) => {
                             like: respSet.like,
                             comment: respSet.comment,
                             isLike: true,
-                            time: "2 Week Ago"
+                            time: "1 Week Ago"
                         }
                         blogInsertTime.push(response);
                     } else {
@@ -1165,7 +1165,7 @@ exports.myBlog = async (req, res) => {
                             like: respSet.like,
                             comment: respSet.comment,
                             isLike: false,
-                            time: "2 Week Ago"
+                            time: "1 Week Ago"
                         }
                         blogInsertTime.push(response);
                     }
@@ -1190,7 +1190,7 @@ exports.myBlog = async (req, res) => {
                             like: respSet.like,
                             comment: respSet.comment,
                             isLike: true,
-                            time: "1 Week Ago"
+                            time: days == 1 ? `${days} day ago` : `${days} days ago`,
                         }
                         blogInsertTime.push(response);
                     } else {
@@ -1206,7 +1206,7 @@ exports.myBlog = async (req, res) => {
                             like: respSet.like,
                             comment: respSet.comment,
                             isLike: false,
-                            time: "1 Week Ago"
+                            time: days == 1 ? `${days} day ago` : `${days} days ago`,
                         }
                         blogInsertTime.push(response);
                     }
@@ -1231,7 +1231,7 @@ exports.myBlog = async (req, res) => {
                             like: respSet.like,
                             comment: respSet.comment,
                             isLike: true,
-                            time: `${hours} Hours Ago`
+                            time: hours == 1 ? `${hours} hour ago` : `${hours} hours ago`,
                         }
                         blogInsertTime.push(response);
                     } else {
@@ -1247,7 +1247,7 @@ exports.myBlog = async (req, res) => {
                             like: respSet.like,
                             comment: respSet.comment,
                             isLike: false,
-                            time: `${hours} Hours Ago`
+                            time: hours == 1 ? `${hours} hour ago` : `${hours} hours ago`,
                         }
                         blogInsertTime.push(response);
                     }
@@ -1272,7 +1272,7 @@ exports.myBlog = async (req, res) => {
                             like: respSet.like,
                             comment: respSet.comment,
                             isLike: true,
-                            time: `${minutes} Minute Ago`,
+                            time: minutes == 1 ? `${minutes} minute ago` : `${minutes} minutes ago`,
                         }
                         blogInsertTime.push(response);
                     } else {
@@ -1288,7 +1288,7 @@ exports.myBlog = async (req, res) => {
                             like: respSet.like,
                             comment: respSet.comment,
                             isLike: false,
-                            time: `${minutes} Minute Ago`,
+                            time: minutes == 1 ? `${minutes} minute ago` : `${minutes} minutes ago`,
                         }
                         blogInsertTime.push(response);
 
@@ -1314,7 +1314,7 @@ exports.myBlog = async (req, res) => {
                             like: respSet.like,
                             comment: respSet.comment,
                             isLike: true,
-                            time: `${seconds} Seconds Ago`,
+                            time: seconds == 1 ? `${seconds} second ago` : `${seconds} seconds ago`,
                         }
                         blogInsertTime.push(response);
                     } else {
@@ -1330,7 +1330,7 @@ exports.myBlog = async (req, res) => {
                             like: respSet.like,
                             comment: respSet.comment,
                             isLike: false,
-                            time: `${seconds} Seconds Ago`,
+                            time: seconds == 1 ? `${seconds} second ago` : `${seconds} seconds ago`,
                         }
                         blogInsertTime.push(response);
                     }
