@@ -455,14 +455,13 @@ exports.getUserInfo = async (req, res) => {
 
         const getAllData = await authModel.find({
             _id: {
-                $ne: userId
+                $ne: req.params.id
             },
             status: "Active"
         }).skip(startIndex).limit(endIndex).select('-__v').sort({ createdAt: -1 });
 
         const userInfoList = [];
         for (const userInfo of getAllData) {
-
 
             const response = {
                 _id: userInfo._id,
@@ -473,7 +472,6 @@ exports.getUserInfo = async (req, res) => {
 
             }
             userInfoList.push(response)
-
 
         }
 

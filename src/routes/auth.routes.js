@@ -24,7 +24,7 @@ router.post("/login", login);
 router.get("/user-profile/:id/:user_id", userProfile);
 router.post("/all-user/:id", userList);
 router.get("/get-lat-long/:id", getLatLong);
-router.get("/get-user-info", getUserInfo);
+router.get("/get-user-info/:id", getUserInfo);
 router.get("/logout/:id", userLogout);
 router.put("/update-user/:id", upload.array('profile'), userUpdate);
 router.put("/update/vehicle-/old/:id/:type", userVehicleUpdateData);
