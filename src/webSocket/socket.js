@@ -25,7 +25,7 @@ function socket(io) {
             const userRoom = `User${arg.receiver_id}`;
 
             const findUserForNotiy = await authModel.findOne({
-                _id: arg.sender_id
+                _id: arg.receiver_id
             })
 
             const checkUser1 = await chatRoom.findOne(
@@ -93,9 +93,8 @@ function socket(io) {
 
 
                         if (findUserForNotiy.fcm_token) {
-                            const title = "city-rides Notification";
-                            const body = `${arg.sender_id} send request to `;
-
+                            const title = `${findUserForNotiy.username}`;
+                            const body = `${arg.message}`;
                             const text = arg.message;
                             const sendBy = arg.sender_id;
                             const registrationToken = findUserForNotiy.fcm_token
@@ -132,12 +131,12 @@ function socket(io) {
                         io.to(userRoom).emit("chatReceive", response)
 
                         if (findUserForNotiy.fcm_token) {
-                            const title = "city-rides Notification";
-                            const body = `${arg.sender_id} send request to `;
-
+                            const title = `${findUserForNotiy.username}`;
+                            const body = `${arg.message}`;
                             const text = arg.message;
                             const sendBy = arg.sender_id;
-                            const registrationToken = findUserForNotiy.fcm_token
+                            const registrationToken = findUserForNotiy.fcm_token;
+
                             Notification.sendPushNotificationFCM(
                                 registrationToken,
                                 title,
@@ -204,9 +203,8 @@ function socket(io) {
                             io.to(userRoom).emit("chatReceive", response)
 
                             if (findUserForNotiy.fcm_token) {
-                                const title = "city-rides Notification";
-                                const body = `${arg.sender_id} send request to `;
-
+                                const title = `${findUserForNotiy.username}`;
+                                const body = `${arg.message}`;
                                 const text = arg.message;
                                 const sendBy = arg.sender_id;
                                 const registrationToken = findUserForNotiy.fcm_token
@@ -256,9 +254,8 @@ function socket(io) {
                             io.to(userRoom).emit("chatReceive", response)
 
                             if (findUserForNotiy.fcm_token) {
-                                const title = "city-rides Notification";
-                                const body = `${arg.sender_id} send request to `;
-
+                                const title = `${findUserForNotiy.username}`;
+                                const body = `${arg.message}`;
                                 const text = arg.message;
                                 const sendBy = arg.sender_id;
                                 const registrationToken = findUserForNotiy.fcm_token
@@ -307,9 +304,8 @@ function socket(io) {
                             io.to(userRoom).emit("chatReceive", response)
 
                             if (findUserForNotiy.fcm_token) {
-                                const title = "city-rides Notification";
-                                const body = `${arg.sender_id} send request to `;
-
+                                const title = `${findUserForNotiy.username}`;
+                                const body = `${arg.message}`;
                                 const text = arg.message;
                                 const sendBy = arg.sender_id;
                                 const registrationToken = findUserForNotiy.fcm_token
@@ -359,9 +355,8 @@ function socket(io) {
                             io.to(userRoom).emit("chatReceive", response)
 
                             if (findUserForNotiy.fcm_token) {
-                                const title = "city-rides Notification";
-                                const body = `${arg.sender_id} send request to `;
-
+                                const title = `${findUserForNotiy.username}`;
+                                const body = `${arg.message}`;
                                 const text = arg.message;
                                 const sendBy = arg.sender_id;
                                 const registrationToken = findUserForNotiy.fcm_token
