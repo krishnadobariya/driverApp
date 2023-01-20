@@ -448,7 +448,7 @@ function socket(io) {
 
             const findChatRoom = await chatModel.findOne({
                 chatRoomId: arg.chat_room_id,
-                "chat.sender": arg.user_id
+                "chat.receiver": arg.user_id
             });
             console.log("findChatRoom::", findChatRoom);
 
@@ -457,13 +457,13 @@ function socket(io) {
             } else {
 
                 for (const [key, getSenderChat] of findChatRoom.chat.entries()) {
-                    if ((getSenderChat.sender).toString() == (arg.user_id).toString()) {
+                    if ((getSenderChat.receiver).toString() == (arg.user_id).toString()) {
                         const updateRead = await chatModel.updateOne(
                             {
                                 chatRoomId: arg.chat_room_id,
                                 chat: {
                                     $elemMatch: {
-                                        sender: mongoose.Types.ObjectId(arg.user_id)
+                                        receiver: mongoose.Types.ObjectId(arg.user_id)
                                     }
                                 }
                             },{
@@ -472,7 +472,7 @@ function socket(io) {
                                 }
                             },{
                                 arrayFilters: [{
-                                    'chat.sender': mongoose.Types.ObjectId(arg.user_id)
+                                    'chat.receiver': mongoose.Types.ObjectId(arg.user_id)
                                 }]
                             }
                         )
