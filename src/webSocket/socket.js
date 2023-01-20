@@ -385,12 +385,13 @@ function socket(io) {
         // ----- readUnread ----- //
         socket.on("readUnread", async (arg) => {
 
-            const userRoom = `User${arg.sender_id}`
+            const userRoom = `User${arg.receiver_id}`
             console.log("arg::", arg);
             const findChatRoom = await chatModel.findOne(
                 {
                     chatRoomId: arg.chat_room_id,
-                    "chat.sender": arg.sender_id
+                    // "chat.sender": arg.sender_id
+                    "chat.receiver": arg.receiver_id
                 }
             );
             console.log("findChatRoom::", findChatRoom);
@@ -400,7 +401,7 @@ function socket(io) {
                 io.to(userRoom).emit("readChat", "ChatRoom Not Found")
 
             } else {
-
+                console.log("enter1");
                 for (const getSenderChat of findChatRoom.chat) {
                     console.log("");
 
@@ -409,7 +410,8 @@ function socket(io) {
                             chatRoomId: arg.chat_room_id,
                             chat: {
                                 $elemMatch: {
-                                    sender: mongoose.Types.ObjectId(arg.sender_id)
+                                    // sender: mongoose.Types.ObjectId(arg.sender_id)
+                                    receiver: mongoose.Types.ObjectId(arg.receiver_id)
                                 }
                             }
                         },
@@ -421,7 +423,8 @@ function socket(io) {
                         {
                             arrayFilters: [
                                 {
-                                    'chat.sender': mongoose.Types.ObjectId(arg.sender_id)
+                                    // 'chat.sender': mongoose.Types.ObjectId(arg.sender_id)
+                                    'chat.receiver': mongoose.Types.ObjectId(arg.receiver_id)
                                 }
                             ]
                         }
