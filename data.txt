@@ -1,6 +1,6 @@
 - Socket : joinUser
 {
-    "user_id": "63ae8debcf146b1c502ba640"
+    "user_id": "63c7dde43c7070c4df51117a"
 }
 
 
@@ -15,7 +15,7 @@
 
 - Socket : readUnread
 {
-    "chat_room_id": "63be8071c2a0c9ce3862d74f",
-    "sender_id": "63ae8debcf146b1c502ba640"
+    "chat_room_id": "63c8cad60e4f2027fc6d533a",
+    "user_id": "63c7dde43c7070c4df51117a"
 }
 - emit : readChat

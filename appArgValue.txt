@@ -15,7 +15,7 @@
 # readUnread
 {
     "chat_room_id": "631197eee9329b2fd2efef88",
-    "sender_id": "6310a2a1031f8230e6327692"
+    "receiver_id": "6310a2a1031f8230e6327692"
 }
 -- emit :- readChat
 

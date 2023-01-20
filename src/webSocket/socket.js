@@ -383,6 +383,7 @@ function socket(io) {
 
 
         // ----- readUnread ----- //
+        /*
         socket.on("readUnread", async (arg) => {
 
             const userRoom = `User${arg.receiver_id}`
@@ -410,7 +411,6 @@ function socket(io) {
                             chatRoomId: arg.chat_room_id,
                             chat: {
                                 $elemMatch: {
-                                    // sender: mongoose.Types.ObjectId(arg.sender_id)
                                     receiver: mongoose.Types.ObjectId(arg.receiver_id)
                                 }
                             }
@@ -438,6 +438,53 @@ function socket(io) {
 
 
         })
+        */
+
+
+        socket.on("readUnread", async (arg) => {
+
+            const userRoom = `User${arg.user_id}`;
+            console.log("userRoom::", userRoom);
+
+            const findChatRoom = await chatModel.findOne({
+                chatRoomId: arg.chat_room_id,
+                "chat.sender": arg.user_id
+            });
+            console.log("findChatRoom::", findChatRoom);
+
+            if (findChatRoom == null) {
+                io.to(userRoom).emit("readChat", "ChatRoom Not Found");
+            } else {
+
+                for (const [key, getSenderChat] of findChatRoom.chat.entries()) {
+                    if ((getSenderChat.sender).toString() == (arg.user_id).toString()) {
+                        const updateRead = await chatModel.updateOne(
+                            {
+                                chatRoomId: arg.chat_room_id,
+                                chat: {
+                                    $elemMatch: {
+                                        sender: mongoose.Types.ObjectId(arg.user_id)
+                                    }
+                                }
+                            },{
+                                $set: {
+                                    "chat.$[chat].read": 0
+                                }
+                            },{
+                                arrayFilters: [{
+                                    'chat.sender': mongoose.Types.ObjectId(arg.user_id)
+                                }]
+                            }
+                        )
+                    }
+                }
+
+                io.to(userRoom).emit("readChat", "Chat Has Been Read")
+
+            }
+
+        })
+
         // ----- End readUnread ----- //
 
 
