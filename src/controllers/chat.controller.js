@@ -67,11 +67,23 @@ exports.getChatByUserId = async (req, res) => {
                     console.log("getLastMessage:::", getLastMessage);
 
                     var count = 0;
+                    // for (const getReadCount of chatMessage) {
+
+                    //     count = count + getReadCount.read;
+                    //     // console.log("chatCount:",count);
+
+                    // }
+
                     for (const getReadCount of chatMessage) {
 
-                        count = count + getReadCount.read;
-                        // console.log("chatCount:",count);
+                        var s_id = (getReadCount.receiver).toString();
+                        var u_id = (req.body.user_id).toString();
 
+                        if (s_id == u_id) {
+                            count = count + getReadCount.read;
+                        } else {
+
+                        }
                     }
 
                     const lastMsgResponse = {
