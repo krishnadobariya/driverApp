@@ -466,15 +466,15 @@ function socket(io) {
                                         receiver: mongoose.Types.ObjectId(arg.user_id)
                                     }
                                 }
-                            },{
-                                $set: {
-                                    "chat.$[chat].read": 0
-                                }
-                            },{
-                                arrayFilters: [{
-                                    'chat.receiver': mongoose.Types.ObjectId(arg.user_id)
-                                }]
+                            }, {
+                            $set: {
+                                "chat.$[chat].read": 0
                             }
+                        }, {
+                            arrayFilters: [{
+                                'chat.receiver': mongoose.Types.ObjectId(arg.user_id)
+                            }]
+                        }
                         )
                     }
                 }
@@ -573,6 +573,7 @@ function socket(io) {
 
 
         // ----- userStatus ----- //
+        /*
         socket.on("userStatus", async (arg) => {
 
             let userId = arg.user_id;
@@ -589,6 +590,26 @@ function socket(io) {
             }
 
         })
+        */
+
+        socket.on("userStatus", async (arg) => {
+
+            let userId = arg.user_id;
+            const userRoom = `User${arg.user_id}`;
+
+            const findUserData = await authModel.findOne({
+                _id: userId
+            });
+            console.log("findUserData::", findUserData);
+
+            if (findUserData.status == 'Active') {
+                io.to(userRoom).emit("getStatus", 1)
+            } else {
+                io.to(userRoom).emit("getStatus", 0)
+            }
+
+        })
+
         // ----- End userStatus ----- //
 
     })
