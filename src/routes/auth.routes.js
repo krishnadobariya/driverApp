@@ -17,6 +17,10 @@ const {
     forgetPassword,
 } = require("../controllers/auth.controller");
 
+const {
+    blockUnblock,
+} = require("../controllers/blockUnblock.controller");
+
 // router.post("/register", upload.array('profile'), registration);
 router.post("/register", registration);
 router.post("/add-image/:id", upload.array('profile'), addImage)
@@ -31,6 +35,9 @@ router.put("/update/vehicle-/old/:id/:type", userVehicleUpdateData);
 router.put("/update/vehicle-data/:id", updateUserVehicleData);
 router.post("/change-password/:id", changePassword);
 router.post("/forget-password", forgetPassword);
+
+/* ----- For Block Unblock Controller ----- */
+router.post("/block-user/:user_id/:block_user_id", blockUnblock)
 
 module.exports = router;
 
