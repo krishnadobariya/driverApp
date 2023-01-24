@@ -19,6 +19,7 @@ const {
 
 const {
     blockUnblock,
+    blockUnblockList,
 } = require("../controllers/blockUnblock.controller");
 
 // router.post("/register", upload.array('profile'), registration);
@@ -37,7 +38,8 @@ router.post("/change-password/:id", changePassword);
 router.post("/forget-password", forgetPassword);
 
 /* ----- For Block Unblock Controller ----- */
-router.post("/block-user/:user_id/:block_user_id", blockUnblock)
+router.post("/block-user/:user_id/:block_user_id", blockUnblock);
+router.get("/block-user-list/:user_id", blockUnblockList)
 
 module.exports = router;
 

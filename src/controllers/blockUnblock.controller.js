@@ -66,7 +66,7 @@ exports.blockUnblockList = async (req, res) => {
     try {
 
         let userId = req.params.user_id;
-        const findBlockList = await BlockUnblock.find({});
+        const findBlockList = await BlockUnblock.find({ user_id: userId });
 
         res.status(status.OK).json(
             {
