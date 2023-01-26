@@ -134,7 +134,7 @@ exports.blogList = async (req, res) => {
                 if (seconds < 10) { seconds = "0" + seconds; }
 
                 var findUserInLikeModel = await likeModel.findOne({
-                    blogId: respSet._id,
+                    blogId: getTime._id,
                     "reqAuthId._id": userId
                 })
 
@@ -179,32 +179,32 @@ exports.blogList = async (req, res) => {
 
                 if (findUserInLikeModel) {
                     const response = {
-                        _id: respSet._id,
-                        userId: respSet.user_id,
-                        username: respSet.username,
-                        user_profile: respSet.user_profile,
-                        thumbnail: respSet.thumbnail[0] ? respSet.thumbnail[0].res : "",
-                        category: respSet.category,
-                        heading: respSet.heading,
-                        description: respSet.description,
-                        like: respSet.like,
-                        comment: respSet.comment,
+                        _id: getTime._id,
+                        userId: getTime.user_id,
+                        username: getTime.username,
+                        user_profile: getTime.user_profile,
+                        thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
+                        category: getTime.category,
+                        heading: getTime.heading,
+                        description: getTime.description,
+                        like: getTime.like,
+                        comment: getTime.comment,
                         isLike: true,
                         time: time
                     }
                     blogInsertTime.push(response);
                 } else {
                     const response = {
-                        _id: respSet._id,
-                        userId: respSet.user_id,
-                        username: respSet.username,
-                        user_profile: respSet.user_profile,
-                        thumbnail: respSet.thumbnail[0] ? respSet.thumbnail[0].res : "",
-                        category: respSet.category,
-                        heading: respSet.heading,
-                        description: respSet.description,
-                        like: respSet.like,
-                        comment: respSet.comment,
+                        _id: getTime._id,
+                        userId: getTime.user_id,
+                        username: getTime.username,
+                        user_profile: getTime.user_profile,
+                        thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
+                        category: getTime.category,
+                        heading: getTime.heading,
+                        description: getTime.description,
+                        like: getTime.like,
+                        comment: getTime.comment,
                         isLike: false,
                         time: time
                     }
