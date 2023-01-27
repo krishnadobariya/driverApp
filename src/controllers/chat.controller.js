@@ -1,6 +1,7 @@
 const chatModel = require("../webSocket/models/chat.model");
 const chatRoom = require("../webSocket/models/chatRoom.model");
 const authModel = require("../models/auth.model");
+const Block = require("../models/blockUnblock.model");
 const status = require("http-status");
 const mongoose = require("mongoose");
 const objectId = mongoose.Schema.Types.ObjectId;
@@ -31,7 +32,7 @@ exports.getChatByUserId = async (req, res) => {
 
             const response = [];
             for (const findChatRoomId of findChatRoom) {
-
+        
                 const getChatRoom = await chatModel.findOne(
                     {
                         chatRoomId: findChatRoomId._id
@@ -54,47 +55,59 @@ exports.getChatByUserId = async (req, res) => {
                         user_id = getChatRoomData.user1;
                     }
 
-                    const getUserData = await authModel.findOne(
-                        {
-                            _id: user_id
-                        }
-                    );
-                    console.log("getUserData::", getUserData);
+                    const findBlockUser = await Block.find({
+                        user_id: req.body.user_id,
+                        block_user_id: user_id
+                    })
 
-                    const chatMessage = getChatRoom.chat;
-                    console.log("chatMessage", chatMessage);
-                    const getLastMessage = chatMessage[chatMessage.length - 1];
-                    console.log("getLastMessage:::", getLastMessage);
 
-                    var count = 0;
-                    // for (const getReadCount of chatMessage) {
+                    if (findBlockUser.length != 0) {
 
-                    //     count = count + getReadCount.read;
-                    //     // console.log("chatCount:",count);
-
-                    // }
-
-                    for (const getReadCount of chatMessage) {
-
-                        var s_id = (getReadCount.receiver).toString();
-                        var u_id = (req.body.user_id).toString();
-
-                        if (s_id == u_id) {
-                            count = count + getReadCount.read;
-                        } else {
-
-                        }
                     }
+                    else {
 
-                    const lastMsgResponse = {
-                        profile: getUserData.profile[0] ? getUserData.profile[0].res : "",
-                        chatRoomId: getChatRoom.chatRoomId,
-                        receiverId: user_id,
-                        username: getUserData.username,
-                        message: getLastMessage.message,
-                        unreadMessage: count
+                        const getUserData = await authModel.findOne(
+                            {
+                                _id: user_id
+                            }
+                        );
+                        console.log("getUserData::", getUserData);
+
+                        const chatMessage = getChatRoom.chat;
+                        console.log("chatMessage", chatMessage);
+                        const getLastMessage = chatMessage[chatMessage.length - 1];
+                        console.log("getLastMessage:::", getLastMessage);
+
+                        var count = 0;
+                        // for (const getReadCount of chatMessage) {
+
+                        //     count = count + getReadCount.read;
+                        //     // console.log("chatCount:",count);
+
+                        // }
+
+                        for (const getReadCount of chatMessage) {
+
+                            var s_id = (getReadCount.receiver).toString();
+                            var u_id = (req.body.user_id).toString();
+
+                            if (s_id == u_id) {
+                                count = count + getReadCount.read;
+                            } else {
+
+                            }
+                        }
+
+                        const lastMsgResponse = {
+                            profile: getUserData.profile[0] ? getUserData.profile[0].res : "",
+                            chatRoomId: getChatRoom.chatRoomId,
+                            receiverId: user_id,
+                            username: getUserData.username,
+                            message: getLastMessage.message,
+                            unreadMessage: count
+                        }
+                        response.push(lastMsgResponse);
                     }
-                    response.push(lastMsgResponse);
 
                 }
 
