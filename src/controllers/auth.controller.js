@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const authModel = require("../models/auth.model");
 const chatRoomModel = require("../webSocket/models/chatRoom.model");
 const chatModel = require("../webSocket/models/chat.model");
+const Block = require("../models/blockUnblock.model");
 const cloudinary = require("../utils/cloudinary.utils");
 const { mailService } = require("../services/email.service");
 const status = require("http-status");
@@ -207,12 +208,12 @@ exports.userList = async (req, res) => {
         const endIndex = page * limit;
 
         // --- get user whithout user that id pass --- //
-
+        const blockUserId = [];
         const getUser = await authModel.find({
             _id: { $ne: userId },
             status: "Active"
         }).skip(startIndex).limit(endIndex).select('-__v').sort({ createdAt: -1 });
-        console.log("getUser::", getUser);
+        // console.log("getUser::", getUser);
 
         if (getUser.length == 0) {
             res.status(status.NOT_FOUND).json(
@@ -229,58 +230,78 @@ exports.userList = async (req, res) => {
             const vehicleDetails = [];
             for (const userDetails of getUser) {
 
-                var finalChatId = "";
-                finalChatId = await chatRoomModel.find(
-                    {
-                        user1: userDetails._id,
-                        user2: userId,
-                    }
-                );
+                const findBlockUser = await Block.find({
+                    user_id: userId,
+                    block_user_id: userDetails._id
+                })
 
-                if (finalChatId.length == 0) {
+
+                for (const getOneData of findBlockUser) {
+
+                    blockUserId.push((getOneData.block_user_id).toString())
+
+                }
+
+
+                if (blockUserId.includes((userDetails._id).toString())) {
+
+                } else {
+
+                    var finalChatId = "";
                     finalChatId = await chatRoomModel.find(
                         {
-                            user2: userDetails._id,
-                            user1: userId,
+                            user1: userDetails._id,
+                            user2: userId,
                         }
                     );
 
-                }
-                else {
+                    if (finalChatId.length == 0) {
+                        finalChatId = await chatRoomModel.find(
+                            {
+                                user2: userDetails._id,
+                                user1: userId,
+                            }
+                        );
 
-                }
+                    }
 
-                const arrVehicleData = [];
-                var isVehicleData = false;
-                for (const vehicleData of userDetails.vehicle) {
+                    const arrVehicleData = [];
+                    var isVehicleData = false;
+                    for (const vehicleData of userDetails.vehicle) {
 
-                    if (vehicleData.vehicle_type == vehicleType) {
-                        isVehicleData = true;
-                        const response = {
-                            vehicleImageId: vehicleData.vehicle_img_id,
-                            model: vehicleData.model,
-                            type: vehicleData.vehicle_type,
-                            year: vehicleData.year,
-                            trim: vehicleData.trim,
-                            dailyDriving: vehicleData.daily_driving,
-                            unit: vehicleData.unit
+                        if (vehicleData.vehicle_type == vehicleType) {
+                            isVehicleData = true;
+                            const response = {
+                                vehicleImageId: vehicleData.vehicle_img_id,
+                                model: vehicleData.model,
+                                type: vehicleData.vehicle_type,
+                                year: vehicleData.year,
+                                trim: vehicleData.trim,
+                                dailyDriving: vehicleData.daily_driving,
+                                unit: vehicleData.unit
+                            }
+                            arrVehicleData.push(response);
                         }
-                        arrVehicleData.push(response);
                     }
-                }
-                if (isVehicleData) {
-                    const response = {
-                        user_id: userDetails._id,
-                        profile: userDetails.profile[0] ? userDetails.profile[0].res : "",
-                        userName: userDetails.username,
-                        email: userDetails.email,
-                        phone: `${userDetails.country_code}${userDetails.phone_number}`,
-                        chatRoomId: finalChatId[0] ? finalChatId[0]._id : "",
-                        vehicles: arrVehicleData
+                    if (isVehicleData) {
+                        const response = {
+                            user_id: userDetails._id,
+                            profile: userDetails.profile[0] ? userDetails.profile[0].res : "",
+                            userName: userDetails.username,
+                            email: userDetails.email,
+                            phone: `${userDetails.country_code}${userDetails.phone_number}`,
+                            chatRoomId: finalChatId[0] ? finalChatId[0]._id : "",
+                            vehicles: arrVehicleData
+                        }
+                        vehicleDetails.push(response)
                     }
-                    vehicleDetails.push(response)
+
+                    // vehicleDetails.push(userDetails)
                 }
+
             }
+
+            // console.log("i am here" , vehicleDetails);
 
             res.status(status.OK).json(
                 {

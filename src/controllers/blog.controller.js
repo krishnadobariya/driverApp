@@ -126,10 +126,6 @@ exports.blogList = async (req, res) => {
                     user_id: userId,
                     blog_id: getTime._id
                 });
-                console.log("userId::", userId);
-                console.log("blogId::", getTime._id);
-                console.log("allReportBlog::", allReportBlog);
-                console.log("allReportBlog.length:::", allReportBlog.length);
 
                 var report;
                 if (allReportBlog.length == 0) {
