@@ -11,6 +11,14 @@ const blockUnblockSchema = mongoose.Schema({
         type: ObjectId,
         required: true
     },
+    user_name: {
+        type: String,
+        required: true
+    },
+    user_img: {
+        type: String,
+        required: true
+    },
     block: {
         type: Number, //1-block 2-unblock
         required: true

@@ -1,4 +1,5 @@
 const BlockUnblock = require("../models/blockUnblock.model");
+const User = require("../models/auth.model");
 const status = require("http-status");
 
 exports.blockUnblock = async (req, res) => {
@@ -8,9 +9,14 @@ exports.blockUnblock = async (req, res) => {
 
         if (req.body.block == 1) {
 
+            const findBlockUserData = await User.findOne({ _id: req.params.block_user_id });
+            console.log("findBlockUserData::", findBlockUserData);
+
             const addBlockUnblock = BlockUnblock({
                 user_id: req.params.user_id,
                 block_user_id: req.params.block_user_id,
+                user_name: findBlockUserData.username,
+                user_img: findBlockUserData.profile[0] ? findBlockUserData.profile[0].res : "",
                 block: req.body.block
             });
             const saveData = await addBlockUnblock.save();

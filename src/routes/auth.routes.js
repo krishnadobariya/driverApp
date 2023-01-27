@@ -42,4 +42,3 @@ router.post("/block-user/:user_id/:block_user_id", blockUnblock);
 router.get("/block-user-list/:user_id", blockUnblockList)
 
 module.exports = router;
-

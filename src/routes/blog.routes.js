@@ -9,7 +9,8 @@ const {
     getCommentList,
     likedUser,
     myBlog,
-    deleteBlog
+    deleteBlog,
+    reportBlog
 } = require("../controllers/blog.controller");
 
 router.post("/add/:id", upload.array('thumbnail'), addBlog);
@@ -20,5 +21,8 @@ router.get("/comment-get-list/:blog_id", getCommentList);
 router.post("/liked-user/:id", likedUser); // passed blogId
 router.post("/my/:user_id", myBlog);
 router.post("/delete/:blog_id", deleteBlog);
+
+/* ----- For Report Blog APIs ----- */
+router.post("/report-blog/:user_id/:blog_id", reportBlog)
 
 module.exports = router;

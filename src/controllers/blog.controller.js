@@ -7,6 +7,7 @@ const blogModel = require("../models/blog.model");
 const likeModel = require("../models/like.model");
 const commentModel = require("../models/comment.model");
 const { find } = require("../models/auth.model");
+const Report = require("../models/reportBlog.model")
 const ObjectId = mongoose.Types.ObjectId
 
 ///home/kurm/Nodejs/driverApp/src/controllers/blog.controller.js
@@ -121,6 +122,22 @@ exports.blogList = async (req, res) => {
             let blogInsertTime = [];
             for (const getTime of allBlogData) {
 
+                const allReportBlog = await Report.find({
+                    user_id: userId,
+                    blog_id: getTime._id
+                });
+                console.log("userId::", userId);
+                console.log("blogId::", getTime._id);
+                console.log("allReportBlog::", allReportBlog);
+                console.log("allReportBlog.length:::", allReportBlog.length);
+
+                var report;
+                if (allReportBlog.length == 0) {
+                    report = false;
+                } else {
+                    report = true;
+                }
+
                 var now = new Date();
                 var addingDate = new Date(getTime.createdAt);
                 var sec_num = (now - addingDate) / 1000;
@@ -153,7 +170,7 @@ exports.blogList = async (req, res) => {
 
                 } else if (days > 7 && days < 14) {
 
-                    time = "1 Week Ago"                    
+                    time = "1 Week Ago"
 
                 } else if (days > 0 && days < 7) {
 
@@ -166,7 +183,7 @@ exports.blogList = async (req, res) => {
                 } else if (minutes > 0 && hours == 0) {
 
                     time = minutes == 1 ? `${minutes} minute ago` : `${minutes} minutes ago`
-                    
+
                 } else if (seconds > 0 && minutes == 0 && hours == 0 && days === 0) {
 
                     time = seconds == 1 ? `${seconds} second ago` : `${seconds} seconds ago`
@@ -190,7 +207,8 @@ exports.blogList = async (req, res) => {
                         like: getTime.like,
                         comment: getTime.comment,
                         isLike: true,
-                        time: time
+                        time: time,
+                        report: report
                     }
                     blogInsertTime.push(response);
                 } else {
@@ -206,11 +224,12 @@ exports.blogList = async (req, res) => {
                         like: getTime.like,
                         comment: getTime.comment,
                         isLike: false,
-                        time: time
+                        time: time,
+                        report: report
                     }
                     blogInsertTime.push(response);
                 }
-                
+
             }
             res.status(status.OK).json({
                 message: "View All List Successfully",
@@ -728,7 +747,7 @@ exports.myBlog = async (req, res) => {
 
                 } else if (days > 7 && days < 14) {
 
-                    time = "1 Week Ago"                    
+                    time = "1 Week Ago"
 
                 } else if (days > 0 && days < 7) {
 
@@ -741,7 +760,7 @@ exports.myBlog = async (req, res) => {
                 } else if (minutes > 0 && hours == 0) {
 
                     time = minutes == 1 ? `${minutes} minute ago` : `${minutes} minutes ago`
-                    
+
                 } else if (seconds > 0 && minutes == 0 && hours == 0 && days === 0) {
 
                     time = seconds == 1 ? `${seconds} second ago` : `${seconds} seconds ago`
@@ -841,6 +860,100 @@ exports.deleteBlog = async (req, res) => {
                 status: false,
                 code: 501,
                 statusCode: 0
+            }
+        )
+
+    }
+}
+
+
+/* ----- for report blog apis ----- */
+exports.reportBlog = async (req, res) => {
+    try {
+
+        const user_id = req.params.user_id;
+        const blog_id = req.params.blog_id;
+
+        const findUserData = await authModel.findOne({ _id: user_id });
+        const findBlogData = await Blog.findOne({ _id: blog_id })
+
+        if (findUserData == null) {
+
+            res.status(status.NOT_FOUND).json(
+                {
+                    message: "User Data Not Exist",
+                    status: false,
+                    code: 404,
+                    statusCode: 0,
+                    data: []
+                }
+            )
+
+        } else {
+
+            if (findBlogData == null) {
+
+                res.status(status.NOT_FOUND).json(
+                    {
+                        message: "Blog Data Not Exist",
+                        status: false,
+                        code: 404,
+                        statusCode: 0,
+                        data: []
+                    }
+                )
+
+            } else {
+
+                const findReportUserData = await Report.findOne({ user_id : user_id , blog_id : blog_id });
+
+                if(findReportUserData == null) {
+
+                    const addInReport = Report({
+                        user_id: user_id,
+                        blog_id: blog_id,
+                        message: req.body.message
+                    });
+                    const saveData = await addInReport.save();
+    
+                    res.status(status.CREATED).json(
+                        {
+                            message: "Blog Report Add Successfully",
+                            status: true,
+                            code: 201,
+                            statusCode: 1,
+                            data: saveData
+                        }
+                    )
+
+                } else {
+
+                    res.status(status.CONFLICT).json(
+                        {
+                            message: "User Already Report This Blog",
+                            status: false,
+                            code: 409,
+                            statusCode: 0,
+                            data: []
+                        }
+                    )
+
+                }
+
+            }
+
+        }
+
+    } catch (error) {
+
+        console.log("Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
             }
         )
 
