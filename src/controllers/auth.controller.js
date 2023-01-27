@@ -235,15 +235,15 @@ exports.userList = async (req, res) => {
                     block_user_id: userDetails._id
                 })
 
+                // for (const getOneData of findBlockUser) {
 
-                for (const getOneData of findBlockUser) {
+                //     blockUserId.push((getOneData.block_user_id).toString())
 
-                    blockUserId.push((getOneData.block_user_id).toString())
+                // }
 
-                }
+                // if (blockUserId.includes((userDetails._id).toString())) {
 
-
-                if (blockUserId.includes((userDetails._id).toString())) {
+                if (findBlockUser.length != 0) {
 
                 } else {
 
@@ -466,36 +466,41 @@ exports.getLatLong = async (req, res) => {
 
 exports.getUserInfo = async (req, res) => {
     try {
-
         const page = parseInt(req.query.page)
         const limit = parseInt(req.query.limit)
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
-
         // const getAllData = await authModel.find().skip(startIndex).limit(endIndex).select('-__v');
-
         const getAllData = await authModel.find({
             _id: {
                 $ne: req.params.id
             },
             status: "Active"
         }).skip(startIndex).limit(endIndex).select('-__v').sort({ createdAt: -1 });
-
         const userInfoList = [];
         for (const userInfo of getAllData) {
 
-            const response = {
-                _id: userInfo._id,
-                profile: userInfo.profile,
-                username: userInfo.username,
-                latitude: userInfo.location.coordinates[1],
-                longitude: userInfo.location.coordinates[0],
+            const findBlockUser = await Block.find({
+                user_id: req.params.id,
+                block_user_id: userInfo._id
+            })
+
+            if (findBlockUser.length != 0) {
+
+            } else {
+
+                const response = {
+                    _id: userInfo._id,
+                    profile: userInfo.profile,
+                    username: userInfo.username,
+                    latitude: userInfo.location.coordinates[1],
+                    longitude: userInfo.location.coordinates[0],
+                }
+                userInfoList.push(response)
 
             }
-            userInfoList.push(response)
 
         }
-
         res.status(status.OK).json(
             {
                 message: "User Login Successfully",
@@ -505,7 +510,6 @@ exports.getUserInfo = async (req, res) => {
                 data: userInfoList
             }
         )
-
     } catch (error) {
         res.status(status.INTERNAL_SERVER_ERROR).json(
             {
