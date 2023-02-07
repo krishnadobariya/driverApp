@@ -201,7 +201,7 @@ exports.userList = async (req, res) => {
         let userId = req.params.id;
         let vehicleType = req.body.vehicle_type;
         let page = parseInt(req.query.page);
-        let limit = parseInt(req.params.limit);
+        let limit = parseInt(req.query.limit);
 
         // --- for pagination --- //
         const startIndex = (page - 1) * limit;
@@ -213,9 +213,10 @@ exports.userList = async (req, res) => {
             _id: { $ne: userId },
             status: "Active"
         }).skip(startIndex).limit(endIndex).select('-__v').sort({ createdAt: -1 });
-        // console.log("getUser::", getUser);
+        console.log("getUser::", getUser.length);
 
         if (getUser.length == 0) {
+
             res.status(status.NOT_FOUND).json(
                 {
                     message: "Data Not Exist",
@@ -225,6 +226,7 @@ exports.userList = async (req, res) => {
                     data: []
                 }
             )
+
         } else {
 
             const vehicleDetails = [];
@@ -233,7 +235,7 @@ exports.userList = async (req, res) => {
                 const findBlockUser = await Block.find({
                     user_id: userId,
                     block_user_id: userDetails._id
-                })
+                });
 
                 // for (const getOneData of findBlockUser) {
 
@@ -264,6 +266,8 @@ exports.userList = async (req, res) => {
                         );
 
                     }
+
+                    console.log("finalChatId::::", finalChatId);
 
                     const arrVehicleData = [];
                     var isVehicleData = false;
