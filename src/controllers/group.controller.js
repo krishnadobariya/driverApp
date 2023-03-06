@@ -32,8 +32,7 @@ exports.insertGroup = async (req, res) => {
                 group_img: newPath.res,
                 group_name: req.body.group_name,
                 group_desc: req.body.group_desc,
-                group_type: req.body.group_type,
-                group_members: req.body.group_members
+                group_type: req.body.group_type
             })
             const saveData = await insertData.save();
 
@@ -92,22 +91,17 @@ exports.updateGroup = async (req, res) => {
                             group_name: req.body.group_name,
                             group_desc: req.body.group_desc,
                             group_type: req.body.group_type,
-                            group_members: req.body.group_members
                         }
-                    }).then(() => {
-
-                        res.status(status.OK).json(
-                            {
-                                message: "Group Update Successfully",
-                                status: true,
-                                code: 200,
-                                statusCode: 1
-                            }
-                        )
-
-                    }).catch((error) => {
-                        console.log("error", error);
                     })
+
+                res.status(status.OK).json(
+                    {
+                        message: "Group Update Successfully",
+                        status: true,
+                        code: 200,
+                        statusCode: 1
+                    }
+                )
 
             } else {
 
@@ -122,11 +116,11 @@ exports.updateGroup = async (req, res) => {
                         )
                     })
                 }
-    
+
                 const file = req.file;
-    
+
                 const { path } = file
-    
+
                 const newPath = await cloudinaryImageUploadMethod(path)
 
                 const updateData = await Group.findOneAndUpdate({ _id: req.params.id },
@@ -135,23 +129,20 @@ exports.updateGroup = async (req, res) => {
                             group_img: newPath.res,
                             group_name: req.body.group_name,
                             group_desc: req.body.group_desc,
-                            group_type: req.body.group_type,
-                            group_members: req.body.group_members
+                            group_type: req.body.group_type
                         }
-                    }).then(() => {
-
-                        res.status(status.OK).json(
-                            {
-                                message: "Group Update Successfully",
-                                status: true,
-                                code: 200,
-                                statusCode: 1
-                            }
-                        )
-
-                    }).catch((error) => {
-                        console.log("error", error);
                     })
+
+                res.status(status.OK).json(
+                    {
+                        message: "Group Update Successfully",
+                        status: true,
+                        code: 200,
+                        statusCode: 1
+                    }
+                )
+
+
 
             }
 
