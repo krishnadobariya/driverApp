@@ -13,7 +13,7 @@ const groupPostSchema = mongoose.Schema({
         required: true
     },
     user_img: {
-        type: String,
+        type: Array,
         ref: "auth",
         required: true
     },
@@ -31,16 +31,13 @@ const groupPostSchema = mongoose.Schema({
         required: true
     },
     like_count: {
-        type: Number,
-        required: true
+        type: Number
     },
     comment_count: {
-        type: Number,
-        required: true
+        type: Number
     },
     post_time: {
-        type: String,
-        required: true
+        type: String
     }
 }, {
     timestamps: true

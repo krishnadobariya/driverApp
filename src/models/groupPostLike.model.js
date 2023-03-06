@@ -18,7 +18,7 @@ const groupPostLikeSchema = mongoose.Schema({
         required: true
     },
     user_img: {
-        type: String,
+        type: Array,
         ref: "auth",
         required: true
     },
