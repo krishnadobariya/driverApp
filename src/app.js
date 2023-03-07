@@ -18,7 +18,6 @@ const blogRouter = require("./routes/blog.routes");
 const groupRouter = require("./routes/group.routes");
 const groupPostRouter = require("./routes/groupPost.routes");
 const groupPostCommentRouter = require("./routes/groupPostComment.routes");
-const groupPostLikeRouter = require("./routes/groupPostLike.routes");
 
 app.use("/auth", authRouter);
 app.use("/chat", chatRouter);
@@ -27,6 +26,5 @@ app.use("/blog",blogRouter);
 app.use("/group",groupRouter);
 app.use("/groupPost",groupPostRouter);
 app.use("/groupPostComment",groupPostCommentRouter);
-app.use("/groupPostLike", groupPostLikeRouter)
 
 module.exports = app;

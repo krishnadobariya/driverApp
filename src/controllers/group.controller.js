@@ -221,20 +221,19 @@ exports.groupPostLike = async (req, res) => {
                     })
 
                 } else if (groupPostLikeModel) {
-                    console.log("**** NOT LIKED Group Post HERE ***");
 
                     const updateLike = await GroupPost.updateOne({
                         group_id: groupId
                     }, {
                         $inc: {
-                            like: 1
+                            like_count: 1
                         }
                     });
                     console.log("updateLike::", updateLike);
 
 
                     const updateLikedUser = await GroupPostLike.updateOne({
-                        groupId: groupId
+                        group_id: groupId
                     }, {
                         $push: {
                             reqAuthId: {
@@ -254,24 +253,26 @@ exports.groupPostLike = async (req, res) => {
 
                 } else {
 
-                    const updateLike = await GroupPost.updateOne({
-                        group_id: groupId
-                    }, {
-                        $inc: {
-                            like: 1
-                        }
-                    });
-                    console.log("updateLike::", updateLike);
-
                     const insertLike = new GroupPostLike({
-                        authId: findGroup?.user_id,
-                        groupId: groupId,
+                        post_id: req.params.postId,
+                        group_id: groupId,
+                        user_img: req.body.user_img,
+                        user_name: req.body.username,
                         reqAuthId: {
                             _id: userId
                         }
-                    })
+                    });
                     const saveData = await insertLike.save();
                     console.log("saveData::--", saveData);
+
+                    const updateLike = await GroupPost.updateOne({
+                        _id: req.params.postId
+                    }, {
+                        $inc: {
+                            like_count: 1
+                        }
+                    });
+                    console.log("updateLike::", updateLike);
 
                     res.status(status.OK).json({
                         message: "Like added!",
@@ -292,7 +293,7 @@ exports.groupPostLike = async (req, res) => {
                         group_id: groupId
                     }, {
                         $inc: {
-                            like: -1
+                            like_count: -1
                         }
                     });
                     console.log("updateLike::-", updateLike);
@@ -380,14 +381,54 @@ exports.groupDetails = async (req, res) => {
         } else {
 
             const getGroupPost = await GroupPost.find({
-                group_id: groupId,
-                user_id: userId
+                group_id: groupId
             });
-            console.log("getGroupPost::", getGroupPost);
+
+            const respGroup = [];
+            for (const resData of getGroupPost) {
+                console.log("resData::--", resData);
+                var findUserWhoLiked = await GroupPostLike.findOne({
+                    group_id: groupId,
+                    post_id: resData._id,
+                    "reqAuthId._id": userId
+                });
+                console.log("findUserWhoLiked:::", findUserWhoLiked);
+
+                if (findUserWhoLiked == null) {
+
+                    const response = {
+                        _id: resData._id,
+                        group_id: resData.group_id,
+                        user_id: resData.user_id,
+                        user_img: resData.user_img,
+                        user_name: resData.user_name,
+                        desc: resData.desc,
+                        image_video: resData.image_video,
+                        isLike: false
+                    }
+                    respGroup.push(response)
+
+                } else {
+
+                    const response = {
+                        _id: resData._id,
+                        group_id: resData.group_id,
+                        user_id: resData.user_id,
+                        user_img: resData.user_img,
+                        user_name: resData.user_name,
+                        desc: resData.desc,
+                        image_video: resData.image_video,
+                        isLike: true
+                    }
+                    respGroup.push(response)
+
+                }
+
+            }
 
             const response = {
                 groupDetails: getGroupData,
-                groupPost: getGroupPost
+                groupPost: respGroup
             }
 
             res.status(status.OK).json(

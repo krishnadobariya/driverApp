@@ -64,8 +64,8 @@ exports.addPost = async (req, res) => {
 
                 for (const file of files) {
                     const { path } = file;
-                    const newPath = await cloudinaryImageUploadMethod(path);
-                    urls.push(newPath);
+                    // const newPath = await cloudinaryImageUploadMethod(path);
+                    // urls.push(newPath);
                 }
 
                 const groupPostData = GroupPost({

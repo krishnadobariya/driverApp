@@ -31,10 +31,12 @@ const groupPostSchema = mongoose.Schema({
         required: true
     },
     like_count: {
-        type: Number
+        type: Number,
+        default: 0
     },
     comment_count: {
-        type: Number
+        type: Number,
+        default: 0
     },
     post_time: {
         type: String

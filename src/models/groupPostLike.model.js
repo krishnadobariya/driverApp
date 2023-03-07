@@ -5,29 +5,29 @@ const groupPostLikeSchema = mongoose.Schema({
     post_id: {
         type: ObjectId,
         ref: 'groupPost',
-        // required: true
+        required: true
     },
     group_id: {
         type: ObjectId,
         ref: "group",
-        // required: true
+        required: true
     },
     reqAuthId: [{
         _id: {
             type: ObjectId,
             ref: 'auth',
-            // required: true
+            required: true
         }
     }],
     user_img: {
-        type: Array,
+        type: String,
         ref: "auth",
-        // required: true
+        required: true
     },
     user_name: {
         type: String,
         ref: "auth",
-        // required: true
+        required: true
     }
 }, {
     timestamps: true
