@@ -18,7 +18,7 @@ const groupPostCommentSchema = mongoose.Schema({
         required: true
     },
     user_img: {
-        type: Array,
+        type: String,
         ref: "auth",
         required: true
     },

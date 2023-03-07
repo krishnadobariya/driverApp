@@ -8,25 +8,22 @@ exports.insertGroupPostComment = async (req, res) => {
     try {
 
         const groupData = await Group.findOne({ _id: req.body.group_id });
-
         if (groupData) {
 
             const groupPostData = await GroupPost.findOne({ _id: req.body.post_id });
-
             if (groupPostData) {
 
                 const userData = await Auth.findOne({ _id: req.body.user_id });
-
                 if (userData) {
-
+                    
                     const insertData = await GroupPostComment({
                         post_id: req.body.post_id,
                         group_id: req.body.group_id,
                         user_id: req.body.user_id,
-                        user_img: userData.profile,
+                        user_img: userData.profile[0] ? userData.profile[0].res : "",
                         user_name: userData.username,
                         comment: req.body.comment
-                    })
+                    });
                     const saveData = await insertData.save();
 
                     res.status(status.CREATED).json(
@@ -101,9 +98,8 @@ exports.insertGroupPostComment = async (req, res) => {
 exports.listComment = async (req, res) => {
     try {
 
-        const findPostWiseData = await GroupPostComment.find({post_id: req.params.post_id});
-
-        if(findPostWiseData[0] == undefined) {
+        const findPostWiseData = await GroupPostComment.find({ post_id: req.params.post_id });
+        if (findPostWiseData[0] == undefined) {
 
             res.status(status.NOT_FOUND).json(
                 {
@@ -128,7 +124,7 @@ exports.listComment = async (req, res) => {
             )
 
         }
-        
+
     } catch (error) {
 
         console.log("Error::", error);
@@ -141,6 +137,6 @@ exports.listComment = async (req, res) => {
                 error: error.message
             }
         )
-        
+
     }
 }

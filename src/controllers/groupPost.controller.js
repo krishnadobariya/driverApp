@@ -20,8 +20,6 @@ exports.addPost = async (req, res) => {
         let userId = req.params.userId;
 
         const getGroup = await Group.findOne({ _id: groupId });
-        console.log("getUser::--", getGroup.length);
-
         if (getGroup == null) {
 
             res.status(status.NOT_FOUND).json(
@@ -36,7 +34,6 @@ exports.addPost = async (req, res) => {
         } else {
 
             const getUser = await User.findOne({ _id: userId });
-            console.log("getUser::", getUser);
 
             if (getUser == null) {
 
@@ -53,7 +50,7 @@ exports.addPost = async (req, res) => {
 
                 const cloudinaryImageUploadMethod = async file => {
                     return new Promise(resolve => {
-                        cloudinary.uploader.upload(file, { resource_type: "video" }, (err, res) => {
+                        cloudinary.uploader.upload(file, (err, res) => {
                             if (err) return err
                             resolve({
                                 res: res.secure_url
@@ -64,10 +61,9 @@ exports.addPost = async (req, res) => {
 
                 const urls = [];
                 const files = req.files;
-                console.log("files::--", files);
 
                 for (const file of files) {
-                    const { path } = file
+                    const { path } = file;
                     const newPath = await cloudinaryImageUploadMethod(path);
                     urls.push(newPath);
                 }
@@ -81,7 +77,6 @@ exports.addPost = async (req, res) => {
                     image_video: urls
                 });
                 const saveData = await groupPostData.save();
-                console.log("saveData:::", saveData);
 
                 res.status(status.OK).json(
                     {
@@ -89,7 +84,7 @@ exports.addPost = async (req, res) => {
                         status: true,
                         code: 200,
                         statusCode: 1,
-                        data: 'response'
+                        data: saveData
                     }
                 )
 

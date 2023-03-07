@@ -1,5 +1,7 @@
 const Group = require("../models/group.model");
 const Auth = require("../models/auth.model");
+const GroupPostLike = require("../models/groupPostLike.model");
+const GroupPost = require("../models/groupPost.model");
 const status = require("http-status");
 const cloudinary = require("../utils/cloudinary.utils");
 
@@ -163,6 +165,246 @@ exports.updateGroup = async (req, res) => {
     } catch (error) {
 
         console.log("Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
+
+exports.groupPostLike = async (req, res) => {
+    try {
+
+        let userId = req.params.user_id;
+        let groupId = req.params.group_id;
+        console.log("userId-groupId::---", userId, groupId);
+
+        const findGroup = await Group.findOne({
+            _id: groupId
+        });
+        console.log("findGroup::---", findGroup);
+
+        const findUser = await Auth.findOne({
+            _id: userId
+        });
+        console.log("findUser::---", findUser);
+
+        if (findGroup && findUser) {
+
+            const groupPostLikeModel = await GroupPostLike.findOne({
+                groupId: groupId
+            })
+            console.log("groupPostLikeModel::---", groupPostLikeModel);
+
+            const reqUserInLikeModel = await GroupPostLike.findOne({
+                "reqAuthId._id": userId
+            });
+            console.log("reqUserInLikeModel::---", groupPostLikeModel);
+
+            console.log("data:body:-", req.body.like);
+            if (req.body.like == 1) {
+
+                if (groupPostLikeModel && reqUserInLikeModel) {
+                    console.log("LIKED Group Post HERE");
+
+                    res.status(status.CONFLICT).json({
+                        message: "Already Liked Group Post!",
+                        status: true,
+                        code: 409,
+                        statusCode: 1,
+                    })
+
+                } else if (groupPostLikeModel) {
+                    console.log("**** NOT LIKED Group Post HERE ***");
+
+                    const updateLike = await GroupPost.updateOne({
+                        group_id: groupId
+                    }, {
+                        $inc: {
+                            like: 1
+                        }
+                    });
+                    console.log("updateLike::", updateLike);
+
+
+                    const updateLikedUser = await GroupPostLike.updateOne({
+                        groupId: groupId
+                    }, {
+                        $push: {
+                            reqAuthId: {
+                                _id: userId
+                            }
+                        }
+                    });
+                    console.log("updateLikedUser::", updateLikedUser);
+
+                    res.status(status.OK).json({
+                        message: "Like added!",
+                        status: true,
+                        code: 200,
+                        statusCode: 1,
+                    })
+
+
+                } else {
+
+                    const updateLike = await GroupPost.updateOne({
+                        group_id: groupId
+                    }, {
+                        $inc: {
+                            like: 1
+                        }
+                    });
+                    console.log("updateLike::", updateLike);
+
+                    const insertLike = new GroupPostLike({
+                        authId: findGroup?.user_id,
+                        groupId: groupId,
+                        reqAuthId: {
+                            _id: userId
+                        }
+                    })
+                    const saveData = await insertLike.save();
+                    console.log("saveData::--", saveData);
+
+                    res.status(status.OK).json({
+                        message: "Like added!",
+                        status: true,
+                        code: 200,
+                        statusCode: 1,
+                    })
+
+                }
+
+            } else if (req.body.like == 0) {
+                console.log('Data::---', req.body.like);
+
+
+                if (groupPostLikeModel && reqUserInLikeModel) {
+
+                    const updateLike = await GroupPost.updateOne({
+                        group_id: groupId
+                    }, {
+                        $inc: {
+                            like: -1
+                        }
+                    });
+                    console.log("updateLike::-", updateLike);
+
+                    const updateLikedUser = await GroupPostLike.updateOne({
+                        groupId: groupId
+                    }, {
+                        $pull: {
+                            reqAuthId: {
+                                _id: userId
+                            }
+                        }
+                    });
+                    console.log("updateLikedUser::--", updateLikedUser);
+
+                    const deleteLikedUser = await GroupPostLike.deleteOne({
+                        groupId: groupId
+                    });
+                    console.log("deleteLikedUser::---", deleteLikedUser);
+
+                    res.status(status.OK).json({
+                        message: "Dislike added!",
+                        status: true,
+                        code: 409,
+                        statusCode: 1,
+                    })
+
+                } else {
+
+                    res.status(status.OK).json({
+                        message: "Dislike added!",
+                        status: true,
+                        code: 409,
+                        statusCode: 1,
+                    })
+
+                }
+
+            }
+        } else {
+
+            res.status(status.NOT_FOUND).json({
+                message: "User Or Group Post Not Found!",
+                status: true,
+                code: 404,
+                statusCode: 1,
+                data: []
+            })
+
+        }
+
+    } catch (error) {
+
+        console.log("Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
+
+exports.groupDetails = async (req, res) => {
+    try {
+
+        let userId = req.params.userId;
+        let groupId = req.params.groupId;
+
+        const getGroupData = await Group.findOne({ _id: groupId });
+        if (getGroupData == null) {
+
+            res.status(status.NOT_FOUND).json({
+                message: "Group Not Found!",
+                status: true,
+                code: 404,
+                statusCode: 1,
+                data: []
+            })
+
+        } else {
+
+            const getGroupPost = await GroupPost.find({
+                group_id: groupId,
+                user_id: userId
+            });
+            console.log("getGroupPost::", getGroupPost);
+
+            const response = {
+                groupDetails: getGroupData,
+                groupPost: getGroupPost
+            }
+
+            res.status(status.OK).json(
+                {
+                    message: "Get Group Details Successfully",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: response
+                }
+            )
+
+        }
+
+    } catch (error) {
+
+        console.log("groupDetails--Error::", error);
         res.status(status.INTERNAL_SERVER_ERROR).json(
             {
                 message: "Something Went Wrong",
