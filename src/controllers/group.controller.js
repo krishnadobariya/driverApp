@@ -567,6 +567,8 @@ exports.groupDetails = async (req, res) => {
                         user_name: resData.user_name,
                         desc: resData.desc,
                         image_video: resData.image_video,
+                        likes: resData.like_count,
+                        commnets: resData.comment_count,
                         isLike: false,
                         time: time
                     }
