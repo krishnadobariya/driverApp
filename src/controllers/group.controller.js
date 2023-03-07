@@ -1,8 +1,9 @@
-const Group = require("../models/group.model");
-const Auth = require("../models/auth.model");
-const GroupPostLike = require("../models/groupPostLike.model");
-const GroupPost = require("../models/groupPost.model");
 const status = require("http-status");
+const Auth = require("../models/auth.model");
+const Group = require("../models/group.model");
+const GroupPost = require("../models/groupPost.model");
+const GroupPostLike = require("../models/groupPostLike.model");
+const GroupPostComment = require("../models/groupPostComment.model");
 const cloudinary = require("../utils/cloudinary.utils");
 
 exports.insertGroup = async (req, res) => {
@@ -361,6 +362,114 @@ exports.groupPostLike = async (req, res) => {
     }
 }
 
+exports.addCommentOnPost = async (req, res) => {
+    try {
+
+        let userId = req.params.userId;
+        let groupId = req.params.groupId;
+        let postId = req.params.postId;
+
+        const findPost = await GroupPost.findOne({
+            _id: postId
+        });
+
+        const findUser = await Auth.findOne({
+            _id: userId
+        });
+
+        if (findPost && findUser) {
+
+            const blogInCommentModel = await GroupPostComment.findOne({
+                post_id: postId,
+                group_id: groupId
+            });
+
+            if (blogInCommentModel) {
+
+                const updateCommentCount = await GroupPost.updateOne({
+                    _id: postId
+                }, {
+                    $inc: {
+                        comment: 1
+                    }
+                })
+
+                const updateComment = await GroupPostComment.updateOne({
+                    post_id: postId,
+                    group_id: groupId
+                }, {
+                    $push: {
+                        comment: {
+                            user_id: userId,
+                            text: req.body.text
+                        }
+
+                    }
+                })
+
+                res.status(status.OK).json({
+                    message: "Comment added!",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                })
+
+            } else {
+
+                const updateCommentCount =  await GroupPost.updateOne({
+                    _id: postId,
+                    group_id: groupId
+                }, {
+                    $inc: {
+                        comment: 1
+                    }
+                })
+
+                const insertComment = new GroupPostComment({
+                    post_id: postId,
+                    group_id: groupId,
+                    user_img: req.body.user_img,
+                    user_name: req.body.username,
+                    comment: {
+                        user_id: userId,
+                        text: req.body.text
+                    }
+                })
+                const saveData = await insertComment.save()
+
+                res.status(status.OK).json({
+                    message: "Comment added!",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                })
+            }
+
+        } else {
+            res.status(status.NOT_FOUND).json({
+                message: "User Or Post Not Found!",
+                status: true,
+                code: 404,
+                statusCode: 1,
+            })
+        }
+
+    } catch (error) {
+
+        console.log("Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
+
 exports.groupDetails = async (req, res) => {
     try {
 
@@ -386,6 +495,60 @@ exports.groupDetails = async (req, res) => {
 
             const respGroup = [];
             for (const resData of getGroupPost) {
+
+                /* To show how long a post has been posted */
+                var now = new Date();
+                var addingDate = new Date(resData.createdAt);
+                var sec_num = (now - addingDate) / 1000;
+                var days = Math.floor(sec_num / (3600 * 24));
+                var hours = Math.floor((sec_num - (days * (3600 * 24))) / 3600);
+                var minutes = Math.floor((sec_num - (days * (3600 * 24)) - (hours * 3600)) / 60);
+                var seconds = Math.floor(sec_num - (days * (3600 * 24)) - (hours * 3600) - (minutes * 60));
+
+                if (hours < 10) { hours = "0" + hours; }
+                if (minutes < 10) { minutes = "0" + minutes; }
+                if (seconds < 10) { seconds = "0" + seconds; }
+
+                var time;
+                if (days > 28) {
+
+                    time = new Date(addingDate).toDateString()
+
+                } else if (days > 21 && days < 28) {
+
+                    time = "3 Week Ago"
+
+                } else if (days > 14 && days < 21) {
+
+                    time = "2 Week Ago"
+
+                } else if (days > 7 && days < 14) {
+
+                    time = "1 Week Ago"
+
+                } else if (days > 0 && days < 7) {
+
+                    time = days == 1 ? `${days} day ago` : `${days} days ago`
+
+                } else if (hours > 0 && days == 0) {
+
+                    time = hours == 1 ? `${hours} hour ago` : `${hours} hours ago`
+
+                } else if (minutes > 0 && hours == 0) {
+
+                    time = minutes == 1 ? `${minutes} minute ago` : `${minutes} minutes ago`
+
+                } else if (seconds > 0 && minutes == 0 && hours == 0 && days === 0) {
+
+                    time = seconds == 1 ? `${seconds} second ago` : `${seconds} seconds ago`
+
+                } else if (seconds == 0 && minutes == 0 && hours == 0 && days === 0) {
+
+                    time = `Just Now`
+
+                }
+                /* End Of to show how long a post has been posted */
+
                 console.log("resData::--", resData);
                 var findUserWhoLiked = await GroupPostLike.findOne({
                     group_id: groupId,
@@ -404,7 +567,8 @@ exports.groupDetails = async (req, res) => {
                         user_name: resData.user_name,
                         desc: resData.desc,
                         image_video: resData.image_video,
-                        isLike: false
+                        isLike: false,
+                        time: time
                     }
                     respGroup.push(response)
 
@@ -418,7 +582,8 @@ exports.groupDetails = async (req, res) => {
                         user_name: resData.user_name,
                         desc: resData.desc,
                         image_video: resData.image_video,
-                        isLike: true
+                        isLike: true,
+                        time: time
                     }
                     respGroup.push(response)
 
