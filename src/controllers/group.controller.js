@@ -4,6 +4,7 @@ const Group = require("../models/group.model");
 const GroupPost = require("../models/groupPost.model");
 const GroupPostLike = require("../models/groupPostLike.model");
 const GroupPostComment = require("../models/groupPostComment.model");
+const Notification = require("../models/notification.model")
 const cloudinary = require("../utils/cloudinary.utils");
 
 exports.insertGroup = async (req, res) => {
@@ -416,7 +417,7 @@ exports.addCommentOnPost = async (req, res) => {
 
             } else {
 
-                const updateCommentCount =  await GroupPost.updateOne({
+                const updateCommentCount = await GroupPost.updateOne({
                     _id: postId,
                     group_id: groupId
                 }, {
@@ -492,6 +493,7 @@ exports.groupDetails = async (req, res) => {
             const getGroupPost = await GroupPost.find({
                 group_id: groupId
             });
+            console.log("getGroupPost::---", getGroupPost);
 
             const respGroup = [];
             for (const resData of getGroupPost) {
@@ -558,7 +560,7 @@ exports.groupDetails = async (req, res) => {
                 console.log("findUserWhoLiked:::", findUserWhoLiked);
 
                 if (findUserWhoLiked == null) {
-
+                    console.log("resData::::----", resData);
                     const response = {
                         _id: resData._id,
                         group_id: resData.group_id,
@@ -613,6 +615,74 @@ exports.groupDetails = async (req, res) => {
     } catch (error) {
 
         console.log("groupDetails--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
+
+exports.inviteList = async (req, res) => {
+    try {
+
+        const userId = req.params.userId;
+
+        const getUserData = await Auth.find({
+            _id: {
+                $ne: userId
+            }
+        })
+        // console.log("getUserData", getUserData);
+
+        const getGroupData = await Group.find({ user_id: userId });
+
+        const userArr = []
+        for (const findUserData of getGroupData) {
+            const getNotificationData = await Notification.findOne({ group_id: findUserData._id })
+            if (getNotificationData) {
+                userArr.push(getNotificationData)
+            }
+        }
+
+        const userData = []
+        for (const getNotificationUser of userArr) {
+            const getUserData = await Auth.find({
+                _id: {
+                    $ne: getNotificationUser.user_id
+                }
+            })
+
+            userData.push(...getUserData)
+        }
+
+        var getAllUserWhichIsInNotification = getUserData.filter(function (data) {
+            // filter out (!) items in result2
+            return userData.some(function (o2) {
+                return (data._id).toString() == (o2.id).toString();          // assumes unique id
+            });
+        })
+
+        console.log("getAllUserWhichIsInNotification", getAllUserWhichIsInNotification.length);
+
+        res.status(status.OK).json(
+            {
+                message: "Get User Details Successfully",
+                status: true,
+                code: 200,
+                statusCode: 1,
+                data: getAllUserWhichIsInNotification
+            }
+        )
+
+    } catch (error) {
+
+        console.log("inviteList--Error::", error);
         res.status(status.INTERNAL_SERVER_ERROR).json(
             {
                 message: "Something Went Wrong",

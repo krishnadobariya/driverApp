@@ -48,14 +48,30 @@ exports.addPost = async (req, res) => {
 
             } else {
 
+                // const cloudinaryImageUploadMethod = async file => {
+                //     return new Promise(resolve => {
+                //         cloudinary.uploader.upload(file, { resource_type: "video" }, (res, err) => {
+                //             console.log("file----cloudinary::", file);
+                //             console.log("file--res--cloudinary::", res);                          
+                //             if (err) return err
+                //             resolve({
+                //                 res: res.secure_url
+                //             })
+                //         })
+                //     })
+                // }
+
                 const cloudinaryImageUploadMethod = async file => {
                     return new Promise(resolve => {
                         cloudinary.uploader.upload(file, (err, res) => {
+                            console.log("file----cloudinary::", file);
+                            console.log("file--res--cloudinary::", res);
                             if (err) return err
                             resolve({
                                 res: res.secure_url
                             })
-                        })
+                        }
+                        )
                     })
                 }
 
@@ -63,15 +79,17 @@ exports.addPost = async (req, res) => {
                 const files = req.files;
 
                 for (const file of files) {
+                    console.log("file::", file);
                     const { path } = file;
-                    // const newPath = await cloudinaryImageUploadMethod(path);
-                    // urls.push(newPath);
+                    const newPath = await cloudinaryImageUploadMethod(path);
+                    console.log("newPath::---------", newPath);
+                    urls.push(newPath);
                 }
-
+                console.log("urls:::", urls);
                 const groupPostData = GroupPost({
                     group_id: groupId,
                     user_id: userId,
-                    user_img: getUser.profile.res,
+                    user_img: getUser.profile[0] ? getUser.profile[0].res : "",
                     user_name: getUser.username,
                     desc: req.body.description,
                     image_video: urls

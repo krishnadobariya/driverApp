@@ -614,11 +614,12 @@ function socket(io) {
         })
         // ----- End userStatus ----- //
 
-        socket.on("joinGroup", async (arg) => {
+
+        // ----- inviteGroup ----- //
+        socket.on("inviteGroup", async (arg) => {
 
             let userId = arg.user_id;
             let groupId = arg.group_id;
-            console.log("Jay shree krishna");
 
             const getUserData = await authModel.findOne({ _id: userId });
             if (getUserData == null) {
@@ -642,10 +643,48 @@ function socket(io) {
                         notification_type: 1
                     })
                     const saveData = await insertData.save();
-                    console.log("saveData::", saveData);
                 }
             }
-        })
+        });
+        // ----- End inviteGroup ----- //
+
+
+        // ----- acceptInvite ----- //
+        socket.on("acceptInvite", async (arg) => {
+            let groupId = arg.group_id;
+            let userId = arg.user_id;
+            let action = arg.action;
+
+            if (action == 1) {
+                
+                const updateData = await NotificationModel.updateOne(
+                    {
+                        group_id: groupId,
+                        user_id: userId
+                    },
+                    {
+                        $set: {
+                            notification_msg: "Accepted",
+                            notification_type: 3
+                        }
+                    }
+                );
+                io.emit("Invite Accept");
+
+            } else if(action == 2) {
+                
+                const rejectInvite = await NotificationModel.deleteOne(
+                    {
+                        group_id: groupId,
+                        user_id: userId
+                    }
+                );
+                io.emit("Invite Reject");
+
+            }
+
+        });
+        // ----- End acceptInvite ----- //
 
     })
 
