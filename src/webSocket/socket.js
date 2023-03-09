@@ -1,8 +1,11 @@
 const chatRoom = require("./models/chatRoom.model");
 const chatModel = require("./models/chat.model");
 const authModel = require("../models/auth.model");
+const NotificationModel = require("../models/notification.model");
 const Notification = require("../helper/firebaseHelper");
-const joinEvent = require("../models/joinEvent.model")
+const joinEvent = require("../models/joinEvent.model");
+const Group = require("../models/group.model");
+
 const mongoose = require("mongoose");
 
 function socket(io) {
@@ -609,8 +612,40 @@ function socket(io) {
             }
 
         })
-
         // ----- End userStatus ----- //
+
+        socket.on("joinGroup", async (arg) => {
+
+            let userId = arg.user_id;
+            let groupId = arg.group_id;
+            console.log("Jay shree krishna");
+
+            const getUserData = await authModel.findOne({ _id: userId });
+            if (getUserData == null) {
+
+                io.emit("User Not Found");
+
+            } else {
+                const getGroupData = await Group.findOne({ _id: groupId });
+                if (getGroupData == null) {
+
+                    io.emit("Group Not Found");
+
+                } else {
+
+                    const insertData = NotificationModel({
+                        group_id: groupId,
+                        user_id: userId,
+                        notification_msg: "User Invited",
+                        notification_img: arg.notification_img,
+                        user_name: arg.user_name,
+                        notification_type: 1
+                    })
+                    const saveData = await insertData.save();
+                    console.log("saveData::", saveData);
+                }
+            }
+        })
 
     })
 
