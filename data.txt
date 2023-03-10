@@ -29,6 +29,15 @@
     "user_name": "test"
 }
 
+
+- Socket : joinGroup
+{
+    "user_id": "63c9157b4becc06796221948",
+    "group_id": "640585b30afa74ab9e4f1142",
+    "notification_img": "https://res.cloudinary.com/tcloud/image/upload/v1678083507/gcmefsf11cbpgcgwjxcg.png",
+    "user_name": "test"
+}
+
 =======================================================================================================
 exports.userList = async (req, res) => {
     try {

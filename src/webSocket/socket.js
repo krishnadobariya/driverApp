@@ -656,7 +656,7 @@ function socket(io) {
             let action = arg.action;
 
             if (action == 1) {
-                
+
                 const updateData = await NotificationModel.updateOne(
                     {
                         group_id: groupId,
@@ -671,8 +671,8 @@ function socket(io) {
                 );
                 io.emit("Invite Accept");
 
-            } else if(action == 2) {
-                
+            } else if (action == 2) {
+
                 const rejectInvite = await NotificationModel.deleteOne(
                     {
                         group_id: groupId,
@@ -686,6 +686,38 @@ function socket(io) {
         });
         // ----- End acceptInvite ----- //
 
+
+        // ----- joinGroup ----- //
+        socket.on("joinGroup", async (arg) => {
+
+            let groupId = arg.group_id;
+            let userId = arg.user_id;
+
+            if (arg.group_type == 2) {
+
+                const findGroup = await Group.findOne({ _id: groupId });
+                if (findGroup == null) {
+                    io.emit("Group Not Found");
+                } else {
+                    const findUser = await authModel.findOne({ _id: userId });
+                    if (findUser == null) {
+                        io.emit("User Not Found");
+                    } else {
+                        const insertData = NotificationModel({
+                            group_id: groupId,
+                            user_id: userId,
+                            notification_msg: "Join With Group",
+                            notification_img: arg.notification_img,
+                            user_name: arg.user_name,
+                            notification_type: 2
+                        })                        
+                    }
+                }
+
+            }
+
+        })
+        // ----- End joinGroup ----- //
     })
 
 }
