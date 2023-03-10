@@ -38,6 +38,10 @@ const groupPostSchema = mongoose.Schema({
         type: Number,
         default: 0
     },
+    media_type: {
+        type: Number, //1-Image 2-Video
+        default: 0
+    },
     post_time: {
         type: String
     }

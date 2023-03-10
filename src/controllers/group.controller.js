@@ -616,6 +616,7 @@ exports.groupDetails = async (req, res) => {
                         image_video: resData.image_video[0] ? resData.image_video[0].res : "",
                         likes: resData.like_count,
                         commnets: resData.comment_count,
+                        media_type: resData.media_type,
                         isLike: false,
                         time: time
                     }
@@ -686,7 +687,7 @@ exports.inviteList = async (req, res) => {
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
 
-        console.log("startIndex:::",startIndex);
+        console.log("startIndex:::", startIndex);
 
         const getUserDatas = await Auth.find({
             _id: {
@@ -777,7 +778,7 @@ exports.addPost = async (req, res) => {
 
             res.status(status.NOT_FOUND).json(
                 {
-                    message: "Data Not Exist",
+                    message: "Group Not Exist",
                     status: false,
                     code: 404,
                     statusCode: 0
@@ -830,7 +831,8 @@ exports.addPost = async (req, res) => {
                     user_img: getUser.profile[0] ? getUser.profile[0].res : "",
                     user_name: getUser.username,
                     desc: req.body.description,
-                    image_video: urls[0]
+                    image_video: urls[0],
+                    media_type: req.body.media_type
                 });
                 const saveData = await groupPostData.save();
 
@@ -843,7 +845,8 @@ exports.addPost = async (req, res) => {
                     desc: saveData.desc,
                     image_video: saveData.image_video[0] ? saveData.image_video[0].res : "",
                     like_count: saveData.like_count,
-                    comment_count: saveData.comment_count
+                    comment_count: saveData.comment_count,
+                    media_type: saveData.media_type
                 }
 
                 res.status(status.OK).json(
