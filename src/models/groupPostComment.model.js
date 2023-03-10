@@ -12,19 +12,19 @@ const groupPostCommentSchema = mongoose.Schema({
         ref: "group",
         required: true
     },
-    user_img: {
-        type: String,
-        ref: "auth",
-        required: true
-    },
-    user_name: {
-        type: String,
-        ref: "auth",
-        required: true
-    },
     comment:[{
         user_id:{
             type: ObjectId,
+            required: true
+        },
+        user_img: {
+            type: String,
+            ref: "auth",
+            required: true
+        },
+        user_name: {
+            type: String,
+            ref: "auth",
             required: true
         },
         text:{

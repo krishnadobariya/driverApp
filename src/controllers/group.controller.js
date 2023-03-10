@@ -391,7 +391,7 @@ exports.addCommentOnPost = async (req, res) => {
                     _id: postId
                 }, {
                     $inc: {
-                        comment: 1
+                        comment_count: 1
                     }
                 })
 
@@ -402,6 +402,8 @@ exports.addCommentOnPost = async (req, res) => {
                     $push: {
                         comment: {
                             user_id: userId,
+                            user_img: req.body.user_img,
+                            user_name: req.body.username,
                             text: req.body.text
                         }
 
@@ -422,17 +424,17 @@ exports.addCommentOnPost = async (req, res) => {
                     group_id: groupId
                 }, {
                     $inc: {
-                        comment: 1
+                        comment_count: 1
                     }
                 })
 
                 const insertComment = new GroupPostComment({
                     post_id: postId,
                     group_id: groupId,
-                    user_img: req.body.user_img,
-                    user_name: req.body.username,
                     comment: {
                         user_id: userId,
+                        user_img: req.body.user_img,
+                        user_name: req.body.username,
                         text: req.body.text
                     }
                 })
@@ -677,12 +679,20 @@ exports.inviteList = async (req, res) => {
     try {
 
         const userId = req.params.userId;
+        let page = parseInt(req.query.page);
+        let limit = parseInt(req.query.limit);
+
+        // --- for pagination --- //
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
+
+        console.log("startIndex:::",startIndex);
 
         const getUserDatas = await Auth.find({
             _id: {
                 $ne: userId
             }
-        }).sort({ createdAt: -1 });
+        }).skip(startIndex).limit(endIndex).sort({ createdAt: -1 });
         console.log("getUserDatas", getUserDatas.length);
 
         const response = [];
@@ -869,7 +879,13 @@ exports.addPost = async (req, res) => {
 exports.notificationList = async (req, res) => {
     try {
 
-        const getData = await Notification.find({ user_id: req.params.userId });
+        let page = parseInt(req.query.page);
+        let limit = parseInt(req.query.limit);
+
+        // --- for pagination --- //
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
+        const getData = await Notification.find({ user_id: req.params.userId }).skip(startIndex).limit(endIndex);
 
         if (getData.length == 0) {
 
