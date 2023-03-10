@@ -48,24 +48,9 @@ exports.addPost = async (req, res) => {
 
             } else {
 
-                // const cloudinaryImageUploadMethod = async file => {
-                //     return new Promise(resolve => {
-                //         cloudinary.uploader.upload(file, { resource_type: "video" }, (res, err) => {
-                //             console.log("file----cloudinary::", file);
-                //             console.log("file--res--cloudinary::", res);                          
-                //             if (err) return err
-                //             resolve({
-                //                 res: res.secure_url
-                //             })
-                //         })
-                //     })
-                // }
-
                 const cloudinaryImageUploadMethod = async file => {
                     return new Promise(resolve => {
-                        cloudinary.uploader.upload(file, (err, res) => {
-                            console.log("file----cloudinary::", file);
-                            console.log("file--res--cloudinary::", res);
+                        cloudinary.uploader.upload(file, { resource_type: "auto" }, (err, res) => {
                             if (err) return err
                             resolve({
                                 res: res.secure_url
@@ -92,9 +77,21 @@ exports.addPost = async (req, res) => {
                     user_img: getUser.profile[0] ? getUser.profile[0].res : "",
                     user_name: getUser.username,
                     desc: req.body.description,
-                    image_video: urls
+                    image_video: urls[0]
                 });
                 const saveData = await groupPostData.save();
+
+                const response = {
+                    post_id: saveData._id,
+                    group_id: saveData.group_id,
+                    user_id: saveData.userId,
+                    user_img: saveData.user_img,
+                    user_name: saveData.user_name,
+                    desc: saveData.desc,
+                    image_video: saveData.image_video[0] ? saveData.image_video[0].res : "",
+                    like_count: saveData.like_count,
+                    comment_count: saveData.comment_count
+                }
 
                 res.status(status.OK).json(
                     {
@@ -102,7 +99,7 @@ exports.addPost = async (req, res) => {
                         status: true,
                         code: 200,
                         statusCode: 1,
-                        data: saveData
+                        data: response
                     }
                 )
 
