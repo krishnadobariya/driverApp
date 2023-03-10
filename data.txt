@@ -21,7 +21,7 @@
 - emit : readChat
 
 
-- Socket : joinGroup
+- Socket : inviteGroup
 {
     "user_id": "63c9157b4becc06796221948",
     "group_id": "640585b30afa74ab9e4f1142",

@@ -471,6 +471,49 @@ exports.addCommentOnPost = async (req, res) => {
     }
 }
 
+exports.commentList = async (req, res) => {
+    try {
+
+        const getCommentedPost = await GroupPostComment.find({ post_id: req.params.postId });
+        console.log("getCommentedPost:::", getCommentedPost);
+
+        if (getCommentedPost.length == 0) {
+
+            res.status(status.NOT_FOUND).json({
+                message: "THIS POST HAS NO COMMENT",
+                status: true,
+                code: 404,
+                statusCode: 1,
+            })
+
+        } else {
+
+            res.status(status.OK).json({
+                message: "ALL COMMENTED MESSAGE WITH USER LIST",
+                status: true,
+                code: 200,
+                statusCode: 1,
+                DATA: getCommentedPost
+            })
+
+        }
+
+    } catch (error) {
+
+        console.log("commentList---Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
+
 exports.groupDetails = async (req, res) => {
     try {
 
@@ -633,42 +676,57 @@ exports.inviteList = async (req, res) => {
 
         const userId = req.params.userId;
 
-        const getUserData = await Auth.find({
+        const getUserDatas = await Auth.find({
             _id: {
                 $ne: userId
             }
-        })
-        // console.log("getUserData", getUserData);
+        }).sort({ createdAt: -1 });
+        console.log("getUserDatas", getUserDatas.length);
 
-        const getGroupData = await Group.find({ user_id: userId });
+        const response = [];
+        for (const getUserData of getUserDatas) {
+            console.log("getUserData::", getUserData._id);
 
-        const userArr = []
-        for (const findUserData of getGroupData) {
-            const getNotificationData = await Notification.findOne({ group_id: findUserData._id })
-            if (getNotificationData) {
-                userArr.push(getNotificationData)
+            const checkNotification = await Notification.findOne({ user_id: getUserData._id });
+            console.log("checkNotification:::---", checkNotification);
+
+            if (checkNotification == null) {
+                const findUser = await Auth.find({
+                    _id: getUserData._id
+                }).sort({ createdAt: -1 });
+                response.push(findUser);
             }
+            console.log("response::---", response.length);
         }
 
-        const userData = []
-        for (const getNotificationUser of userArr) {
-            const getUserData = await Auth.find({
-                _id: {
-                    $ne: getNotificationUser.user_id
-                }
-            })
+        // const getGroupData = await Group.find({ user_id: userId });
 
-            userData.push(...getUserData)
-        }
+        // const userArr = [];
+        // for (const findUserData of getGroupData) {
+        //     const getNotificationData = await Notification.findOne({ group_id: findUserData._id })
+        //     if (getNotificationData) {
+        //         userArr.push(getNotificationData)
+        //     }
+        // }
 
-        var getAllUserWhichIsInNotification = getUserData.filter(function (data) {
-            // filter out (!) items in result2
-            return userData.some(function (o2) {
-                return (data._id).toString() == (o2.id).toString();          // assumes unique id
-            });
-        })
+        // const userData = []
+        // for (const getNotificationUser of userArr) {
+        //     const getUserData = await Auth.find({
+        //         _id: {
+        //             $ne: getNotificationUser.user_id
+        //         }
+        //     })
 
-        console.log("getAllUserWhichIsInNotification", getAllUserWhichIsInNotification.length);
+        //     userData.push(...getUserData)
+        // }
+
+        // var getAllUserWhichIsInNotification = getUserData.filter(function (data) {
+        //     return userData.some(function (o2) {
+        //         return (data._id).toString() == (o2.id).toString();          // assumes unique id
+        //     });
+        // })
+
+        // console.log("getAllUserWhichIsInNotification", getAllUserWhichIsInNotification.length);
 
         res.status(status.OK).json(
             {
@@ -676,7 +734,7 @@ exports.inviteList = async (req, res) => {
                 status: true,
                 code: 200,
                 statusCode: 1,
-                data: getAllUserWhichIsInNotification
+                data: response
             }
         )
 
