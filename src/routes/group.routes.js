@@ -8,7 +8,9 @@ const {
     addCommentOnPost,
     commentList,
     groupDetails,
-    inviteList
+    inviteList,
+    addPost,
+    notificationList,
 } = require("../controllers/group.controller");
 
 router.post("/add/:user_id", upload.single("group_img"), insertGroup);
@@ -18,5 +20,7 @@ router.post("/comment/:userId/:groupId/:postId", addCommentOnPost)
 router.get("/commentList/:postId", commentList)
 router.get("/details/:groupId/:userId", groupDetails);
 router.get("/inviteList/:userId", inviteList);
+router.post("/post/add/:groupId/:userId", upload.array('posts'), addPost);
+router.get("/notificationList/:userId", notificationList);
 
 module.exports = router;

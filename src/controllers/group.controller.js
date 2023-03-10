@@ -4,7 +4,7 @@ const Group = require("../models/group.model");
 const GroupPost = require("../models/groupPost.model");
 const GroupPostLike = require("../models/groupPostLike.model");
 const GroupPostComment = require("../models/groupPostComment.model");
-const Notification = require("../models/notification.model")
+const Notification = require("../models/notification.model");
 const cloudinary = require("../utils/cloudinary.utils");
 
 exports.insertGroup = async (req, res) => {
@@ -200,7 +200,7 @@ exports.groupPostLike = async (req, res) => {
         if (findGroup && findUser) {
 
             const groupPostLikeModel = await GroupPostLike.findOne({
-                groupId: groupId
+                post_id: req.params.postId
             })
             console.log("groupPostLikeModel::---", groupPostLikeModel);
 
@@ -535,7 +535,7 @@ exports.groupDetails = async (req, res) => {
 
             const getGroupPost = await GroupPost.find({
                 group_id: groupId
-            });
+            }).sort({ createdAt: -1 });
             console.log("getGroupPost::---", getGroupPost);
 
             const respGroup = [];
@@ -611,7 +611,7 @@ exports.groupDetails = async (req, res) => {
                         user_img: resData.user_img,
                         user_name: resData.user_name,
                         desc: resData.desc,
-                        image_video: resData.image_video,
+                        image_video: resData.image_video[0] ? resData.image_video[0].res : "",
                         likes: resData.like_count,
                         commnets: resData.comment_count,
                         isLike: false,
@@ -628,7 +628,7 @@ exports.groupDetails = async (req, res) => {
                         user_img: resData.user_img,
                         user_name: resData.user_name,
                         desc: resData.desc,
-                        image_video: resData.image_video,
+                        image_video: resData.image_video[0] ? resData.image_video[0].res : "",
                         isLike: true,
                         time: time
                     }
@@ -741,6 +741,162 @@ exports.inviteList = async (req, res) => {
     } catch (error) {
 
         console.log("inviteList--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
+
+exports.addPost = async (req, res) => {
+    try {
+
+        let groupId = req.params.groupId;
+        let userId = req.params.userId;
+
+        const getGroup = await Group.findOne({ _id: groupId });
+        if (getGroup == null) {
+
+            res.status(status.NOT_FOUND).json(
+                {
+                    message: "Data Not Exist",
+                    status: false,
+                    code: 404,
+                    statusCode: 0
+                }
+            )
+
+        } else {
+
+            const getUser = await Auth.findOne({ _id: userId });
+
+            if (getUser == null) {
+
+                res.status(status.NOT_FOUND).json(
+                    {
+                        message: "Data Not Exist",
+                        status: false,
+                        code: 404,
+                        statusCode: 0
+                    }
+                )
+
+            } else {
+
+                const cloudinaryImageUploadMethod = async file => {
+                    return new Promise(resolve => {
+                        cloudinary.uploader.upload(file, { resource_type: "auto" }, (err, res) => {
+                            if (err) return err
+                            resolve({
+                                res: res.secure_url
+                            })
+                        }
+                        )
+                    })
+                }
+
+                const urls = [];
+                const files = req.files;
+
+                for (const file of files) {
+                    console.log("file::", file);
+                    const { path } = file;
+                    const newPath = await cloudinaryImageUploadMethod(path);
+                    console.log("newPath::---------", newPath);
+                    urls.push(newPath);
+                }
+                console.log("urls:::", urls);
+                const groupPostData = GroupPost({
+                    group_id: groupId,
+                    user_id: userId,
+                    user_img: getUser.profile[0] ? getUser.profile[0].res : "",
+                    user_name: getUser.username,
+                    desc: req.body.description,
+                    image_video: urls[0]
+                });
+                const saveData = await groupPostData.save();
+
+                const response = {
+                    post_id: saveData._id,
+                    group_id: saveData.group_id,
+                    user_id: saveData.userId,
+                    user_img: saveData.user_img,
+                    user_name: saveData.user_name,
+                    desc: saveData.desc,
+                    image_video: saveData.image_video[0] ? saveData.image_video[0].res : "",
+                    like_count: saveData.like_count,
+                    comment_count: saveData.comment_count
+                }
+
+                res.status(status.OK).json(
+                    {
+                        message: "POST ADDED SUCCESSFULLY",
+                        status: true,
+                        code: 200,
+                        statusCode: 1,
+                        data: response
+                    }
+                )
+
+            }
+
+        }
+
+    } catch (error) {
+
+        console.log("addPost--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
+
+exports.notificationList = async (req, res) => {
+    try {
+
+        const getData = await Notification.find({ user_id: req.params.userId });
+
+        if (getData.length == 0) {
+
+            res.status(status.NOT_FOUND).json(
+                {
+                    message: "Data Not Exist",
+                    status: false,
+                    code: 404,
+                    statusCode: 0
+                }
+            )
+
+        } else {
+
+            res.status(status.OK).json(
+                {
+                    message: "LIST OF NOTIFICATION FOR USER",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: getData
+                }
+            )
+
+        }
+
+    } catch (error) {
+
+        console.log("notificationList--Error::", error);
         res.status(status.INTERNAL_SERVER_ERROR).json(
             {
                 message: "Something Went Wrong",
