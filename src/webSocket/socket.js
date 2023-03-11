@@ -2,9 +2,12 @@ const chatRoom = require("./models/chatRoom.model");
 const chatModel = require("./models/chat.model");
 const authModel = require("../models/auth.model");
 const NotificationModel = require("../models/notification.model");
-const Notification = require("../helper/firebaseHelper");
 const joinEvent = require("../models/joinEvent.model");
 const Group = require("../models/group.model");
+const GroupList = require("../models/groupList.model");
+const GroupChatRoom = require("./models/groupChatRoom.model");
+const GroupChat = require("./models/groupChat.model");
+const Notification = require("../helper/firebaseHelper");
 
 const mongoose = require("mongoose");
 
@@ -19,7 +22,7 @@ function socket(io) {
         socket.on("joinUser", (arg) => {
             const userRoom = `User${arg.user_id}`;
             socket.join(userRoom)
-        })
+        });
         // ----- joinUser ----- //
 
 
@@ -65,7 +68,6 @@ function socket(io) {
                     user1: arg.receiver_id,
                     user2: arg.sender_id
                 }).select('user1, user2').lean();
-
 
                 if (getChatRoom == null && getChatRoom2 == null) {
 
@@ -381,7 +383,7 @@ function socket(io) {
 
             }
 
-        })
+        });
         // ----- End chat ----- //
 
 
@@ -443,7 +445,6 @@ function socket(io) {
         })
         */
 
-
         socket.on("readUnread", async (arg) => {
 
             const userRoom = `User${arg.user_id}`;
@@ -486,13 +487,11 @@ function socket(io) {
 
             }
 
-        })
-
+        });
         // ----- End readUnread ----- //
 
 
         // ----- updateLatLong ----- //
-
         socket.on("updateLatLong", async (arg) => {
 
 
@@ -529,8 +528,7 @@ function socket(io) {
 
 
 
-        })
-
+        });
         // ----- End readUnread ----- //
 
         // ----- isJoin ----- //
@@ -553,7 +551,7 @@ function socket(io) {
             })
             const saveData = await registerData.save();
 
-        })
+        });
         // ----- isJoin ----- //5876
 
 
@@ -571,7 +569,7 @@ function socket(io) {
                 }
             })
 
-        })
+        });
         // ----- End updateStatus ----- //
 
 
@@ -611,7 +609,7 @@ function socket(io) {
                 io.to(userRoom).emit("getStatus", 0)
             }
 
-        })
+        });
         // ----- End userStatus ----- //
 
 
@@ -643,6 +641,22 @@ function socket(io) {
                         notification_type: 1
                     })
                     const saveData = await insertData.save();
+
+                    const title = `Invited you!`;
+                    const body = `You're invited for this ${getGroupData.group_name}`;
+                    const text = 'User Invited';
+                    const sendBy = userId;
+                    const registrationToken = getUserData.fcm_token;
+
+                    Notification.sendPushNotificationFCM(
+                        registrationToken,
+                        title,
+                        body,
+                        text,
+                        sendBy,
+                        true
+                    );
+
                 }
             }
         });
@@ -656,6 +670,35 @@ function socket(io) {
             let action = arg.action;
 
             if (action == 1) {
+
+                const getGroupData = await Group.findOne({ _id: groupId }).select('group_members');
+                const addMemenber = parseInt(getGroupData.group_members) + 1;
+                const updateGroupData = await Group.findByIdAndUpdate(
+                    {
+                        _id: groupId
+                    },
+                    {
+                        $set: {
+                            group_members: addMemenber
+                        }
+                    },
+                    {
+                        new: true
+                    }
+                );
+                console.log("updateGroupData:::", updateGroupData);
+                // add group memenber + 1        
+                console.log("getGroupData:::---", getGroupData);
+                const addData = GroupList({
+                    group_id: groupId,
+                    user_id: userId,
+                    group_img: updateGroupData.group_img,
+                    group_name: updateGroupData.group_name,
+                    group_type: updateGroupData.group_type,
+                    group_members: addMemenber
+                });
+                const saveData = await addData.save();
+                console.log("saveData:::", saveData);
 
                 const updateData = await NotificationModel.updateOne(
                     {
@@ -693,6 +736,47 @@ function socket(io) {
             let groupId = arg.group_id;
             let userId = arg.user_id;
 
+            if (arg.group_type == 1) {
+
+                const getGroupData = await Group.findOne({ _id: groupId }).select('group_members');
+                if (getGroupData == null) {
+                    io.emit("Group Not Found");
+                } else {
+
+                    // add group memenber + 1
+                    const addMemenber = parseInt(getGroupData.group_members) + 1;
+                    const updateGroupData = await Group.findByIdAndUpdate(
+                        {
+                            _id: groupId
+                        },
+                        {
+                            $set: {
+                                group_members: addMemenber
+                            }
+                        },
+                        {
+                            new: true
+                        }
+                    );
+                    console.log("updateGroupData:::", updateGroupData);
+                    // add group memenber + 1        
+                    console.log("getGroupData:::---", getGroupData);
+                    const addData = GroupList({
+                        group_id: groupId,
+                        user_id: userId,
+                        group_img: updateGroupData.group_img,
+                        group_name: updateGroupData.group_name,
+                        group_type: updateGroupData.group_type,
+                        group_members: addMemenber
+                    });
+                    const saveData = await addData.save();
+                    console.log("saveData:::", saveData);
+                    io.emit("Public Group");
+
+                }
+
+            }
+
             if (arg.group_type == 2) {
 
                 const findGroup = await Group.findOne({ _id: groupId });
@@ -710,14 +794,54 @@ function socket(io) {
                             notification_img: arg.notification_img,
                             user_name: arg.user_name,
                             notification_type: 2
-                        })                        
+                        })
                     }
+
+                    const title = `Join Group`;
+                    const body = `${arg.user_name} sending you a request for join your group`;
+                    const text = "Join With Group";
+                    const sendBy = userId;
+                    const registrationToken = findUser.fcm_token;
+
+                    Notification.sendPushNotificationFCM(
+                        registrationToken,
+                        title,
+                        body,
+                        text,
+                        sendBy,
+                        true
+                    );
+
                 }
 
             }
 
-        })
+        });
         // ----- End joinGroup ----- //
+
+
+        // ----- groupChat ----- //
+        socket.on("groupChat", async (arg) => {
+
+            const findUser = await authModel.findOne({
+                _id: arg.receiver_id
+            });
+
+            const addGroupChatData = GroupChat({
+                chatRoomId: arg.chatRoomId,
+                groupId: arg.groupId,
+                groupName: arg.groupName,
+                chat: {
+                    sender: arg.sender_id,
+                    message: arg.message
+                }
+            });
+            const saveData = await addGroupChatData.save();
+            console.log("saveData:::----", saveData);
+
+        });
+        // ----- End groupChat ----- //
+
     })
 
 }

@@ -5,7 +5,9 @@ const GroupPost = require("../models/groupPost.model");
 const GroupPostLike = require("../models/groupPostLike.model");
 const GroupPostComment = require("../models/groupPostComment.model");
 const Notification = require("../models/notification.model");
+const GroupList = require("../models/groupList.model");
 const cloudinary = require("../utils/cloudinary.utils");
+
 
 exports.insertGroup = async (req, res) => {
     try {
@@ -804,7 +806,7 @@ exports.addPost = async (req, res) => {
 
                 const cloudinaryImageUploadMethod = async file => {
                     return new Promise(resolve => {
-                        cloudinary.uploader.upload(file, { resource_type: "auto" }, (err, res) => {
+                        cloudinary.uploader.upload(file, {quality: 60},{ resource_type: "auto" }, (err, res) => {
                             if (err) return err
                             resolve({
                                 res: res.secure_url

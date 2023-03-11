@@ -16,11 +16,13 @@ const chatRouter = require("./routes/chat.routes");
 const eventRouter = require("./routes/event.routes");
 const blogRouter = require("./routes/blog.routes");
 const groupRouter = require("./routes/group.routes");
+const groupListRouter = require("./routes/groupList.routes")
 
 app.use("/auth", authRouter);
 app.use("/chat", chatRouter);
 app.use("/event", eventRouter);
 app.use("/blog",blogRouter);
 app.use("/group",groupRouter);
+app.use("/groupList",groupListRouter);
 
 module.exports = app;

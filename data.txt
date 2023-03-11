@@ -29,6 +29,12 @@
     "user_name": "test"
 }
 
+- Socket : acceptInvite
+{
+    "group_id": "640acfc921839985e4d6d23e",
+    "user_id": "63e21581a436ea28cdd0f1fa",
+    "action": "1"
+}
 
 - Socket : joinGroup
 {
@@ -36,6 +42,15 @@
     "group_id": "640585b30afa74ab9e4f1142",
     "notification_img": "https://res.cloudinary.com/tcloud/image/upload/v1678083507/gcmefsf11cbpgcgwjxcg.png",
     "user_name": "test"
+}
+
+- Socket : groupChat
+{
+    "chatRoomId": "63f35e5a0dce7e87a589a477",
+    "groupId": "640acfc921839985e4d6d23e",
+    "groupName": "Ashish Bike Group",
+    "sender_id": "63e21581a436ea28cdd0f1fa",
+    "message": "Hello!"
 }
 
 =======================================================================================================
