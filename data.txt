@@ -57,10 +57,10 @@
 
 - Socket : groupChat
 {
-    "chatRoomId": "63f35e5a0dce7e87a589a477",
-    "groupId": "640acfc921839985e4d6d23e",
-    "groupName": "Ashish Bike Group",
-    "sender_id": "63e21581a436ea28cdd0f1fa",
+    "chatRoomId": "640eb8edc2602a5ea7dd66e0",
+    "groupId": "640acfef21839985e4d6d241",
+    "groupName": "test group 001",
+    "sender_id": "640078f60dce7e87a589d7d3",
     "message": "Hello!"
 }
 

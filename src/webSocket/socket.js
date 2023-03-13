@@ -885,21 +885,50 @@ function socket(io) {
         // ----- groupChat ----- //
         socket.on("groupChat", async (arg) => {
 
-            const findUser = await authModel.findOne({
-                _id: arg.receiver_id
-            });
+            const findGroup = await GroupChat.findOne({ groupId: arg.groupId });
+            const getUserData = await authModel.findOne({ _id: arg.sender_id });
 
-            const addGroupChatData = GroupChat({
-                chatRoomId: arg.chatRoomId,
-                groupId: arg.groupId,
-                groupName: arg.groupName,
-                chat: {
-                    sender: arg.sender_id,
-                    message: arg.message
+            if (findGroup == null) {
+                if (getUserData == null) {
+                    console.log("getUserData--null");
+                } else {
+
+                    const addGroupChatData = GroupChat({
+                        chatRoomId: arg.chatRoomId,
+                        groupId: arg.groupId,
+                        groupName: arg.groupName,
+                        chat: {
+                            sender: arg.sender_id,
+                            senderName: getUserData.username,
+                            senderImg: getUserData.profile[0] ? getUserData.profile[0].res : "",
+                            message: arg.message
+                        }
+                    });
+                    const saveData = await addGroupChatData.save();
+                    console.log("saveData:::----", saveData);
+
                 }
-            });
-            const saveData = await addGroupChatData.save();
-            console.log("saveData:::----", saveData);
+
+            } else {
+
+                const updateGroupChat = await GroupChat.updateOne(
+                    {
+                        groupId: arg.groupId
+                    },
+                    {
+                        $push: {
+                            chat: {
+                                sender: arg.sender_id,
+                                senderName: getUserData.username,
+                                senderImg: getUserData.profile[0] ? getUserData.profile[0].res : "",
+                                message: arg.message
+                            }
+                        }
+                    }
+                );
+                console.log("updateGroupChat:::----", updateGroupChat);
+
+            }
 
         });
         // ----- End groupChat ----- //
