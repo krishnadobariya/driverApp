@@ -10,6 +10,7 @@ const GroupChat = require("./models/groupChat.model");
 const Notification = require("../helper/firebaseHelper");
 
 const mongoose = require("mongoose");
+const { findByIdAndUpdate, updateOne } = require("./models/chatRoom.model");
 
 function socket(io) {
     console.log("SETUP :- Socket Loading....");
@@ -700,6 +701,37 @@ function socket(io) {
                 const saveData = await addData.save();
                 console.log("saveData:::", saveData);
 
+                const getChatRoomData = await GroupChatRoom.findOne({ groupId: groupId });
+                console.log("getChatRoomData::", getChatRoomData);
+                if (getChatRoomData == null) {
+
+                    const joinOnRoom = GroupChatRoom({
+                        groupId: groupId,
+                        groupName: updateGroupData.group_name,
+                        users: {
+                            userId: userId
+                        }
+                    });
+                    const createRoom = await joinOnRoom.save();
+                    console.log("createRoom:::", createRoom);
+
+                } else {
+
+                    const updateRoom = await GroupChatRoom.updateOne(
+                        {
+                            groupId: groupId
+                        },
+                        {
+                            $push: {
+                                users: {
+                                    userId: userId
+                                }
+                            }
+                        }
+                    )
+
+                }
+
                 const updateData = await NotificationModel.updateOne(
                     {
                         group_id: groupId,
@@ -771,7 +803,37 @@ function socket(io) {
                     });
                     const saveData = await addData.save();
                     console.log("saveData:::", saveData);
-                    io.emit("Public Group");
+
+                    const getChatRoomData = await GroupChatRoom.findOne({ groupId: groupId });
+                    console.log("getChatRoomData::", getChatRoomData);
+                    if (getChatRoomData == null) {
+
+                        const joinOnRoom = GroupChatRoom({
+                            groupId: groupId,
+                            groupName: updateGroupData.group_name,
+                            users: {
+                                userId: userId
+                            }
+                        });
+                        const createRoom = await joinOnRoom.save();
+                        console.log("createRoom:::", createRoom);
+
+                    } else {
+
+                        const updateRoom = await GroupChatRoom.updateOne(
+                            {
+                                groupId: groupId
+                            },
+                            {
+                                $push: {
+                                    users: {
+                                        userId: userId
+                                    }
+                                }
+                            }
+                        )
+
+                    }
 
                 }
 

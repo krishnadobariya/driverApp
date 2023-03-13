@@ -32,17 +32,28 @@
 - Socket : acceptInvite
 {
     "group_id": "640acfc921839985e4d6d23e",
-    "user_id": "63e21581a436ea28cdd0f1fa",
-    "action": "1"
+    "user_id": "6409267cba8f793e28c86183",
+    "action": "1" (1-Accept, 2-Reject)
 }
 
+[If group_type-1 (1/2 (1-Public, 2-Private))]
 - Socket : joinGroup
 {
-    "user_id": "63c9157b4becc06796221948",
+    "group_id": "640acfef21839985e4d6d241",
+    "user_id": "6409267cba8f793e28c86183",
+    "group_type": 1
+}
+
+[If group_type-2]
+- Socket : joinGroup
+{
     "group_id": "640585b30afa74ab9e4f1142",
+    "user_id": "63c9157b4becc06796221948",
+    "group_type": 2
     "notification_img": "https://res.cloudinary.com/tcloud/image/upload/v1678083507/gcmefsf11cbpgcgwjxcg.png",
     "user_name": "test"
 }
+
 
 - Socket : groupChat
 {
@@ -170,3 +181,9 @@ exports.userList = async (req, res) => {
     }
 }
 =======================================================================================================
+
+=============================================
+------------------- ToDo -------------------
+=============================================
+1. ek no ek user group join naa thavo joiye validation baki chhe
+2. 

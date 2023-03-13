@@ -9,19 +9,29 @@ const groupChatSchema = mongoose.Schema({
     },
     groupId: {
         type: objectId,
-        required: true, 
+        required: true,
     },
     groupName: {
         type: String,
-        required: true, 
+        required: true,
     },
     chat: [
         {
             sender: {
-                type: objectId
+                type: objectId,
+                required: true,
+            },
+            senderName: {
+                type: String,
+                required: true,
+            },
+            senderImg: {
+                type: String,
+                required: true,
             },
             message: {
-                type: String
+                type: String,
+                required: true,
             },
             read: {
                 type: Number,
