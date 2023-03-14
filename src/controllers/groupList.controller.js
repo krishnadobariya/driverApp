@@ -44,9 +44,36 @@ exports.joinList = async (req, res) => {
         }
         */
 
+        const myGroup = [];
+        for (const respGroupData of groupData) {
+            const response = {
+                groupId: respGroupData._id,
+                userId: respGroupData.user_id,
+                groupImg: respGroupData.group_img,
+                groupName: respGroupData.group_name,
+                groupDesc: respGroupData.group_desc,
+                groupType: respGroupData.group_type,
+                groupMembers: respGroupData.group_members
+            }
+            myGroup.push(response)
+        }
+
+        const joinGroup = [];
+        for (const respGroupData of getData) {
+            const response = {
+                groupId: respGroupData.group_id,
+                userId: respGroupData.user_id,
+                groupImg: respGroupData.group_img,
+                groupName: respGroupData.group_name,
+                groupType: respGroupData.group_type,
+                groupMembers: respGroupData.group_members
+            }
+            joinGroup.push(response)
+        }
+
         const response = {
-            myGroup: groupData,
-            joinGroup: getData
+            myGroup: myGroup,
+            joinGroup: joinGroup
         }
 
         res.status(status.OK).json(
