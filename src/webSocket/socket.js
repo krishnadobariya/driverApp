@@ -856,23 +856,24 @@ function socket(io) {
                             notification_img: arg.notification_img,
                             user_name: arg.user_name,
                             notification_type: 2
-                        })
+                        });
+                        const saveData = await insertData.save();
+
+                        const title = `Join Group`;
+                        const body = `${arg.user_name} sending you a request for join your group`;
+                        const text = "Join With Group";
+                        const sendBy = userId;
+                        const registrationToken = findUser.fcm_token;
+    
+                        Notification.sendPushNotificationFCM(
+                            registrationToken,
+                            title,
+                            body,
+                            text,
+                            sendBy,
+                            true
+                        );
                     }
-
-                    const title = `Join Group`;
-                    const body = `${arg.user_name} sending you a request for join your group`;
-                    const text = "Join With Group";
-                    const sendBy = userId;
-                    const registrationToken = findUser.fcm_token;
-
-                    Notification.sendPushNotificationFCM(
-                        registrationToken,
-                        title,
-                        body,
-                        text,
-                        sendBy,
-                        true
-                    );
 
                 }
 

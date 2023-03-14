@@ -706,12 +706,18 @@ exports.inviteList = async (req, res) => {
             console.log("checkNotification:::---", checkNotification);
 
             if (checkNotification == null) {
-                const findUser = await Auth.find({
+                const findUser = await Auth.findOne({
                     _id: getUserData._id
                 }).sort({ createdAt: -1 });
-                response.push(findUser);
+                
+                const respData = {
+                    userId: findUser._id,
+                    profile: findUser.profile[0] ? findUser.profile[0].res : "",
+                    userName: findUser.username
+                }
+                response.push(respData);
             }
-            console.log("response::---", response.length);
+
         }
 
         // const getGroupData = await Group.find({ user_id: userId });
@@ -891,6 +897,74 @@ exports.notificationList = async (req, res) => {
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
         const getData = await Notification.find({ user_id: req.params.userId }).skip(startIndex).limit(endIndex);
+        console.log("getData:::----", getData);
+
+        const respList = [];
+        for (const respData of getData) {
+
+            var now = new Date();
+            var addingDate = new Date(respData.createdAt);
+            var sec_num = (now - addingDate) / 1000;
+            var days = Math.floor(sec_num / (3600 * 24));
+            var hours = Math.floor((sec_num - (days * (3600 * 24))) / 3600);
+            var minutes = Math.floor((sec_num - (days * (3600 * 24)) - (hours * 3600)) / 60);
+            var seconds = Math.floor(sec_num - (days * (3600 * 24)) - (hours * 3600) - (minutes * 60));
+
+            if (hours < 10) { hours = "0" + hours; }
+            if (minutes < 10) { minutes = "0" + minutes; }
+            if (seconds < 10) { seconds = "0" + seconds; }
+
+            var time;
+            if (days > 28) {
+
+                time = new Date(addingDate).toDateString()
+
+            } else if (days > 21 && days < 28) {
+
+                time = "3 Week Ago"
+
+            } else if (days > 14 && days < 21) {
+
+                time = "2 Week Ago"
+
+            } else if (days > 7 && days < 14) {
+
+                time = "1 Week Ago"
+
+            } else if (days > 0 && days < 7) {
+
+                time = days == 1 ? `${days} day ago` : `${days} days ago`
+
+            } else if (hours > 0 && days == 0) {
+
+                time = hours == 1 ? `${hours} hour ago` : `${hours} hours ago`
+
+            } else if (minutes > 0 && hours == 0) {
+
+                time = minutes == 1 ? `${minutes} minute ago` : `${minutes} minutes ago`
+
+            } else if (seconds > 0 && minutes == 0 && hours == 0 && days === 0) {
+
+                time = seconds == 1 ? `${seconds} second ago` : `${seconds} seconds ago`
+
+            } else if (seconds == 0 && minutes == 0 && hours == 0 && days === 0) {
+
+                time = `Just Now`
+
+            }
+
+            const response = {
+                id: respData._id,
+                group_id: respData.group_id,
+                user_id: respData.user_id,
+                notification_msg: respData.notification_msg,
+                notification_img: respData.notification_img,
+                user_name: respData.user_name,
+                notification_type: respData.notification_type,
+                time: time
+            }
+            respList.push(response)
+        }
 
         if (getData.length == 0) {
 
@@ -911,7 +985,7 @@ exports.notificationList = async (req, res) => {
                     status: true,
                     code: 200,
                     statusCode: 1,
-                    data: getData
+                    data: respList
                 }
             )
 
