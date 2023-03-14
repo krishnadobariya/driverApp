@@ -51,7 +51,6 @@ exports.joinList = async (req, res) => {
                 userId: respGroupData.user_id,
                 groupImg: respGroupData.group_img,
                 groupName: respGroupData.group_name,
-                groupDesc: respGroupData.group_desc,
                 groupType: respGroupData.group_type,
                 groupMembers: respGroupData.group_members
             }
