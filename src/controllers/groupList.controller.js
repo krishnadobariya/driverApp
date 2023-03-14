@@ -50,36 +50,26 @@ exports.joinList = async (req, res) => {
     }
 }
 
+/*
+- Groups
+    a b c d
+
+- GroupList
+    a 
+
+- joinList ma jetla ma join chhe e list apvanu
+- remainingList ma jetla ma join thavanu baki chhe e list apvanu chhe
+*/
+
 exports.remainingList = async (req, res) => {
     try {
 
         let userId = req.params.userId;
-        const findGroupListDatas = await GroupList.find({
-            user_id: userId
-        });
 
-        if (findGroupListDatas.length == 0) {
-
-            res.status(status.NOT_FOUND).json(
-                {
-                    message: "Data Not Exist",
-                    status: false,
-                    code: 404,
-                    statusCode: 0
-                }
-            )
-
-        } else {
-
-            const response = [];
-            for (const findGroupListData of findGroupListDatas) {
-                const remainingGroup = await Group.findOne({
-                    _id: {
-                        $ne: findGroupListData.group_id
-                    }
-                })
-                response.push(remainingGroup)
-            }
+        const groupList = await Group.find();
+        const groupListData = await GroupList.find({ user_id: userId });
+        console.log("groupListData::", groupListData);
+        if (groupListData.length == 0) {
 
             res.status(status.OK).json(
                 {
@@ -87,7 +77,25 @@ exports.remainingList = async (req, res) => {
                     status: true,
                     code: 200,
                     statusCode: 1,
-                    data: response
+                    data: groupList
+                }
+            )
+
+        } else {
+
+            var remainingData = groupList.filter(function (data) {
+                return !groupListData.some(function (o2) {
+                    return (data._id).toString() == (o2.group_id).toString();
+                });
+            });
+
+            res.status(status.OK).json(
+                {
+                    message: "REMAINING GROUP LIST",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: remainingData
                 }
             )
 
