@@ -849,9 +849,11 @@ function socket(io) {
                     if (findUser == null) {
                         io.emit("User Not Found");
                     } else {
+
                         const insertData = NotificationModel({
                             group_id: groupId,
-                            user_id: userId,
+                            user_id: findGroup.user_id,
+                            req_user_id: userId,
                             notification_msg: "Join With Group",
                             notification_img: arg.notification_img,
                             user_name: arg.user_name,

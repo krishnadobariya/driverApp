@@ -10,6 +10,10 @@ const notificationSchema = mongoose.Schema({
         type: ObjectId,
         required: true
     },
+    req_user_id: {
+        type: ObjectId,
+        required: true
+    },
     notification_msg : {
         type : String,
         required : true

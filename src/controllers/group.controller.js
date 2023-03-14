@@ -957,6 +957,7 @@ exports.notificationList = async (req, res) => {
                 id: respData._id,
                 group_id: respData.group_id,
                 user_id: respData.user_id,
+                req_user_id: respData.req_user_id ? respData.req_user_id : "",
                 notification_msg: respData.notification_msg,
                 notification_img: respData.notification_img,
                 user_name: respData.user_name,
