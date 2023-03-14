@@ -7,8 +7,10 @@ exports.joinList = async (req, res) => {
     try {
 
         let userId = req.params.userId;
+        const groupData = await Group.find({ user_id: userId });
         const getData = await GroupList.find({ user_id: userId });
 
+        /*
         if (getData.length == 0) {
 
             res.status(status.NOT_FOUND).json(
@@ -22,17 +24,40 @@ exports.joinList = async (req, res) => {
 
         } else {
 
-            res.status(status.OK).json(
-                {
-                    message: "Group List View Successfully",
-                    status: true,
-                    code: 200,
-                    statusCode: 1,
-                    data: getData
-                }
-            )
+            if (groupData.length == 0) {
+
+                res.status(status.NOT_FOUND).json(
+                    {
+                        message: "Group Not Exist",
+                        status: false,
+                        code: 404,
+                        statusCode: 0
+                    }
+                )
+
+            } else {
+
+                
+
+            }
 
         }
+        */
+
+        const response = {
+            myGroup: groupData,
+            joinGroup: getData
+        }
+
+        res.status(status.OK).json(
+            {
+                message: "Group List View Successfully",
+                status: true,
+                code: 200,
+                statusCode: 1,
+                data: response
+            }
+        )
 
     } catch (error) {
 
