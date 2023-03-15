@@ -116,10 +116,17 @@ exports.remainingList = async (req, res) => {
     try {
 
         let userId = req.params.userId;
-
-        const groupList = await Group.find();
-        const groupListData = await GroupList.find({ user_id: userId });
-        console.log("groupListData::", groupListData);
+        // jo e j user nu group hoy to ene list nathi apvanu, 10 g - 2 ma join and 2 banavela chhe 2 ma jon chavo te nai aave pan 2 tame banavel chhe te pan na ava joiye 
+        // tame je userid aapo te mane male gropList mathi to e list pan nathi apvani
+        const groupList = await Group.find({
+            user_id: {
+                $ne: userId
+            }
+        });
+        const groupListData = await GroupList.find({
+            user_id: userId
+        });
+        
         if (groupListData.length == 0) {
 
             res.status(status.OK).json(
