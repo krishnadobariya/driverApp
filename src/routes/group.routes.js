@@ -11,6 +11,7 @@ const {
     inviteList,
     addPost,
     notificationList,
+    groupChatList,
 } = require("../controllers/group.controller");
 
 router.post("/add/:user_id", upload.single("group_img"), insertGroup);
@@ -22,5 +23,6 @@ router.get("/details/:groupId/:userId", groupDetails);
 router.get("/inviteList/:userId", inviteList);
 router.post("/post/add/:groupId/:userId", upload.array('posts'), addPost);
 router.get("/notificationList/:userId", notificationList);
+router.get("/groupChatList/:group_id", groupChatList)
 
 module.exports = router;

@@ -6,6 +6,7 @@ const GroupPostLike = require("../models/groupPostLike.model");
 const GroupPostComment = require("../models/groupPostComment.model");
 const Notification = require("../models/notification.model");
 const GroupMemberList = require("../models/groupMemberList.model");
+const GroupChat = require("../webSocket/models/groupChat.model");
 const GroupList = require("../models/groupList.model");
 const cloudinary = require("../utils/cloudinary.utils");
 
@@ -1022,7 +1023,6 @@ exports.notificationList = async (req, res) => {
     }
 }
 
-
 exports.groupMemberList = async (req, res) => {
     try {
 
@@ -1057,6 +1057,49 @@ exports.groupMemberList = async (req, res) => {
     } catch (error) {
 
         console.log("groupMemberList--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
+
+exports.groupChatList = async (req, res) => {
+    try {
+
+        let groupId = req.params.group_id;
+        const getChatData = await GroupChat.findOne({ groupId: groupId });
+
+        if (getChatData == null) {
+            res.status(status.NOT_FOUND).json(
+                {
+                    message: "Data Not Exist",
+                    status: false,
+                    code: 404,
+                    statusCode: 0
+                }
+            )
+        } else {
+            res.status(status.OK).json(
+                {
+                    message: "LIST OF GROUP MEMEBER",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: getChatData
+                }
+            )
+        }
+
+    } catch (error) {
+
+        console.log("groupChatList--Error::", error);
         res.status(status.INTERNAL_SERVER_ERROR).json(
             {
                 message: "Something Went Wrong",
