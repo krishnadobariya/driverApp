@@ -8,6 +8,7 @@ const GroupList = require("../models/groupList.model");
 const GroupChatRoom = require("./models/groupChatRoom.model");
 const GroupChat = require("./models/groupChat.model");
 const Notification = require("../helper/firebaseHelper");
+const GroupMemberList = require("../models/groupMemberList.model");
 
 const mongoose = require("mongoose");
 const { findByIdAndUpdate, updateOne } = require("./models/chatRoom.model");
@@ -701,6 +702,25 @@ function socket(io) {
                 const saveData = await addData.save();
                 console.log("saveData:::", saveData);
 
+                /* Get Group Member List */
+                const getUserData = await authModel.findOne({ _id: userId });
+                const updateGroupChat = await GroupMemberList.updateOne(
+                    {
+                        groupId: groupId
+                    },
+                    {
+                        $push: {
+                            users: {
+                                user_id: userId,
+                                user_name: getUserData.username,
+                                user_img: getUserData.profile[0] ? getUserData.profile[0].res : "",
+                                user_type: 2 // 1-Admin 2-Normal
+                            }
+                        }
+                    }
+                );
+                /* End Get Group Member List */
+
                 const getChatRoomData = await GroupChatRoom.findOne({ groupId: groupId });
                 console.log("getChatRoomData::", getChatRoomData);
                 if (getChatRoomData == null) {
@@ -806,6 +826,26 @@ function socket(io) {
 
                     const getChatRoomData = await GroupChatRoom.findOne({ groupId: groupId });
                     console.log("getChatRoomData::", getChatRoomData);
+
+                    /* Get Group Member List */
+                    const getUserData = await authModel.findOne({ _id: userId });
+                    const updateGroupChat = await GroupMemberList.updateOne(
+                        {
+                            groupId: groupId
+                        },
+                        {
+                            $push: {
+                                users: {
+                                    user_id: userId,
+                                    user_name: getUserData.username,
+                                    user_img: getUserData.profile[0] ? getUserData.profile[0].res : "",
+                                    user_type: 2 // 1-Admin 2-Normal
+                                }
+                            }
+                        }
+                    );
+                    /* End Get Group Member List */
+
                     if (getChatRoomData == null) {
 
                         const joinOnRoom = GroupChatRoom({
@@ -866,7 +906,7 @@ function socket(io) {
                         const text = "Join With Group";
                         const sendBy = userId;
                         const registrationToken = findUser.fcm_token;
-    
+
                         Notification.sendPushNotificationFCM(
                             registrationToken,
                             title,

@@ -5,13 +5,14 @@ const GroupPost = require("../models/groupPost.model");
 const GroupPostLike = require("../models/groupPostLike.model");
 const GroupPostComment = require("../models/groupPostComment.model");
 const Notification = require("../models/notification.model");
+const GroupMemberList = require("../models/groupMemberList.model");
 const GroupList = require("../models/groupList.model");
 const cloudinary = require("../utils/cloudinary.utils");
 
 
 exports.insertGroup = async (req, res) => {
     try {
-        const userData = await Auth.findOne({ _id: req.params.user_id })
+        const userData = await Auth.findOne({ _id: req.params.user_id });
 
         if (userData) {
 
@@ -33,7 +34,7 @@ exports.insertGroup = async (req, res) => {
 
             const newPath = await cloudinaryImageUploadMethod(path)
 
-            const insertData = await Group({
+            const insertData = Group({
                 user_id: req.params.user_id,
                 group_img: newPath.res,
                 group_name: req.body.group_name,
@@ -41,6 +42,19 @@ exports.insertGroup = async (req, res) => {
                 group_type: req.body.group_type
             })
             const saveData = await insertData.save();
+            console.log("saveData:::", saveData);
+
+            const addMember = GroupMemberList({
+                group_id: saveData._id,
+                users: {
+                    user_id: req.params.user_id,
+                    user_name: userData.username,
+                    user_img: userData.profile[0] ? userData.profile[0].res : "",
+                    user_type: 1 // 1-Admin 2-Normal
+                }
+            });
+            const saveMemberData = await addMember.save();
+            console.log("saveMemberData::--", saveMemberData);
 
             res.status(status.CREATED).json(
                 {
@@ -709,7 +723,7 @@ exports.inviteList = async (req, res) => {
                 const findUser = await Auth.findOne({
                     _id: getUserData._id
                 }).sort({ createdAt: -1 });
-                
+
                 const respData = {
                     userId: findUser._id,
                     profile: findUser.profile[0] ? findUser.profile[0].res : "",
@@ -995,6 +1009,54 @@ exports.notificationList = async (req, res) => {
     } catch (error) {
 
         console.log("notificationList--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
+
+
+exports.groupMemberList = async (req, res) => {
+    try {
+
+        const groupId = req.params.group_id;
+        const getData = await GroupMemberList.findOne({ group_id: groupId });
+
+        if (getData == null) {
+
+            res.status(status.NOT_FOUND).json(
+                {
+                    message: "Data Not Exist",
+                    status: false,
+                    code: 404,
+                    statusCode: 0
+                }
+            )
+
+        } else {
+
+            res.status(status.OK).json(
+                {
+                    message: "LIST OF GROUP MEMEBER",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: getData
+                }
+            )
+
+        }
+
+    } catch (error) {
+
+        console.log("groupMemberList--Error::", error);
         res.status(status.INTERNAL_SERVER_ERROR).json(
             {
                 message: "Something Went Wrong",
