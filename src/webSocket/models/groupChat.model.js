@@ -2,11 +2,11 @@ const mongoose = require("mongoose");
 const objectId = mongoose.Schema.Types.ObjectId;
 
 const groupChatSchema = mongoose.Schema({
-    chatRoomId: {
-        type: objectId,
-        required: true,
-        ref: 'groupChatRoom'
-    },
+    // chatRoomId: {
+    //     type: objectId,
+    //     required: true,
+    //     ref: 'groupChatRoom'
+    // },
     groupId: {
         type: objectId,
         required: true,

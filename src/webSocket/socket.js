@@ -930,14 +930,19 @@ function socket(io) {
 
             const findGroup = await GroupChat.findOne({ groupId: arg.groupId });
             const getUserData = await authModel.findOne({ _id: arg.sender_id });
+            // memeber list and sender id sivay na data io.to(userRoom).emit("getStatus", 1)
+
+            const getMemberList = await GroupMemberList.findOne({ group_id: arg.groupId });
+            console.log("getMemberList:::", getMemberList.users);
 
             if (findGroup == null) {
+
                 if (getUserData == null) {
                     console.log("getUserData--null");
                 } else {
 
                     const addGroupChatData = GroupChat({
-                        chatRoomId: arg.chatRoomId,
+                        // chatRoomId: arg.chatRoomId,
                         groupId: arg.groupId,
                         groupName: arg.groupName,
                         chat: {
@@ -949,6 +954,35 @@ function socket(io) {
                     });
                     const saveData = await addGroupChatData.save();
                     console.log("saveData:::----", saveData);
+
+                    for (const userData of getMemberList.users) {
+                        console.log("userData:::", userData);
+
+                        if (userData.user_id == arg.sender_id) {
+                            console.log("Condition:::---", userData.user_id == arg.sender_id);
+                        } else {
+
+                            io.to(userData.user_id).emit('Message You');
+
+                            const getUserToken = await authModel.findOne({_id:userData.user_id}).select('fcm_token');
+
+                            const title = `${arg.groupName}`;
+                            const body = `${getUserData.username} Send ${arg.message}`;
+                            const text = arg.message;
+                            const sendBy = userData.user_id;
+                            const registrationToken = getUserToken.fcm_token
+                            Notification.sendPushNotificationFCM(
+                                registrationToken,
+                                title,
+                                body,
+                                text,
+                                sendBy,
+                                true
+                            );
+
+                        }
+
+                    }
 
                 }
 
@@ -970,6 +1004,33 @@ function socket(io) {
                     }
                 );
                 console.log("updateGroupChat:::----", updateGroupChat);
+
+                for (const userData of getMemberList.users) {
+                    console.log("userData:::", userData);
+
+                    if (userData.user_id == arg.sender_id) {
+                        console.log("Condition:::---", userData.user_id == arg.sender_id);
+                    } else {
+                        io.to(userData.user_id).emit('Message You');
+                        const getUserToken = await authModel.findOne({_id:userData.user_id}).select('fcm_token');
+
+                        const title = `${arg.groupName}`;
+                        const body = `${getUserData.username} Send ${arg.message}`;
+                        const text = arg.message;
+                        const sendBy = userData.user_id;
+                        const registrationToken = getUserToken.fcm_token
+                        Notification.sendPushNotificationFCM(
+                            registrationToken,
+                            title,
+                            body,
+                            text,
+                            sendBy,
+                            true
+                        );
+
+                    }
+
+                }
 
             }
 
