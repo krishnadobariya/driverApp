@@ -3,6 +3,7 @@ const authModel = require("../models/auth.model");
 const chatRoomModel = require("../webSocket/models/chatRoom.model");
 const chatModel = require("../webSocket/models/chat.model");
 const Block = require("../models/blockUnblock.model");
+const GroupList = require("../models/groupList.model");
 const cloudinary = require("../utils/cloudinary.utils");
 const { mailService } = require("../services/email.service");
 const status = require("http-status");
@@ -343,11 +344,6 @@ exports.userProfile = async (req, res) => {
         );
         console.log("userProfile:::", getUserData);
 
-        const profile_id = getUserData._id;
-        const user_id = req.params.user_id;
-
-        console.log("Ids:::::", profile_id, user_id);
-
         if (getUserData == null) {
 
             res.status(status.NOT_FOUND).json(
@@ -373,6 +369,9 @@ exports.userProfile = async (req, res) => {
             //     user2: profile_id
             // });
 
+            const profile_id = getUserData._id;
+            const user_id = req.params.user_id;
+
             var getChatRoom = "";
             getChatRoom = await chatRoomModel.find({
                 user1: profile_id,
@@ -389,7 +388,10 @@ exports.userProfile = async (req, res) => {
 
             }
 
-            const response = {
+            const getGroupData = await GroupList.find({ user_id: req.params.id });
+            console.log("getGroupData::--", getGroupData);
+
+            const resp = {
                 user_id: getUserData._id,
                 chatRoomId: getChatRoom[0] ? getChatRoom[0]._id : "",
                 profile: getUserData.profile[0] ? getUserData.profile[0].res : "",
@@ -404,6 +406,11 @@ exports.userProfile = async (req, res) => {
                 longitude: getUserData.location.coordinates[0],
                 latitude: getUserData.location.coordinates[1],
                 vehicle: getUserData.vehicle
+            }
+
+            const response = {
+                userData: resp,
+                groupData: getGroupData
             }
 
             res.status(status.OK).json(
