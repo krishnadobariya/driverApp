@@ -54,7 +54,6 @@
     "user_name": "test"
 }
 
-
 - Socket : groupChat
 {
     "groupId": "64116e34e0278f59be4119b0",

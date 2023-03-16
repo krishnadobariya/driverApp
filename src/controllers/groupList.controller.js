@@ -101,17 +101,6 @@ exports.joinList = async (req, res) => {
     }
 }
 
-/*
-- Groups
-    a b c d
-
-- GroupList
-    a 
-
-- joinList ma jetla ma join chhe e list apvanu
-- remainingList ma jetla ma join thavanu baki chhe e list apvanu chhe
-*/
-
 exports.remainingList = async (req, res) => {
     try {
 
@@ -126,7 +115,7 @@ exports.remainingList = async (req, res) => {
         const groupListData = await GroupList.find({
             user_id: userId
         });
-        
+
         if (groupListData.length == 0) {
 
             res.status(status.OK).json(

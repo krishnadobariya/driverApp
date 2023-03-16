@@ -693,18 +693,30 @@ exports.groupDetails = async (req, res) => {
     }
 }
 
+/*
+
+a - invite
+b, c dekhavana joiye
+
+mare 
+a
+b
+c
+
+ */
+
 exports.inviteList = async (req, res) => {
     try {
 
         const userId = req.params.userId;
+        const groupId = req.params.groupId;
         let page = parseInt(req.query.page);
         let limit = parseInt(req.query.limit);
 
         // --- for pagination --- //
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
-
-        console.log("startIndex:::", startIndex);
+        console.log("startIndex:::", startIndex, endIndex);
 
         const getUserDatas = await Auth.find({
             _id: {
@@ -717,7 +729,10 @@ exports.inviteList = async (req, res) => {
         for (const getUserData of getUserDatas) {
             console.log("getUserData::", getUserData._id);
 
-            const checkNotification = await Notification.findOne({ user_id: getUserData._id });
+            const checkNotification = await Notification.findOne({
+                user_id: getUserData._id,
+                group_id: groupId
+            });
             console.log("checkNotification:::---", checkNotification);
 
             if (checkNotification == null) {

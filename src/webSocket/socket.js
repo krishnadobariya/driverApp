@@ -9,9 +9,7 @@ const GroupChatRoom = require("./models/groupChatRoom.model");
 const GroupChat = require("./models/groupChat.model");
 const Notification = require("../helper/firebaseHelper");
 const GroupMemberList = require("../models/groupMemberList.model");
-
 const mongoose = require("mongoose");
-const { findByIdAndUpdate, updateOne } = require("./models/chatRoom.model");
 
 function socket(io) {
     console.log("SETUP :- Socket Loading....");
@@ -962,7 +960,7 @@ function socket(io) {
                             console.log("Condition:::---", userData.user_id == arg.sender_id);
                         } else {
 
-                            io.to(userData.user_id).emit('Message You');
+                            io.to(userData.user_id).emit('messageYou');
 
                             const getUserToken = await authModel.findOne({_id:userData.user_id}).select('fcm_token');
 
@@ -1011,7 +1009,7 @@ function socket(io) {
                     if (userData.user_id == arg.sender_id) {
                         console.log("Condition:::---", userData.user_id == arg.sender_id);
                     } else {
-                        io.to(userData.user_id).emit('Message You');
+                        io.to(userData.user_id).emit('messageYou');
                         const getUserToken = await authModel.findOne({_id:userData.user_id}).select('fcm_token');
 
                         const title = `${arg.groupName}`;
