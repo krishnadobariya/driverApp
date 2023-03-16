@@ -954,7 +954,7 @@ function socket(io) {
                     console.log("saveData:::----", saveData);
 
                     for (const userData of getMemberList.users) {
-                        console.log("userData:::", userData);
+                        console.log("userData:::", userData.user_id);
 
                         if (userData.user_id == arg.sender_id) {
                             console.log("Condition:::---", userData.user_id == arg.sender_id);
@@ -962,12 +962,12 @@ function socket(io) {
 
                             io.to(userData.user_id).emit('messageYou');
 
-                            const getUserToken = await authModel.findOne({_id:userData.user_id}).select('fcm_token');
+                            const getUserToken = await authModel.findOne({ _id: userData.user_id }).select('fcm_token');
 
                             const title = `${arg.groupName}`;
                             const body = `${getUserData.username} Send ${arg.message}`;
                             const text = arg.message;
-                            const sendBy = userData.user_id;
+                            const sendBy = JSON.stringify(userData.user_id);
                             const registrationToken = getUserToken.fcm_token
                             Notification.sendPushNotificationFCM(
                                 registrationToken,
@@ -1010,12 +1010,13 @@ function socket(io) {
                         console.log("Condition:::---", userData.user_id == arg.sender_id);
                     } else {
                         io.to(userData.user_id).emit('messageYou');
-                        const getUserToken = await authModel.findOne({_id:userData.user_id}).select('fcm_token');
+                        
+                        const getUserToken = await authModel.findOne({ _id: userData.user_id }).select('fcm_token');
 
                         const title = `${arg.groupName}`;
                         const body = `${getUserData.username} Send ${arg.message}`;
                         const text = arg.message;
-                        const sendBy = userData.user_id;
+                        const sendBy = JSON.stringify(userData.user_id);
                         const registrationToken = getUserToken.fcm_token
                         Notification.sendPushNotificationFCM(
                             registrationToken,
