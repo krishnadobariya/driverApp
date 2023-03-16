@@ -960,7 +960,8 @@ function socket(io) {
                             console.log("Condition:::---", userData.user_id == arg.sender_id);
                         } else {
 
-                            io.to(userData.user_id).emit('messageYou');
+                            const emitUserId = `User${userData.user_id}`
+                            io.to(emitUserId).emit('messageYou');
 
                             const getUserToken = await authModel.findOne({ _id: userData.user_id }).select('fcm_token');
 
@@ -1009,7 +1010,9 @@ function socket(io) {
                     if (userData.user_id == arg.sender_id) {
                         console.log("Condition:::---", userData.user_id == arg.sender_id);
                     } else {
-                        io.to(userData.user_id).emit('messageYou');
+
+                        const emitUserId = `User${userData.user_id}`
+                        io.to(emitUserId).emit('messageYou');
                         
                         const getUserToken = await authModel.findOne({ _id: userData.user_id }).select('fcm_token');
 

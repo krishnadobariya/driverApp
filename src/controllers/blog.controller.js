@@ -19,7 +19,7 @@ exports.addBlog = async (req, res) => {
 
         const cloudinaryImageUploadMethod = async file => {
             return new Promise(resolve => {
-                cloudinary.uploader.upload(file, (err, res) => {
+                cloudinary.uploader.upload(file, { resource_type: "auto" }, (err, res) => {
                     if (err) return err
                     resolve({
                         res: res.secure_url
@@ -901,9 +901,9 @@ exports.reportBlog = async (req, res) => {
 
             } else {
 
-                const findReportUserData = await Report.findOne({ user_id : user_id , blog_id : blog_id });
+                const findReportUserData = await Report.findOne({ user_id: user_id, blog_id: blog_id });
 
-                if(findReportUserData == null) {
+                if (findReportUserData == null) {
 
                     const addInReport = Report({
                         user_id: user_id,
@@ -911,7 +911,7 @@ exports.reportBlog = async (req, res) => {
                         message: req.body.message
                     });
                     const saveData = await addInReport.save();
-    
+
                     res.status(status.CREATED).json(
                         {
                             message: "Blog Report Add Successfully",

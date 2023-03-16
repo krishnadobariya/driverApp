@@ -11,7 +11,7 @@ exports.addEvent = async (req, res) => {
 
         const cloudinaryImageUploadMethod = async file => {
             return new Promise(resolve => {
-                cloudinary.uploader.upload(file, (err, res) => {
+                cloudinary.uploader.upload(file, { resource_type: "auto" }, (err, res) => {
                     if (err) return err
                     resolve({
                         res: res.secure_url
