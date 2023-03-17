@@ -15,6 +15,6 @@ router.get("/list/:userId", userPostList);
 router.post("/addComment/:userId/:postId", userPostComment);
 router.post("/likeDislike/:userId/:postId", userPostLikeDislike);
 router.post("/commentList/:postId", userPostCommnetList);
-router.post("/likedList/:postId", userPostLikedList)
+router.post("/likedUserList/:postId", userPostLikedList)
 
 module.exports = router;
