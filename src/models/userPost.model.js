@@ -2,11 +2,6 @@ const mongoose = require("mongoose");
 const ObjectId = mongoose.Types.ObjectId;
 
 const userPostSchema = mongoose.Schema({
-    group_id: {
-        type: ObjectId,
-        ref: 'group',
-        required: true
-    },
     user_id: {
         type: ObjectId,
         ref: "auth",
@@ -30,11 +25,11 @@ const userPostSchema = mongoose.Schema({
         type: Array,
         required: true
     },
-    like_count: {
+    likes: {
         type: Number,
         default: 0
     },
-    comment_count: {
+    comments: {
         type: Number,
         default: 0
     },

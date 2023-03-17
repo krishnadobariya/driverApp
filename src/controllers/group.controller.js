@@ -512,7 +512,7 @@ exports.commentList = async (req, res) => {
                 status: true,
                 code: 200,
                 statusCode: 1,
-                DATA: getCommentedPost
+                data: getCommentedPost
             })
 
         }
@@ -692,18 +692,6 @@ exports.groupDetails = async (req, res) => {
 
     }
 }
-
-/*
-
-a - invite
-b, c dekhavana joiye
-
-mare 
-a
-b
-c
-
- */
 
 exports.inviteList = async (req, res) => {
     try {
