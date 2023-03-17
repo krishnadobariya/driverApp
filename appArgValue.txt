@@ -19,6 +19,13 @@
 }
 -- emit :- readChat
 
+#groupChatReadUnread
+{
+    "groupId": "64116e34e0278f59be4119b0",
+    "user_id": "63da52c0a436ea28cdd0ee0b"
+}
+-- emit :- groupReadChat
+
 == userDetails ==
 user1: 630dd4b90578c17364b8157a
 user2: 630dd6e56f1c372cab1dfca7

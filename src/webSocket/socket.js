@@ -931,7 +931,6 @@ function socket(io) {
             // memeber list and sender id sivay na data io.to(userRoom).emit("getStatus", 1)
 
             const getMemberList = await GroupMemberList.findOne({ group_id: arg.groupId });
-            console.log("getMemberList:::", getMemberList.users);
 
             if (findGroup == null) {
 
@@ -939,54 +938,61 @@ function socket(io) {
                     console.log("getUserData--null");
                 } else {
 
-                    const addGroupChatData = GroupChat({
-                        // chatRoomId: arg.chatRoomId,
-                        groupId: arg.groupId,
-                        groupName: arg.groupName,
-                        chat: {
-                            sender: arg.sender_id,
-                            senderName: getUserData.username,
-                            senderImg: getUserData.profile[0] ? getUserData.profile[0].res : "",
-                            message: arg.message
-                        }
-                    });
-                    const saveData = await addGroupChatData.save();
-                    console.log("saveData:::----", saveData);
+                    if (getMemberList == null) {
+                        io.emit('messageYou', 'You are not a member of the group');
+                    } else {
 
-                    for (const userData of getMemberList.users) {
-                        console.log("userData:::", userData.user_id);
-
-                        if (userData.user_id == arg.sender_id) {
-                            console.log("Condition:::---", userData.user_id == arg.sender_id);
-                        } else {
-
-                            const emitUserId = `User${userData.user_id}`;
-
-                            const response = {
+                        const addGroupChatData = GroupChat({
+                            // chatRoomId: arg.chatRoomId,
+                            groupId: arg.groupId,
+                            groupName: arg.groupName,
+                            chat: {
                                 sender: arg.sender_id,
-                                user_name: userData.user_name,
+                                senderName: getUserData.username,
+                                senderImg: getUserData.profile[0] ? getUserData.profile[0].res : "",
                                 message: arg.message
                             }
+                        });
+                        const saveData = await addGroupChatData.save();
+                        console.log("saveData:::----", saveData);
 
-                            io.to(emitUserId).emit('messageYou', response);
+                        for (const userData of getMemberList.users) {
+                            console.log("userData:::", userData.user_id);
 
-                            const getUserToken = await authModel.findOne({ _id: userData.user_id }).select('fcm_token');
+                            if (userData.user_id == arg.sender_id) {
+                                console.log("Condition:::---", userData.user_id == arg.sender_id);
+                            } else {
 
-                            const title = `${arg.groupName}`;
-                            const body = `${getUserData.username} Send ${arg.message}`;
-                            const text = arg.message;
-                            const sendBy = JSON.stringify(userData.user_id);
-                            const registrationToken = getUserToken.fcm_token
-                            Notification.sendPushNotificationFCM(
-                                registrationToken,
-                                title,
-                                body,
-                                text,
-                                sendBy,
-                                true
-                            );
+                                const emitUserId = `User${userData.user_id}`;
+
+                                const response = {
+                                    sender: arg.sender_id,
+                                    user_name: userData.user_name,
+                                    message: arg.message
+                                }
+
+                                io.to(emitUserId).emit('messageYou', response);
+
+                                const getUserToken = await authModel.findOne({ _id: userData.user_id }).select('fcm_token');
+
+                                const title = `${arg.groupName}`;
+                                const body = `${getUserData.username} Send ${arg.message}`;
+                                const text = arg.message;
+                                const sendBy = JSON.stringify(userData.user_id);
+                                const registrationToken = getUserToken.fcm_token
+                                Notification.sendPushNotificationFCM(
+                                    registrationToken,
+                                    title,
+                                    body,
+                                    text,
+                                    sendBy,
+                                    true
+                                );
+
+                            }
 
                         }
+
 
                     }
 
@@ -1052,6 +1058,64 @@ function socket(io) {
 
         });
         // ----- End groupChat ----- //
+
+
+        // ----- groupChatReadUnread ----- //
+        socket.on("groupChatReadUnread", async (arg) => {
+
+            let userId = arg.userId;
+            let groupId = arg.groupId;
+            const userRoom = `User${userId}`;
+            console.log("userRoom::", userRoom);
+
+            const findUser = await authModel.findOne({ _id: userId });
+            if (findUser == null) {
+                io.to(userRoom).emit("groupReadChat", "User Not Found");
+            } else {
+
+                const findGroupMember = await GroupMemberList.findOne({
+                    group_id: groupId,
+                    users: {
+                        $elemMatch: {
+                            user_id: userId
+                        }
+                    }
+                });
+                console.log("findGroupMember:::", findGroupMember);
+
+                if (findGroupMember == null) {
+                    io.to(userRoom).emit("groupReadChat", "Group ChatRoom Not Found");
+                } else {
+
+                    const findChatRoom = await GroupChat.findOne({ groupId: groupId });
+                    if (findChatRoom == null) {
+                        io.to(userRoom).emit("groupReadChat", "You are not a member of the group");
+                    } else {
+
+                        console.log("--aSagdsck--");
+                        const updateChat = await GroupChat.updateOne(
+                            {
+                                groupId: groupId
+                            },
+                            {
+                                $push: {
+                                    "chat.$[].read": {
+                                        reader: userId,
+                                        readerName: findUser.username
+                                    }
+                                }
+                            }
+                        )
+                        io.to(userRoom).emit("groupReadChat", "Chat Has Been Read");
+
+                    }
+
+                }
+
+            }
+
+        });
+        // ----- groupChatReadUnread ----- //
 
     })
 

@@ -1,6 +1,6 @@
 - Socket : joinUser
 {
-    "user_id": "63c7dde43c7070c4df51117a"
+    "user_id": "63c9157b4becc06796221948"
 }
 
 
@@ -58,9 +58,18 @@
 {
     "groupId": "64116e34e0278f59be4119b0",
     "groupName": "abc",
-    "sender_id": "63da52c0a436ea28cdd0ee0b",
-    "message": "Hello!"
+    "sender_id": "63d8ffe2a436ea28cdd0ecc1",
+    "message": "km chho"
 }
+- emit : messageYou
+
+- Socket : groupChatReadUnread
+{
+    "userId": "63e21501a436ea28cdd0f1cb",
+    "groupId": "64116e34e0278f59be4119b0"
+}
+- emit : groupReadChat
+
 
 =============================================
 ------------------- ToDo -------------------
@@ -110,3 +119,5 @@ invite
 64100c4d60b619abc53251bb = group
 63d8ffe2a436ea28cdd0ecc1 = invite frd 1
 63da52c0a436ea28cdd0ee0b = invite frd 2
+
+

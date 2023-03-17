@@ -33,10 +33,16 @@ const groupChatSchema = mongoose.Schema({
                 type: String,
                 required: true,
             },
-            read: {
-                type: Number,
-                default: 0
-            }
+            read: [
+                {
+                    reader: {
+                        type: objectId
+                    },
+                    readerName: {
+                        type: String
+                    }
+                }
+            ]
         }
     ]
 }, {
