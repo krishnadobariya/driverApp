@@ -40,7 +40,17 @@ const authSchema = mongoose.Schema({
     status: {
         type: String,
         required: true,
-        default: "Active"
+        default: "active"
+    },
+    start_time: {
+        type: String,
+        required: true,
+        default: "0000-00-00T00:00:00"
+    },
+    end_time: {
+        type: String,
+        required: true,
+        default: "0000-00-00T00:00:00"
     },
     password: {
         type: String,

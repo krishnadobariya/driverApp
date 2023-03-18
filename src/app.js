@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require("cors");
+const cron = require("node-cron");
 require("dotenv").config();
 require("./db/conn");
 
@@ -26,5 +27,16 @@ app.use("/blog", blogRouter);
 app.use("/group", groupRouter);
 app.use("/groupList", groupListRouter);
 app.use("/userPost", userPost);
+// ---------- End Define Routes Here ---------- //
+
+
+// ---------- For cron that starts continuously ---------- //
+const { userStatus } = require("./controllers/cronJob.controller");
+cron.schedule('*/1 * * * * *', async () => {
+
+    userStatus()
+
+});
+// ---------- End For cron that starts continuously ---------- //
 
 module.exports = app;

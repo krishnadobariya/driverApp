@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+const cron = require("node-cron");
 const chatRoom = require("./models/chatRoom.model");
 const chatModel = require("./models/chat.model");
 const authModel = require("../models/auth.model");
@@ -7,9 +9,8 @@ const Group = require("../models/group.model");
 const GroupList = require("../models/groupList.model");
 const GroupChatRoom = require("./models/groupChatRoom.model");
 const GroupChat = require("./models/groupChat.model");
-const Notification = require("../helper/firebaseHelper");
 const GroupMemberList = require("../models/groupMemberList.model");
-const mongoose = require("mongoose");
+const Notification = require("../helper/firebaseHelper");
 
 function socket(io) {
     console.log("SETUP :- Socket Loading....");
@@ -1116,6 +1117,40 @@ function socket(io) {
 
         });
         // ----- groupChatReadUnread ----- //
+
+
+        socket.on("mapOnline", async (arg) => {
+
+            let userId = arg.userId;
+            let minutes = arg.time;
+
+            const startTime = new Date().toISOString().slice(0, 19);;
+            const endTime = new Date(new Date().getTime() + minutes * 60000).toISOString().slice(0, 19);;
+
+            const insertData = await authModel.findByIdAndUpdate(
+                {
+                    _id: userId
+                },
+                {
+                    $set: {
+                        start_time: startTime,
+                        end_time: endTime
+                    }
+                }
+            );
+
+        });
+
+        // socket.on("userStatus", async (arg) => {
+
+        //     cron.schedule('*/5 * * * * *', async () => {
+
+        //         const startTime = new Date();
+        //         console.log("startTime::--::", startTime);
+
+        //     });
+
+        // });
 
     })
 

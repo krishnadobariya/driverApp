@@ -23,6 +23,6 @@ router.get("/details/:groupId/:userId", groupDetails);
 router.get("/inviteList/:userId/:groupId", inviteList);
 router.post("/post/add/:groupId/:userId", upload.array('posts'), addPost);
 router.get("/notificationList/:userId", notificationList);
-router.get("/groupChatList/:group_id", groupChatList)
+router.get("/groupChatList/:group_id", groupChatList);
 
 module.exports = router;
