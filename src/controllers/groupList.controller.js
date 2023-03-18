@@ -1,5 +1,7 @@
 const GroupList = require("../models/groupList.model");
 const Group = require("../models/group.model");
+const GroupChat = require("../webSocket/models/groupChat.model");
+const User = require("../models/auth.model");
 const status = require("http-status");
 
 
@@ -118,13 +120,12 @@ exports.remainingList = async (req, res) => {
 
         if (groupListData.length == 0) {
 
-            res.status(status.OK).json(
+            res.status(status.NOT_FOUND).json(
                 {
-                    message: "REMAINING GROUP LIST",
-                    status: true,
-                    code: 200,
-                    statusCode: 1,
-                    data: groupList
+                    message: "GroupList Not Exist",
+                    status: false,
+                    code: 404,
+                    statusCode: 0
                 }
             )
 
@@ -150,7 +151,95 @@ exports.remainingList = async (req, res) => {
 
     } catch (error) {
 
-        console.log("notJoinList--Error::", error);
+        console.log("remainingList--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
+
+exports.groupListByChat = async (req, res) => {
+    try {
+
+        let userId = req.params.userId;
+        const findUser = await User.findOne({ _id: userId });
+        if (findUser == null) {
+
+            res.status(status.NOT_FOUND).json(
+                {
+                    message: "User Not Exist",
+                    status: false,
+                    code: 404,
+                    statusCode: 0
+                }
+            )
+
+        } else {
+
+            const findGroup = await GroupList.find({ user_id: userId });
+ 
+            const response = [];
+            for (const respData of findGroup) {
+
+                const findChats = await GroupChat.find({ groupId: respData.group_id });
+                for (const findChat of findChats) {
+
+                    const chatMessage = findChat.chat;
+                    const getLastMessage = chatMessage[chatMessage.length - 1];
+                    
+                    var readCount = 0
+                    var unReadCount = 0
+                    for (const getReader of chatMessage) {
+    
+                        var readerCount = getReader.read;
+    
+                        var data = readerCount.find(function (ele) {
+                            return ele.reader == userId;
+                        });
+    
+                        if (data == undefined) {
+                            unReadCount += 1
+                        } else {
+                            readCount += 1
+                        }
+    
+                    }
+
+                    const chatData = {
+                        groupName: respData.group_name,
+                        groupImage: respData.group_img,
+                        unReadCount: unReadCount,
+                        lastMsg: getLastMessage.message,
+                        lastMsgUsername: getLastMessage.senderName,
+                    }
+                    response.push(chatData);
+
+                }
+
+            }
+
+            res.status(status.OK).json(
+                {
+                    message: "REMAINING GROUP LIST",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: response
+                }
+            )
+
+        }
+
+    } catch (error) {
+
+        console.log("groupListByChat--Error::", error);
         res.status(status.INTERNAL_SERVER_ERROR).json(
             {
                 message: "Something Went Wrong",
