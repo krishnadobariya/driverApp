@@ -1,6 +1,7 @@
 const GroupList = require("../models/groupList.model");
 const Group = require("../models/group.model");
 const GroupChat = require("../webSocket/models/groupChat.model");
+const GroupPostLike = require("../models/groupPostLike.model");
 const User = require("../models/auth.model");
 const status = require("http-status");
 
@@ -230,6 +231,71 @@ exports.groupListByChat = async (req, res) => {
             res.status(status.OK).json(
                 {
                     message: "REMAINING GROUP LIST",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: response
+                }
+            )
+
+        }
+
+    } catch (error) {
+
+        console.log("groupListByChat--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
+
+exports.groupPostLikedList = async (req, res) => {
+    try {
+
+        let postId = req.params.postId;
+        const findGroupPostData = await GroupPostLike.findOne({
+            post_id: postId
+        });
+        console.log("findGroupPostData::", findGroupPostData);
+
+        if (findGroupPostData == null) {
+
+            res.status(status.NOT_FOUND).json({
+                message: "Liked user Not Found!",
+                status: true,
+                code: 200,
+                statusCode: 1,
+                data: []
+            })
+
+        } else {
+
+            const response = [];
+            for (const respData of findGroupPostData.reqAuthId) {
+
+                const getUserData = await User.findOne({
+                    _id: respData._id
+                });
+
+                const userData = {
+                    user_id: respData._id,
+                    profile: getUserData.profile[0] ? getUserData.profile[0].res : "",
+                    username: getUserData.username,
+                    email: getUserData.email
+                }
+                response.push(userData)
+            }
+
+            res.status(status.OK).json(
+                {
+                    message: "Get Liked User Data List From Group Post Successfully",
                     status: true,
                     code: 200,
                     statusCode: 1,
