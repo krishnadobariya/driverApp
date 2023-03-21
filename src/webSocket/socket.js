@@ -1141,17 +1141,6 @@ function socket(io) {
 
         });
 
-        // socket.on("userStatus", async (arg) => {
-
-        //     cron.schedule('*/5 * * * * *', async () => {
-
-        //         const startTime = new Date();
-        //         console.log("startTime::--::", startTime);
-
-        //     });
-
-        // });
-
     })
 
 }

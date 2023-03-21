@@ -33,9 +33,7 @@ app.use("/userPost", userPost);
 // ---------- For cron that starts continuously ---------- //
 const { userStatus } = require("./controllers/cronJob.controller");
 cron.schedule('*/1 * * * * *', async () => {
-
     userStatus()
-
 });
 // ---------- End For cron that starts continuously ---------- //
 

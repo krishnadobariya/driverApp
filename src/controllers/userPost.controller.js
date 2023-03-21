@@ -122,13 +122,59 @@ exports.userPostList = async (req, res) => {
 
             const getUserPost = await UserPost.find({ user_id: userId });
 
+            const response = [];
+            for (const respData of getUserPost) {
+                
+                var findLikedUser = await UserPostLike.findOne({
+                    post_id: respData._id,
+                    "reqAuthId._id": userId
+                });
+
+                if (findLikedUser == null) {
+                    
+                    const data = {
+                        postId: respData._id,
+                        userId: respData.user_id,
+                        user_img: respData.user_img,
+                        user_name: respData.user_name,
+                        desc: respData.desc,
+                        image_video: respData.image_video,
+                        likes: respData.likes,
+                        comments: respData.comments,
+                        media_type: respData.media_type,
+                        isLike: false,
+                    }
+                    response.push(data)
+
+                } else {
+
+                    const data = {
+                        postId: respData._id,
+                        userId: respData.user_id,
+                        user_img: respData.user_img,
+                        user_name: respData.user_name,
+                        desc: respData.desc,
+                        image_video: respData.image_video,
+                        likes: respData.likes,
+                        comments: respData.comments,
+                        media_type: respData.media_type,
+                        isLike: true,
+                    }
+                    response.push(data)
+
+                }
+
+
+
+            }
+
             res.status(status.OK).json(
                 {
                     message: "USER POST ADDED SUCCESSFULLY",
                     status: true,
                     code: 200,
                     statusCode: 1,
-                    data: getUserPost
+                    data: response
                 }
             )
 
@@ -392,7 +438,7 @@ exports.userPostLikeDislike = async (req, res) => {
                     if (userPostLikeModel && reqUserInLikeModel) {
 
                         const updateLike = await UserPost.updateOne({
-                            group_id: groupId
+                            _id: postId
                         }, {
                             $inc: {
                                 likes: -1
@@ -401,7 +447,7 @@ exports.userPostLikeDislike = async (req, res) => {
                         console.log("updateLike::-", updateLike);
 
                         const updateLikedUser = await UserPostLike.updateOne({
-                            groupId: groupId
+                            post_id: postId
                         }, {
                             $pull: {
                                 reqAuthId: {
@@ -514,9 +560,9 @@ exports.userPostCommnetList = async (req, res) => {
     }
 }
 
-exports.userPostLikedList = async (req,res) => {
+exports.userPostLikedList = async (req, res) => {
     try {
-        
+
         let postId = req.params.postId;
 
         const findUserPostData = await UserPostLike.find({
@@ -565,7 +611,7 @@ exports.userPostLikedList = async (req,res) => {
         }
 
     } catch (error) {
-        
+
         console.log("userPostLikedList--Error::", error);
         res.status(status.INTERNAL_SERVER_ERROR).json(
             {

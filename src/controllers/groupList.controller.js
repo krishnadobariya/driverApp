@@ -184,32 +184,34 @@ exports.groupListByChat = async (req, res) => {
         } else {
 
             const findGroup = await GroupList.find({ user_id: userId });
- 
+            console.log("findGroup::", findGroup);
+
             const response = [];
             for (const respData of findGroup) {
 
                 const findChats = await GroupChat.find({ groupId: respData.group_id });
+                console.log("findChats::--:", findChats);
                 for (const findChat of findChats) {
 
                     const chatMessage = findChat.chat;
                     const getLastMessage = chatMessage[chatMessage.length - 1];
-                    
+
                     var readCount = 0
                     var unReadCount = 0
                     for (const getReader of chatMessage) {
-    
+
                         var readerCount = getReader.read;
-    
+
                         var data = readerCount.find(function (ele) {
                             return ele.reader == userId;
                         });
-    
+
                         if (data == undefined) {
                             unReadCount += 1
                         } else {
                             readCount += 1
                         }
-    
+
                     }
 
                     const chatData = {
