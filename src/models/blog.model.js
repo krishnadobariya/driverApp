@@ -36,7 +36,11 @@ const blogSchema = mongoose.Schema({
     comment: {
         type: Number,
         default: 0
-    }
+    },
+    media_type: {
+        type: Number, //1-Image 2-Video
+        default: 0
+    },
 }, {
     timestamps: true
 }, {

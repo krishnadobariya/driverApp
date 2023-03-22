@@ -49,7 +49,11 @@ const eventSchema = mongoose.Schema({
     about: {
         type: String,
         required: true
-    }
+    },
+    media_type: {
+        type: Number, //1-Image 2-Video
+        default: 0
+    },
 }, {
     timestamps: true
 }, {

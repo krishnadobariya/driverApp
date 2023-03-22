@@ -63,7 +63,8 @@ exports.addBlog = async (req, res) => {
                 thumbnail: urls,
                 category: req.body.category,
                 heading: req.body.heading,
-                description: req.body.description
+                description: req.body.description,
+                media_type: req.body.type
             });
             const saveData = await blog.save();
 
@@ -204,7 +205,8 @@ exports.blogList = async (req, res) => {
                         comment: getTime.comment,
                         isLike: true,
                         time: time,
-                        report: report
+                        report: report,
+                        mediaType: getTime.media_type
                     }
                     blogInsertTime.push(response);
                 } else {
@@ -221,12 +223,14 @@ exports.blogList = async (req, res) => {
                         comment: getTime.comment,
                         isLike: false,
                         time: time,
-                        report: report
+                        report: report,
+                        mediaType: getTime.media_type
                     }
                     blogInsertTime.push(response);
                 }
 
             }
+
             res.status(status.OK).json({
                 message: "View All List Successfully",
                 status: true,
@@ -234,6 +238,7 @@ exports.blogList = async (req, res) => {
                 statusCode: 1,
                 data: blogInsertTime
             })
+            
         }
 
     } catch (error) {

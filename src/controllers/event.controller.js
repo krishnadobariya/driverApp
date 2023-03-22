@@ -67,7 +67,8 @@ exports.addEvent = async (req, res) => {
                     ],
                 },
                 address: req.body.address,
-                about: req.body.about
+                about: req.body.about,
+                media_type: req.body.type
             });
             const saveData = await insertEventData.save();
 
@@ -83,7 +84,8 @@ exports.addEvent = async (req, res) => {
                 longitude: saveData.location.coordinates[0],
                 latitude: saveData.location.coordinates[1],
                 address: saveData.address,
-                about: saveData.about
+                about: saveData.about,
+                media_type: saveData.media_type
             }
 
             res.status(status.CREATED).json(
@@ -179,7 +181,8 @@ exports.eventList = async (req, res) => {
                         address: getUser.address,
                         about: getUser.about,
                         isJoin: false,
-                        join_user: getJoinUser
+                        join_user: getJoinUser,
+                        mediaType: getUser.media_type
                     }
                     eventDetails.push(response)
 
@@ -200,7 +203,8 @@ exports.eventList = async (req, res) => {
                         address: getUser.address,
                         about: getUser.about,
                         isJoin: true,
-                        join_user: getJoinUser
+                        join_user: getJoinUser,
+                        mediaType: getUser.media_type
                     }
                     eventDetails.push(response)
 
@@ -347,7 +351,8 @@ exports.myEvent = async (req, res) => {
                     address: respSet.address,
                     about: respSet.about,
                     isJoin: true,
-                    join_user: getJoinUser
+                    join_user: getJoinUser,
+                    mediaType: respSet.media_type
                 }
                 response.push(eventData)
 
