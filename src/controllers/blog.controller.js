@@ -238,7 +238,7 @@ exports.blogList = async (req, res) => {
                 statusCode: 1,
                 data: blogInsertTime
             })
-            
+
         }
 
     } catch (error) {
@@ -785,7 +785,8 @@ exports.myBlog = async (req, res) => {
                         like: respSet.like,
                         comment: respSet.comment,
                         isLike: true,
-                        time: time
+                        time: time,
+                        mediaType: respSet.media_type
                     }
                     blogInsertTime.push(response);
                 } else {
@@ -801,7 +802,8 @@ exports.myBlog = async (req, res) => {
                         like: respSet.like,
                         comment: respSet.comment,
                         isLike: false,
-                        time: time
+                        time: time,
+                        mediaType: respSet.media_type
                     }
                     blogInsertTime.push(response);
                 }
