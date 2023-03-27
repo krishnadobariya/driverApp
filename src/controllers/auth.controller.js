@@ -4,6 +4,7 @@ const chatRoomModel = require("../webSocket/models/chatRoom.model");
 const chatModel = require("../webSocket/models/chat.model");
 const Block = require("../models/blockUnblock.model");
 const GroupList = require("../models/groupList.model");
+const Question = require("../models/userQuestion.model");
 const cloudinary = require("../utils/cloudinary.utils");
 const { mailService } = require("../services/email.service");
 const status = require("http-status");
@@ -67,6 +68,14 @@ exports.registration = async (req, res) => {
             const saveData = await authData.save();
             console.log("saveData:::", saveData);
 
+            const insertAns = Question({
+                user_id: saveData._id,
+                que_one: req.body.que_one,
+                que_two: req.body.que_two,
+                que_three: req.body.que_three,
+                que_four: req.body.que_four,
+            });
+            const saveQue = await insertAns.save();
 
             const response = {
                 user_id: saveData._id,
@@ -391,6 +400,8 @@ exports.userProfile = async (req, res) => {
 
             }
 
+            const getAnswer = await Question.findOne({ user_id: req.params.id }).select({ 'que_one': 1, 'que_two': 1, 'que_three': 1, 'que_four': 1, '_id': 0 });
+
             const getGroupData = await GroupList.find({ user_id: req.params.id });
             console.log("getGroupData::--", getGroupData);
 
@@ -409,6 +420,7 @@ exports.userProfile = async (req, res) => {
                 fcm_token: getUserData.fcm_token,
                 longitude: getUserData.location.coordinates[0],
                 latitude: getUserData.location.coordinates[1],
+                questions: getAnswer,
                 vehicle: getUserData.vehicle
             }
 
@@ -1020,7 +1032,7 @@ exports.checkMail = async (req, res) => {
 
         const findUserData = await authModel.findOne({ email: req.params.email })
 
-        if(findUserData) {
+        if (findUserData) {
 
             res.status(status.NOT_ACCEPTABLE).json(
                 {
@@ -1043,7 +1055,7 @@ exports.checkMail = async (req, res) => {
             )
 
         }
-        
+
     } catch (error) {
 
         console.log("checkMail-Error::", error);
@@ -1056,6 +1068,6 @@ exports.checkMail = async (req, res) => {
                 error: error.message
             }
         )
-        
+
     }
 }
