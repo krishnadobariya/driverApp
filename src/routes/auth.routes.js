@@ -15,6 +15,7 @@ const {
     updateUserVehicleData,
     changePassword,
     forgetPassword,
+    checkMail
 } = require("../controllers/auth.controller");
 
 const {
@@ -36,6 +37,7 @@ router.put("/update/vehicle-/old/:id/:type", userVehicleUpdateData);
 router.put("/update/vehicle-data/:id", updateUserVehicleData);
 router.post("/change-password/:id", changePassword);
 router.post("/forget-password", forgetPassword);
+router.get("/check-mail/:email", checkMail)
 
 /* ----- For Block Unblock Controller ----- */
 router.post("/block-user/:user_id/:block_user_id", blockUnblock);

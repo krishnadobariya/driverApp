@@ -1008,3 +1008,48 @@ exports.forgetPassword = async (req, res) => {
 
     }
 }
+
+exports.checkMail = async (req, res) => {
+    try {
+
+        const findUserData = await authModel.findOne({ email: req.params.email })
+
+        if(findUserData) {
+
+            res.status(status.NOT_ACCEPTABLE).json(
+                {
+                    message: "Email Is Already Exist",
+                    status: false,
+                    code: 406,
+                    statusCode: 0
+                }
+            )
+
+        } else {
+
+            res.status(status.OK).json(
+                {
+                    message: "You Can Use This Email",
+                    status: false,
+                    code: 200,
+                    statusCode: 1
+                }
+            )
+
+        }
+        
+    } catch (error) {
+
+        console.log("checkMail-Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+        
+    }
+}
