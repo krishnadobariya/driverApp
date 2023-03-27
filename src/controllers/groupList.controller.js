@@ -108,47 +108,58 @@ exports.remainingList = async (req, res) => {
     try {
 
         let userId = req.params.userId;
-        // jo e j user nu group hoy to ene list nathi apvanu, 10 g - 2 ma join and 2 banavela chhe 2 ma jon chavo te nai aave pan 2 tame banavel chhe te pan na ava joiye 
-        // tame je userid aapo te mane male gropList mathi to e list pan nathi apvani
+
         const groupList = await Group.find({
             user_id: {
                 $ne: userId
             }
-        });
+        }); //5
+
         const groupListData = await GroupList.find({
             user_id: userId
+        }); // 4
+
+        // var remainingData = groupList.filter(function (data) {
+        //     return !groupListData.some(function (o2) {
+        //         return (data._id).toString() == (o2.group_id).toString();
+        //     });
+        // });
+
+
+        // if (groupListData.length == 0) {
+
+        //     res.status(status.NOT_FOUND).json(
+        //         {
+        //             message: "GroupList Not Exist",
+        //             status: false,
+        //             code: 404,
+        //             statusCode: 0
+        //         }
+        //     )
+
+        // } else {
+
+        var remainingData = groupList.filter(function (data) {
+            return !groupListData.some(function (o2) {
+                return (data._id).toString() == (o2.group_id).toString();
+            });
         });
 
-        if (groupListData.length == 0) {
+        res.status(status.OK).json(
+            {
+                message: "REMAINING GROUP LIST",
+                status: true,
+                code: 200,
+                statusCode: 1,
+                data: remainingData
+            }
+        )
 
-            res.status(status.NOT_FOUND).json(
-                {
-                    message: "GroupList Not Exist",
-                    status: false,
-                    code: 404,
-                    statusCode: 0
-                }
-            )
+        // }
 
-        } else {
 
-            var remainingData = groupList.filter(function (data) {
-                return !groupListData.some(function (o2) {
-                    return (data._id).toString() == (o2.group_id).toString();
-                });
-            });
 
-            res.status(status.OK).json(
-                {
-                    message: "REMAINING GROUP LIST",
-                    status: true,
-                    code: 200,
-                    statusCode: 1,
-                    data: remainingData
-                }
-            )
-
-        }
+        // console.log("remainingData::-", remainingData);
 
     } catch (error) {
 
