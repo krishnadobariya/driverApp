@@ -27,7 +27,7 @@ const groupPostLikeSchema = mongoose.Schema({
     user_name: {
         type: String,
         ref: "auth",
-        required: true
+        required: true  
     }
 }, {
     timestamps: true

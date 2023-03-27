@@ -2,6 +2,7 @@ const GroupList = require("../models/groupList.model");
 const Group = require("../models/group.model");
 const GroupChat = require("../webSocket/models/groupChat.model");
 const GroupPostLike = require("../models/groupPostLike.model");
+const GroupMemberList = require("../models/groupMemberList.model")
 const User = require("../models/auth.model");
 const status = require("http-status");
 
@@ -329,5 +330,51 @@ exports.groupPostLikedList = async (req, res) => {
             }
         )
 
+    }
+}
+
+exports.memberList = async (req, res) => {
+    try {
+
+        const findGroupMember = await GroupMemberList.find({ group_id: req.params.groupId })
+        console.log("findGroupMember", findGroupMember);
+
+        if(findGroupMember[0] == undefined) {
+
+            res.status(status.NOT_FOUND).json({
+                message: "Group Member Not Found!",
+                status: true,
+                code: 200,
+                statusCode: 1,
+                data: []
+            })
+
+        } else {
+
+            res.status(status.OK).json(
+                {
+                    message: "Get Group Member Successfully",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: findGroupMember
+                }
+            )
+
+        }
+        
+    } catch (error) {
+
+        console.log("memberList--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+        
     }
 }

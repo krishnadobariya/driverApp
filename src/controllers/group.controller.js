@@ -8,6 +8,7 @@ const Notification = require("../models/notification.model");
 const GroupMemberList = require("../models/groupMemberList.model");
 const GroupChat = require("../webSocket/models/groupChat.model");
 const GroupList = require("../models/groupList.model");
+const GroupChatRoom = require("../webSocket/models/groupChatRoom.model")
 const cloudinary = require("../utils/cloudinary.utils");
 
 
@@ -1113,5 +1114,60 @@ exports.groupChatList = async (req, res) => {
             }
         )
 
+    }
+}
+
+exports.deleteGroup = async (req, res) => {
+    try {
+
+        const groupId = req.params.id
+        const findGroup = await Group.findOne({ _id: groupId })
+
+        if(findGroup) {
+
+            const deleteGroupData = await Group.deleteOne({ _id: groupId });
+            const deleteGroupPost = await GroupPost.deleteMany({ group_id: groupId });
+            const deleteGroupPostLike = await GroupPostLike.deleteMany({ group_id: groupId });
+            const deleteGroupPostComment = await GroupPostComment.deleteMany({ group_id: groupId });
+            const deleteGroupMemberList = await GroupMemberList.deleteMany({ group_id: groupId });
+            const deleteGroupList = await GroupList.deleteMany({ group_id: groupId });
+            const deleteGroupChatrooms = await GroupChatRoom.deleteMany({ groupId: groupId });
+            const deleteGroupChat = await GroupChat.deleteMany({ groupId: groupId });
+
+            res.status(status.OK).json(
+                {
+                    message: "Group Delete Successfully",
+                    status: true,
+                    code: 200,
+                    statusCode: 1
+                }
+            )
+
+        } else {
+
+            res.status(status.NOT_FOUND).json(
+                {
+                    message: "Group Not Exist",
+                    status: false,
+                    code: 404,
+                    statusCode: 0
+                }
+            )
+
+        }
+        
+    } catch (error) {
+
+        console.log("deleteGroup--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+        
     }
 }
