@@ -28,3 +28,17 @@ router.get("/groupChatList/:group_id", groupChatList);
 router.delete("/delete/:id", deleteGroup)
 
 module.exports = router;
+
+/*
+139.59.88.204:5000/group/add/:user_id
+139.59.88.204:5000/group/update/:id"
+139.59.88.204:5000/group/likeDislike/:user_id/:group_id/:postId
+139.59.88.204:5000/group/comment/:userId/:groupId/:postId
+139.59.88.204:5000/group/commentList/:postId
+139.59.88.204:5000/group/details/:groupId/:userId
+139.59.88.204:5000/group/inviteList/:userId/:groupId
+139.59.88.204:5000/group/post/add/:groupId/:userId
+139.59.88.204:5000/group/notificationList/:userId
+139.59.88.204:5000/group/groupChatList/:group_id
+139.59.88.204:5000/group/delete/:id
+*/

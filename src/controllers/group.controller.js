@@ -719,7 +719,9 @@ exports.inviteList = async (req, res) => {
             console.log("getUserData::", getUserData._id);
 
             const checkNotification = await Notification.findOne({
-                user_id: getUserData._id,
+                user_id: {
+                    $ne: getUserData._id,
+                },
                 group_id: groupId
             });
             console.log("checkNotification:::---", checkNotification);
@@ -1123,7 +1125,7 @@ exports.deleteGroup = async (req, res) => {
         const groupId = req.params.id
         const findGroup = await Group.findOne({ _id: groupId })
 
-        if(findGroup) {
+        if (findGroup) {
 
             const deleteGroupData = await Group.deleteOne({ _id: groupId });
             const deleteGroupPost = await GroupPost.deleteMany({ group_id: groupId });
@@ -1155,7 +1157,7 @@ exports.deleteGroup = async (req, res) => {
             )
 
         }
-        
+
     } catch (error) {
 
         console.log("deleteGroup--Error::", error);
@@ -1168,6 +1170,6 @@ exports.deleteGroup = async (req, res) => {
                 error: error.message
             }
         )
-        
+
     }
 }

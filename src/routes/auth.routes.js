@@ -44,3 +44,9 @@ router.post("/block-user/:user_id/:block_user_id", blockUnblock);
 router.get("/block-user-list/:user_id", blockUnblockList)
 
 module.exports = router;
+
+/*
+registration (139.59.88.204:5000/auth/register)
+addImage
+login
+*/

@@ -18,3 +18,12 @@ router.post("/commentList/:postId", userPostCommnetList);
 router.post("/likedUserList/:postId", userPostLikedList)
 
 module.exports = router;
+
+/**
+139.59.88.204:5000/userPost/add/:userId
+139.59.88.204:5000/userPost/list/:userId
+139.59.88.204:5000/userPost/addComment/:userId/:postId
+139.59.88.204:5000/userPost/likeDislike/:userId/:postId
+139.59.88.204:5000/userPost/commentList/:postId
+139.59.88.204:5000/userPost/likedUserList/:postId
+*/
