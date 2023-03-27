@@ -705,7 +705,6 @@ exports.inviteList = async (req, res) => {
         // --- for pagination --- //
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
-        console.log("startIndex:::", startIndex, endIndex);
 
         const getUserDatas = await Auth.find({
             _id: {
@@ -715,13 +714,12 @@ exports.inviteList = async (req, res) => {
         console.log("getUserDatas", getUserDatas.length);
 
         const response = [];
+        var a = 0;
         for (const getUserData of getUserDatas) {
-            console.log("getUserData::", getUserData._id);
-
+            // console.log("getUserData::", getUserData._id);
+            a += 1
             const checkNotification = await Notification.findOne({
-                user_id: {
-                    $ne: getUserData._id,
-                },
+                user_id: getUserData._id,
                 group_id: groupId
             });
             console.log("checkNotification:::---", checkNotification);
@@ -730,7 +728,7 @@ exports.inviteList = async (req, res) => {
                 const findUser = await Auth.findOne({
                     _id: getUserData._id
                 }).sort({ createdAt: -1 });
-
+                console.log('a::--::',a);
                 const respData = {
                     userId: findUser._id,
                     profile: findUser.profile[0] ? findUser.profile[0].res : "",
@@ -740,6 +738,9 @@ exports.inviteList = async (req, res) => {
             }
 
         }
+
+
+
 
         // const getGroupData = await Group.find({ user_id: userId });
 

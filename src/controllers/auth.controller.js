@@ -223,8 +223,9 @@ exports.userList = async (req, res) => {
         // --- get user whithout user that id pass --- //
         const blockUserId = [];
         const getUser = await authModel.find({
-            _id: { $ne: userId },
-            status: "Active"
+            _id: {
+                $ne: userId
+            }
         }).skip(startIndex).limit(endIndex).select('-__v').sort({ createdAt: -1 });
         console.log("getUser::", getUser.length);
 
