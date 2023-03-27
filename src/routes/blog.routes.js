@@ -23,6 +23,6 @@ router.post("/my/:user_id", myBlog);
 router.post("/delete/:blog_id", deleteBlog);
 
 /* ----- For Report Blog APIs ----- */
-router.post("/report-blog/:user_id/:blog_id", reportBlog)
+router.post("/report-blog/:user_id/:blog_id", reportBlog);
 
 module.exports = router;

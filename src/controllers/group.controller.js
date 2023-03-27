@@ -1123,7 +1123,7 @@ exports.groupChatList = async (req, res) => {
 exports.deleteGroup = async (req, res) => {
     try {
 
-        const groupId = req.params.id
+        const groupId = req.params.groupId
         const findGroup = await Group.findOne({ _id: groupId })
 
         if (findGroup) {

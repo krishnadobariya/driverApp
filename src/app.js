@@ -21,9 +21,9 @@ const groupListRouter = require("./routes/groupList.routes");
 const userPost = require("./routes/userPost.routes");
 
 app.use("/auth", authRouter);
+app.use("/blog", blogRouter);
 app.use("/chat", chatRouter);
 app.use("/event", eventRouter);
-app.use("/blog", blogRouter);
 app.use("/group", groupRouter);
 app.use("/groupList", groupListRouter);
 app.use("/userPost", userPost);
