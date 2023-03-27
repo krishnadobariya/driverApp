@@ -61,6 +61,7 @@ exports.registration = async (req, res) => {
                         parseFloat(req.body.latitude),
                     ],
                 },
+                user_type: req.body.user_type,
                 vehicle: req.body.vehicle
             });
             const saveData = await authData.save();
@@ -80,6 +81,7 @@ exports.registration = async (req, res) => {
                 fcm_token: saveData.fcm_token,
                 longitude: saveData.location.coordinates[0],
                 latitude: saveData.location.coordinates[1],
+                user_type: saveData.user_type,
                 status: saveData.status,
                 vehicle: saveData.vehicle
             }
@@ -154,6 +156,7 @@ exports.login = async (req, res) => {
                     phone_number: getData[0].phone_number,
                     age: getData[0].age,
                     gender: getData[0].gender,
+                    user_type: getData[0].user_type,
                     password: getData[0].password,
                     fcm_token: getData[0].fcm_token,
                     longitude: getData[0].location.coordinates[0],
@@ -401,6 +404,7 @@ exports.userProfile = async (req, res) => {
                 phone_number: getUserData.phone_number,
                 age: getUserData.age,
                 gender: getUserData.gender,
+                user_type: getUserData.user_type,
                 password: getUserData.password,
                 fcm_token: getUserData.fcm_token,
                 longitude: getUserData.location.coordinates[0],
@@ -635,7 +639,8 @@ exports.userUpdate = async (req, res) => {
                 phone_number: req.body.phone_number,
                 age: req.body.age,
                 gender: req.body.gender,
-                password: req.body.password
+                password: req.body.password,
+                user_type: req.body.user_type
             }
         }, {
             new: true,
@@ -809,6 +814,7 @@ exports.addImage = async (req, res) => {
             phone_number: getUserData.phone_number,
             age: getUserData.age,
             gender: getUserData.gender,
+            user_type: getUserData.user_type,
             password: getUserData.password,
             fcm_token: getUserData.fcm_token,
             longitude: getUserData.location.coordinates[0],

@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { array } = require("../utils/multer.photo");
 
 const authSchema = mongoose.Schema({
     profile: {
@@ -41,6 +40,10 @@ const authSchema = mongoose.Schema({
         type: String,
         required: true,
         default: "active"
+    },
+    user_type: {
+        type: Number, //1-Public,2-Private
+        required: true,
     },
     start_time: {
         type: String,
