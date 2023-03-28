@@ -78,6 +78,15 @@
 }
 - emit : followRequest
 
+
+- Socket : friendReqAccept [action: 1-accept, 2-decline]
+{
+    "user_id": "63d8ffe2a436ea28cdd0ecc1",
+    "req_user_id": "63da52c0a436ea28cdd0ee0b",
+    "action": 1
+}
+- emit : requestAccept
+
 =============================================
 ------------------- ToDo -------------------
 =============================================

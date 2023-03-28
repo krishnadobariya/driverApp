@@ -27,7 +27,7 @@ const notificationSchema = mongoose.Schema({
         required : true
     },
     notification_type :{
-        type : Number, //invite - 1, group join req. - 2, accepted req. - 3, matches - 4, following request - 5
+        type : Number, //invite - 1, group join req. - 2, accepted req. - 3, matches - 4, following request - 5, follow request accept - 6
         required : true
     }
 }, {

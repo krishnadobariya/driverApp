@@ -10,8 +10,8 @@ const GroupList = require("../models/groupList.model");
 const GroupChatRoom = require("./models/groupChatRoom.model");
 const GroupChat = require("./models/groupChat.model");
 const GroupMemberList = require("../models/groupMemberList.model");
+const FriendRequest = require("../models/frdReq.model");
 const Notification = require("../helper/firebaseHelper");
-const FriendRequest = require("../models/frdReq.model")
 
 function socket(io) {
     console.log("SETUP :- Socket Loading....");
@@ -1146,7 +1146,6 @@ function socket(io) {
         socket.on("friendRequest", async (arg) => {
 
             const userRoom = `User${arg.req_user_id}`;
-
             const userId = arg.user_id;
             const reqUserId = arg.req_user_id;
 
@@ -1170,9 +1169,9 @@ function socket(io) {
                     console.log("saveChatData::", saveData);
 
                     const insertNotifi = NotificationModel({
-                        user_id: userId,
-                        req_user_id: reqUserId,
-                        notification_msg: 'following request send',
+                        user_id: reqUserId,
+                        req_user_id: userId,
+                        notification_msg: 'following request',
                         notification_img: findUserData.profile[0] ? findUserData.profile[0].res : "",
                         user_name: findUserData.username,
                         notification_type: 5
@@ -1212,6 +1211,75 @@ function socket(io) {
 
         })
         // ----- friendRequest ----- //
+
+
+        //frdreqaccept ->  
+        // accept thay atle frdRequest na table ma status change
+        // sender ne notification mlavi joiye
+        // notification na tbale ma change avse --> old entry delete 
+
+        socket.on('friendReqAccept', async (arg) => {
+
+            const userId = arg.user_id;
+            const reqUserId = arg.req_user_id;
+            const userRoom = `User${userId}`;
+            const action = arg.action;
+
+            if (action == 1) {
+
+                const getUserData = await authModel.findOne({ _id: userId });
+
+                const updateStatus = await FriendRequest.updateOne(
+                    {
+                        user_id: userId,
+                        requested_user_id: reqUserId
+                    },
+                    {
+                        $set: {
+                            status: 2
+                        }
+                    }
+                );
+
+                const updateNotification = await NotificationModel.deleteOne(
+                    {
+                        user_id: reqUserId,
+                        req_user_id: userId,
+                    }
+                );
+
+                const getReqUserData = await authModel.findOne({ _id: reqUserId });
+                const insertNotifi = NotificationModel({
+                    user_id: userId,
+                    req_user_id: reqUserId,
+                    notification_msg: 'Request Accepted',
+                    notification_img: getReqUserData.profile[0] ? getReqUserData.profile[0].res : "",
+                    user_name: getReqUserData.username,
+                    notification_type: 6
+                });
+                const saveData = await insertNotifi.save();
+
+                io.to(userRoom).emit("requestAccept", `Request Accept By ${reqUserId}`)
+
+                const title = `Request Accepted`;
+                const body = `Request Accept By ${reqUserId}`;
+                const text = 'Request Accepted';
+                const sendBy = userId;
+                const registrationToken = getUserData.fcm_token;
+                Notification.sendPushNotificationFCM(
+                    registrationToken,
+                    title,
+                    body,
+                    text,
+                    sendBy,
+                    true
+                );
+
+            } else {
+
+            }
+
+        })
 
     })
 
