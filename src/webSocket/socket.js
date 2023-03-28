@@ -706,7 +706,7 @@ function socket(io) {
                 const getUserData = await authModel.findOne({ _id: userId });
                 const updateGroupChat = await GroupMemberList.updateOne(
                     {
-                        groupId: groupId
+                        group_id: groupId
                     },
                     {
                         $push: {
@@ -719,6 +719,7 @@ function socket(io) {
                         }
                     }
                 );
+                console.log("updateGroupChat::", updateGroupChat);
                 /* End Get Group Member List */
 
                 const getChatRoomData = await GroupChatRoom.findOne({ groupId: groupId });
