@@ -406,6 +406,8 @@ exports.userProfile = async (req, res) => {
             const getGroupData = await GroupList.find({ user_id: req.params.id });
             console.log("getGroupData::--", getGroupData);
 
+            
+
             const resp = {
                 user_id: getUserData._id,
                 chatRoomId: getChatRoom[0] ? getChatRoom[0]._id : "",
