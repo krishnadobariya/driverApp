@@ -114,11 +114,13 @@ exports.remainingList = async (req, res) => {
             user_id: {
                 $ne: userId
             }
-        }); //5
+        });
+        // console.log("groupList::--", groupList);
 
         const groupListData = await GroupList.find({
             user_id: userId
-        }); // 4
+        });
+        // console.log("groupListData:::", groupListData);
 
         // var remainingData = groupList.filter(function (data) {
         //     return !groupListData.some(function (o2) {
@@ -141,10 +143,13 @@ exports.remainingList = async (req, res) => {
         // } else {
 
         var remainingData = groupList.filter(function (data) {
+            console.log("data::", data);
             return !groupListData.some(function (o2) {
+                console.log("o2:", o2);
                 return (data._id).toString() == (o2.group_id).toString();
             });
         });
+        console.log("remainingData::", remainingData);
 
         res.status(status.OK).json(
             {
@@ -339,7 +344,7 @@ exports.memberList = async (req, res) => {
         const findGroupMember = await GroupMemberList.find({ group_id: req.params.groupId })
         console.log("findGroupMember", findGroupMember);
 
-        if(findGroupMember[0] == undefined) {
+        if (findGroupMember[0] == undefined) {
 
             res.status(status.NOT_FOUND).json({
                 message: "Group Member Not Found!",
@@ -362,7 +367,7 @@ exports.memberList = async (req, res) => {
             )
 
         }
-        
+
     } catch (error) {
 
         console.log("memberList--Error::", error);
@@ -375,6 +380,6 @@ exports.memberList = async (req, res) => {
                 error: error.message
             }
         )
-        
+
     }
 }

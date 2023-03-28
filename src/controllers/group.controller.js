@@ -652,6 +652,7 @@ exports.groupDetails = async (req, res) => {
                         image_video: resData.image_video[0] ? resData.image_video[0].res : "",
                         likes: resData.like_count,
                         commnets: resData.comment_count,
+                        media_type: resData.media_type,
                         isLike: true,
                         time: time
                     }
@@ -711,7 +712,7 @@ exports.inviteList = async (req, res) => {
                 $ne: userId
             }
         }).skip(startIndex).limit(endIndex).sort({ createdAt: -1 });
-        console.log("getUserDatas", getUserDatas.length); //22
+        console.log("getUserDatas", getUserDatas.length); 
 
         const response = [];
 

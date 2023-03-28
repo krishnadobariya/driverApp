@@ -73,8 +73,8 @@
 
 - Socket : friendRequest
 {
-    "user_id": "63d8ffe2a436ea28cdd0ecc1",
-    "req_user_id": "63da52c0a436ea28cdd0ee0b"
+    "user_id": "6422dd21d505c01c29560506",
+    "req_user_id": "6422dd10d505c01c295604ee"
 }
 - emit : followRequest
 

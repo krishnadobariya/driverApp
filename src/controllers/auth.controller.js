@@ -5,6 +5,7 @@ const chatModel = require("../webSocket/models/chat.model");
 const Block = require("../models/blockUnblock.model");
 const GroupList = require("../models/groupList.model");
 const Question = require("../models/userQuestion.model");
+const FriendRequest = require("../models/frdReq.model");
 const cloudinary = require("../utils/cloudinary.utils");
 const { mailService } = require("../services/email.service");
 const status = require("http-status");
@@ -406,7 +407,18 @@ exports.userProfile = async (req, res) => {
             const getGroupData = await GroupList.find({ user_id: req.params.id });
             console.log("getGroupData::--", getGroupData);
 
-            
+            const getFriendRequest = await FriendRequest.findOne({
+                user_id: req.params.user_id,
+                requested_user_id: req.params.id,
+            });
+            console.log("getFriendRequest::", getFriendRequest);
+
+            var request;
+            if (getFriendRequest == null) {
+                request = false
+            } else {
+                request = true                
+            }
 
             const resp = {
                 user_id: getUserData._id,
@@ -423,6 +435,7 @@ exports.userProfile = async (req, res) => {
                 fcm_token: getUserData.fcm_token,
                 longitude: getUserData.location.coordinates[0],
                 latitude: getUserData.location.coordinates[1],
+                requested: request,
                 questions: getAnswer,
                 vehicle: getUserData.vehicle
             }
