@@ -711,13 +711,13 @@ exports.inviteList = async (req, res) => {
                 $ne: userId
             }
         }).skip(startIndex).limit(endIndex).sort({ createdAt: -1 });
-        console.log("getUserDatas", getUserDatas.length);
+        console.log("getUserDatas", getUserDatas.length); //22
 
         const response = [];
-        var a = 0;
+
         for (const getUserData of getUserDatas) {
-            // console.log("getUserData::", getUserData._id);
-            a += 1
+            console.log("getUserData::", getUserData._id);
+
             const checkNotification = await Notification.findOne({
                 user_id: getUserData._id,
                 group_id: groupId
@@ -728,7 +728,7 @@ exports.inviteList = async (req, res) => {
                 const findUser = await Auth.findOne({
                     _id: getUserData._id
                 }).sort({ createdAt: -1 });
-                console.log('a::--::',a);
+
                 const respData = {
                     userId: findUser._id,
                     profile: findUser.profile[0] ? findUser.profile[0].res : "",

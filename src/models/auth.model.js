@@ -73,4 +73,4 @@ const authSchema = mongoose.Schema({
     collection: 'auth'
 });
 
-module.exports = mongoose.model('auth', authSchema);
+    module.exports = mongoose.model('auth', authSchema);

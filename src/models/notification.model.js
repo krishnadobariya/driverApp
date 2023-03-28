@@ -4,7 +4,7 @@ const ObjectId = mongoose.Types.ObjectId;
 const notificationSchema = mongoose.Schema({
     group_id :{
         type: ObjectId,
-        required: true
+        // required: true
     },
     user_id:{
         type: ObjectId,
@@ -27,7 +27,7 @@ const notificationSchema = mongoose.Schema({
         required : true
     },
     notification_type :{
-        type : Number, //invite - 1, group join req. - 2, accepted req. - 3, matches - 4
+        type : Number, //invite - 1, group join req. - 2, accepted req. - 3, matches - 4, following request - 5
         required : true
     }
 }, {

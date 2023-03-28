@@ -1,6 +1,6 @@
 - Socket : joinUser
 {
-    "user_id": "63c9157b4becc06796221948"
+    "user_id": "63da52c0a436ea28cdd0ee0b"
 }
 
 
@@ -23,10 +23,10 @@
 
 - Socket : inviteGroup
 {
-    "user_id": "63c9157b4becc06796221948",
-    "group_id": "640585b30afa74ab9e4f1142",
-    "notification_img": "https://res.cloudinary.com/tcloud/image/upload/v1678083507/gcmefsf11cbpgcgwjxcg.png",
-    "user_name": "test"
+    "user_id": "64217605b693032b7a06e335",
+    "group_id": "64219868a87bc49c53cf4c24",
+    "notification_img": "https://res.cloudinary.com/dat4u94dd/image/upload/v1679914509/iu3cqrawd96lm7b8jw3t.jpg",
+    "user_name": "test012"
 }
 
 - Socket : acceptInvite
@@ -70,6 +70,13 @@
 }
 - emit : groupReadChat
 
+
+- Socket : friendRequest
+{
+    "user_id": "63d8ffe2a436ea28cdd0ecc1",
+    "req_user_id": "63da52c0a436ea28cdd0ee0b"
+}
+- emit : followRequest
 
 =============================================
 ------------------- ToDo -------------------
