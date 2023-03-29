@@ -815,6 +815,7 @@ function socket(io) {
 
                     // add group memenber + 1
                     const addMemenber = parseInt(getGroupData.group_members) + 1;
+                    console.log("addMemenber::", addMemenber);
                     const updateGroupData = await Group.findByIdAndUpdate(
                         {
                             _id: groupId
@@ -849,7 +850,7 @@ function socket(io) {
                     const getUserData = await authModel.findOne({ _id: userId });
                     const updateGroupChat = await GroupMemberList.updateOne(
                         {
-                            groupId: groupId
+                            group_id: groupId
                         },
                         {
                             $push: {

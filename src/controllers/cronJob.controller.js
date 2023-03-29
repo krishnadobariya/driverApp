@@ -6,7 +6,7 @@ exports.userStatus = async (req, res) => {
 
         const presentTime = new Date().toISOString().slice(0, 19);
         const getUser = await User.find({ end_time: presentTime });
-
+        
         for (const respData of getUser) {
             
             const updateStatus = await User.findByIdAndUpdate(
