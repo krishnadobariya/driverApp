@@ -673,7 +673,7 @@ function socket(io) {
 
             if (action == 1) {
 
-                const getGroupData = await Group.findOne({ _id: groupId }).select('group_members');
+                const getGroupData = await Group.findOne({ _id: groupId }).select({ 'group_members': 1, 'group_type': 1 });
                 const addMemenber = parseInt(getGroupData.group_members) + 1;
                 const updateGroupData = await Group.findByIdAndUpdate(
                     {
@@ -701,6 +701,22 @@ function socket(io) {
                 });
                 const saveData = await addData.save();
                 console.log("saveData:::", saveData);
+
+                if (getGroupData.group_type == 2) {
+
+                    const updateNoti = await NotificationModel.updateOne(
+                        {
+                            group_id: groupId
+                        },
+                        {
+                            $set: {
+                                user_id: userId,
+                                req_user_id: "",
+                            }
+                        }
+                    )
+
+                }
 
                 /* Get Group Member List */
                 const getUserData = await authModel.findOne({ _id: userId });
@@ -793,7 +809,7 @@ function socket(io) {
 
                 const getGroupData = await Group.findOne({ _id: groupId }).select('group_members');
                 if (getGroupData == null) {
-                    io.emit("Group Not Found");
+                    io.emit("groupJoin", "Group Not Found");
                 } else {
 
                     // add group memenber + 1
@@ -884,13 +900,14 @@ function socket(io) {
 
                 const findGroup = await Group.findOne({ _id: groupId });
                 if (findGroup == null) {
-                    io.emit("Group Not Found");
+                    io.emit("groupJoin", "Group Not Found");
                 } else {
                     const findUser = await authModel.findOne({ _id: userId });
-                    if (findUser == null) {
-                        io.emit("User Not Found");
-                    } else {
 
+                    if (findUser == null) {
+                        io.emit("groupJoin", "User Not Found");
+                    } else {
+                        console.log('else---part-----');
                         const insertData = NotificationModel({
                             group_id: groupId,
                             user_id: findGroup.user_id,
