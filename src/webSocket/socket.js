@@ -703,7 +703,8 @@ function socket(io) {
                 console.log("saveData:::", saveData);
 
                 if (getGroupData.group_type == 2) {
-
+                    console.log("getGroupData.group_type:::", getGroupData.group_type);
+                    console.log("groupId::--", groupId);
                     const updateNoti = await NotificationModel.updateOne(
                         {
                             group_id: groupId
@@ -711,7 +712,7 @@ function socket(io) {
                         {
                             $set: {
                                 user_id: userId,
-                                req_user_id: "",
+                                req_user_id: null,
                             }
                         }
                     )
