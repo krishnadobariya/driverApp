@@ -4,6 +4,7 @@ const GroupChat = require("../webSocket/models/groupChat.model");
 const GroupPostLike = require("../models/groupPostLike.model");
 const GroupMemberList = require("../models/groupMemberList.model");
 const GroupChatRoom = require("../webSocket/models/groupChatRoom.model");
+const Notification = require("../models/notification.model");
 const User = require("../models/auth.model");
 const status = require("http-status");
 
@@ -144,13 +145,29 @@ exports.remainingList = async (req, res) => {
         // } else {
 
         var remainingData = groupList.filter(function (data) {
-            console.log("data::", data);
+            // console.log("data::", data);
             return !groupListData.some(function (o2) {
-                console.log("o2:", o2);
+                // console.log("o2:", o2);
                 return (data._id).toString() == (o2.group_id).toString();
             });
         });
-        console.log("remainingData::", remainingData);
+        // console.log("remainingData::", remainingData);
+        const response = [];
+        for (const respData of remainingData) {
+
+            const getNotiData = await Notification.findOne({
+                group_id: respData._id,
+                user_id: userId,
+                notification_type: 1
+            })
+            console.log("getNotiData::", getNotiData);
+
+
+            if (getNotiData == null) {
+                response.push(respData)
+            }
+
+        }
 
         res.status(status.OK).json(
             {
@@ -158,7 +175,7 @@ exports.remainingList = async (req, res) => {
                 status: true,
                 code: 200,
                 statusCode: 1,
-                data: remainingData
+                data: response
             }
         )
 
