@@ -186,7 +186,7 @@ exports.remainingList = async (req, res) => {
 
 exports.groupListByChat = async (req, res) => {
     try {
-// groupChatRoom ma check karvanu user chhe ke nai
+        // groupChatRoom ma check karvanu user chhe ke nai
         let userId = req.params.userId;
         const findUser = await User.findOne({ _id: userId });
         if (findUser == null) {
@@ -214,44 +214,64 @@ exports.groupListByChat = async (req, res) => {
                     }
                 }
             );
-            console.log("findGroup::", findGroup);           
+            console.log("findGroup::", findGroup);
 
             const response = [];
             for (const respData of findGroup) {
-
+                console.log("respData::", respData);
                 const findChats = await GroupChat.find({ groupId: respData.group_id });
-                console.log("findChats::--:", findChats);
-                for (const findChat of findChats) {
+                console.log("findChats::--:", findChats.length);
 
-                    const chatMessage = findChat.chat;
-                    const getLastMessage = chatMessage[chatMessage.length - 1];
+                const getGroupData = await Group.findOne({ _id: respData.groupId }).select({ 'group_name': 1, 'group_img': 1 })
 
-                    var readCount = 0
-                    var unReadCount = 0
-                    for (const getReader of chatMessage) {
-
-                        var readerCount = getReader.read;
-
-                        var data = readerCount.find(function (ele) {
-                            return ele.reader == userId;
-                        });
-
-                        if (data == undefined) {
-                            unReadCount += 1
-                        } else {
-                            readCount += 1
-                        }
-
-                    }
+                if (findChats.length == 0) {
 
                     const chatData = {
-                        groupName: respData.group_name,
-                        groupImage: respData.group_img,
-                        unReadCount: unReadCount,
-                        lastMsg: getLastMessage.message,
-                        lastMsgUsername: getLastMessage.senderName,
+                        groupName: getGroupData.group_name,
+                        groupImage: getGroupData.group_img,
+                        unReadCount: 0,
+                        lastMsg: '',
+                        lastMsgUsername: '',
                     }
                     response.push(chatData);
+
+                } else {
+
+                    for (const findChat of findChats) {
+
+                        const chatMessage = findChat.chat;
+                        const getLastMessage = chatMessage[chatMessage.length - 1];
+
+                        var readCount = 0
+                        var unReadCount = 0
+                        for (const getReader of chatMessage) {
+
+                            var readerCount = getReader.read;
+
+                            var data = readerCount.find(function (ele) {
+                                return ele.reader == userId;
+                            });
+
+                            if (data == undefined) {
+                                unReadCount += 1
+                            } else {
+                                readCount += 1
+                            }
+
+                        }
+
+                        const chatData = {
+                            groupName: getGroupData.group_name,
+                            groupImage: getGroupData.group_img,
+                            unReadCount: unReadCount,
+                            lastMsg: getLastMessage.message,
+                            lastMsgUsername: getLastMessage.senderName,
+                        }
+                        response.push(chatData);
+
+                    }
+
+
 
                 }
 
