@@ -722,7 +722,7 @@ exports.inviteList = async (req, res) => {
                 $ne: userId
             }
         }).skip(startIndex).limit(endIndex).sort({ createdAt: -1 });
-        console.log("getUserDatas", getUserDatas.length); 
+        console.log("getUserDatas", getUserDatas.length);
 
         const response = [];
 
@@ -736,16 +736,22 @@ exports.inviteList = async (req, res) => {
             console.log("checkNotification:::---", checkNotification);
 
             if (checkNotification == null) {
-                const findUser = await Auth.findOne({
-                    _id: getUserData._id
-                }).sort({ createdAt: -1 });
 
-                const respData = {
-                    userId: findUser._id,
-                    profile: findUser.profile[0] ? findUser.profile[0].res : "",
-                    userName: findUser.username
+                const getGroupData = await GroupList.find({ user_id: getUserData._id });
+
+                if (getGroupData == null) {
+                    const findUser = await Auth.findOne({
+                        _id: getUserData._id
+                    }).sort({ createdAt: -1 });
+
+                    const respData = {
+                        userId: findUser._id,
+                        profile: findUser.profile[0] ? findUser.profile[0].res : "",
+                        userName: findUser.username
+                    }
+                    response.push(respData);
                 }
-                response.push(respData);
+
             }
 
         }
