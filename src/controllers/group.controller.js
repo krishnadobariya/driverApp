@@ -46,6 +46,16 @@ exports.insertGroup = async (req, res) => {
             const saveData = await insertData.save();
             console.log("saveData:::", saveData);
 
+            const joinOnRoom = GroupChatRoom({
+                groupId: saveData._id,
+                groupName: req.body.group_name,
+                users: {
+                    userId: req.params.user_id
+                }
+            });
+            const createRoom = await joinOnRoom.save();
+            console.log("createRoom:::", createRoom);
+
             const addMember = GroupMemberList({
                 group_id: saveData._id,
                 users: {

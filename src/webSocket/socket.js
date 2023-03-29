@@ -665,7 +665,7 @@ function socket(io) {
         // ----- End inviteGroup ----- //
 
 
-        // ----- acceptInvite ----- //
+        // ----- acceptInvite  //
         socket.on("acceptInvite", async (arg) => {
             let groupId = arg.group_id;
             let userId = arg.user_id;

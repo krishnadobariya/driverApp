@@ -2,7 +2,8 @@ const GroupList = require("../models/groupList.model");
 const Group = require("../models/group.model");
 const GroupChat = require("../webSocket/models/groupChat.model");
 const GroupPostLike = require("../models/groupPostLike.model");
-const GroupMemberList = require("../models/groupMemberList.model")
+const GroupMemberList = require("../models/groupMemberList.model");
+const GroupChatRoom = require("../webSocket/models/groupChatRoom.model");
 const User = require("../models/auth.model");
 const status = require("http-status");
 
@@ -185,7 +186,7 @@ exports.remainingList = async (req, res) => {
 
 exports.groupListByChat = async (req, res) => {
     try {
-
+// groupChatRoom ma check karvanu user chhe ke nai
         let userId = req.params.userId;
         const findUser = await User.findOne({ _id: userId });
         if (findUser == null) {
@@ -201,8 +202,19 @@ exports.groupListByChat = async (req, res) => {
 
         } else {
 
-            const findGroup = await GroupList.find({ user_id: userId });
-            console.log("findGroup::", findGroup);
+            // const findGroup = await GroupList.find({ user_id: userId });
+            // console.log("findGroup::", findGroup); // chatRoom walu fix karvanu chhe
+
+            const findGroup = await GroupChatRoom.find(
+                {
+                    users: {
+                        $elemMatch: {
+                            userId: userId
+                        }
+                    }
+                }
+            );
+            console.log("findGroup::", findGroup);           
 
             const response = [];
             for (const respData of findGroup) {
