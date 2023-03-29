@@ -151,9 +151,13 @@ exports.remainingList = async (req, res) => {
                 return (data._id).toString() == (o2.group_id).toString();
             });
         });
-        // console.log("remainingData::", remainingData);
+        console.log("remainingData::", remainingData);
         const response = [];
         for (const respData of remainingData) {
+
+            // if (condition) {
+                
+            // }
 
             const getNotiData = await Notification.findOne({
                 group_id: respData._id,
@@ -164,7 +168,16 @@ exports.remainingList = async (req, res) => {
 
 
             if (getNotiData == null) {
-                response.push(respData)
+                const getNotificationData = await Notification.findOne({
+                    group_id: respData._id,
+                    req_user_id: userId,
+                    notification_type: 2
+                })
+                console.log("getNotificationData::", getNotificationData);
+
+                if (getNotificationData == null) {
+                    response.push(respData);
+                }
             }
 
         }
