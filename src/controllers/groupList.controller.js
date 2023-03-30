@@ -244,15 +244,16 @@ exports.groupListByChat = async (req, res) => {
                     }
                 }
             );
-            console.log("findGroup::", findGroup);
+            // console.log("findGroup::", findGroup);
 
             const response = [];
             for (const respData of findGroup) {
-                console.log("respData::", respData);
-                const findChats = await GroupChat.find({ groupId: respData.group_id });
-                console.log("findChats::--:", findChats.length);
+                // console.log("respData::", respData.group_id);
+                const findChats = await GroupChat.find({ groupId: respData.groupId });
+                // console.log("findChats::--:", findChats.length);
 
                 const getGroupData = await Group.findOne({ _id: respData.groupId }).select({ 'group_name': 1, 'group_img': 1 })
+                // console.log("getGroupData::", getGroupData);
 
                 if (findChats.length == 0) {
 
@@ -301,15 +302,13 @@ exports.groupListByChat = async (req, res) => {
 
                     }
 
-
-
                 }
 
             }
 
             res.status(status.OK).json(
                 {
-                    message: "REMAINING GROUP LIST",
+                    message: "GET GROUP CHAT SUCCESSFULLY",
                     status: true,
                     code: 200,
                     statusCode: 1,
