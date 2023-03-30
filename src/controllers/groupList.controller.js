@@ -13,8 +13,8 @@ exports.joinList = async (req, res) => {
     try {
 
         let userId = req.params.userId;
-        const groupData = await Group.find({ user_id: userId });
-        const getData = await GroupList.find({ user_id: userId });
+        const groupData = await Group.find({ user_id: userId }).sort({ createdAt: -1 });
+        const getData = await GroupList.find({ user_id: userId }).sort({ createdAt: -1 });
 
         /*
         if (getData.length == 0) {
@@ -116,12 +116,12 @@ exports.remainingList = async (req, res) => {
             user_id: {
                 $ne: userId
             }
-        });
+        }).sort({ createdAt: -1 });
         // console.log("groupList::--", groupList);
 
         const groupListData = await GroupList.find({
             user_id: userId
-        });
+        }).sort({ createdAt: -1 });
         // console.log("groupListData:::", groupListData);
 
         // var remainingData = groupList.filter(function (data) {
@@ -156,7 +156,7 @@ exports.remainingList = async (req, res) => {
         for (const respData of remainingData) {
 
             // if (condition) {
-                
+
             // }
 
             const getNotiData = await Notification.findOne({

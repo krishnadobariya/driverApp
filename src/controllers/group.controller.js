@@ -736,14 +736,17 @@ exports.inviteList = async (req, res) => {
             console.log("checkNotification:::---", checkNotification);
 
             if (checkNotification == null) {
+                                
+                const getGroupData = await GroupList.find({
+                    user_id: getUserData._id,
+                    group_id: groupId
+                });
+                console.log("getGroupData::", getGroupData);
 
-                const getGroupData = await GroupList.find({ user_id: getUserData._id });
-
-                if (getGroupData == null) {
+                if (getGroupData.length == 0) {
                     const findUser = await Auth.findOne({
                         _id: getUserData._id
                     }).sort({ createdAt: -1 });
-
                     const respData = {
                         userId: findUser._id,
                         profile: findUser.profile[0] ? findUser.profile[0].res : "",
@@ -935,7 +938,7 @@ exports.notificationList = async (req, res) => {
         // --- for pagination --- //
         const startIndex = (page - 1) * limit;
         const endIndex = page * limit;
-        const getData = await Notification.find({ user_id: req.params.userId }).skip(startIndex).limit(endIndex);
+        const getData = await Notification.find({ user_id: req.params.userId }).skip(startIndex).limit(endIndex).sort({ createdAt: -1 });
         console.log("getData:::----", getData);
 
         const respList = [];
