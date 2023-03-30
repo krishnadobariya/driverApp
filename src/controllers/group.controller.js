@@ -736,7 +736,7 @@ exports.inviteList = async (req, res) => {
             console.log("checkNotification:::---", checkNotification);
 
             if (checkNotification == null) {
-                                
+
                 const getGroupData = await GroupList.find({
                     user_id: getUserData._id,
                     group_id: groupId
@@ -1182,6 +1182,89 @@ exports.deleteGroup = async (req, res) => {
     } catch (error) {
 
         console.log("deleteGroup--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
+
+exports.removeMember = async (req, res) => {
+    try {
+
+        let groupId = req.params.groupId;
+        let userId = req.params.userId;
+
+        const delMemberList = await GroupMemberList.updateOne(
+            {
+                group_id: groupId
+            },
+            {
+                $pull: {
+                    users: {
+                        user_id: userId
+                    }
+                }
+            }
+        );
+        console.log('delMemberList::', delMemberList);
+
+        const delMember = await GroupList.deleteOne({
+            group_id: groupId,
+            user_id: userId
+        });
+        console.log('delMember::', delMember);
+
+        const delGroupChatRoom = await GroupChatRoom.updateOne(
+            {
+                group_id: groupId
+            },
+            {
+                $pull: {
+                    users: {
+                        userId: userId
+                    }
+                }
+            }
+        );
+        console.log('delGroupChatRoom::', delGroupChatRoom);
+
+        const getGroupPost = await GroupPost.find({
+            group_id: groupId,
+            user_id: userId
+        });
+        console.log("getGroupPost::", getGroupPost);
+
+        for (const respData of getGroupPost) {
+
+            const removePost = await GroupPost.deleteOne({ _id: respData._id });
+            console.log("removePost::", removePost);
+
+            const removePostLike = await GroupPostLike.deleteOne({ post_id: respData._id });
+            console.log("removePostLike::", removePostLike);
+
+            const removePostComment = await GroupPostComment.deleteOne({ post_id: respData._id });
+            console.log("removePostComment::", removePostComment);
+        }
+
+        res.status(status.OK).json(
+            {
+                message: "Group Member Delete Successfully",
+                status: true,
+                code: 200,
+                statusCode: 1
+            }
+        )
+
+    } catch (error) {
+
+        console.log("removeMember--Error::", error);
         res.status(status.INTERNAL_SERVER_ERROR).json(
             {
                 message: "Something Went Wrong",

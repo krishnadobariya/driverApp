@@ -120,11 +120,11 @@ exports.userPostList = async (req, res) => {
 
         } else {
 
-            const getUserPost = await UserPost.find({ user_id: userId });
+            const getUserPost = await UserPost.find({ user_id: userId }).sort({ createdAt: -1 });
 
             const response = [];
             for (const respData of getUserPost) {
-                
+
                 /* To show how long a post has been posted */
                 var now = new Date();
                 var addingDate = new Date(respData.createdAt);
@@ -185,7 +185,7 @@ exports.userPostList = async (req, res) => {
                 });
 
                 if (findLikedUser == null) {
-                    
+
                     const data = {
                         postId: respData._id,
                         userId: respData.user_id,
