@@ -117,14 +117,53 @@ exports.updateGroup = async (req, res) => {
 
             if (req.file == undefined) {
 
-                const updateData = await Group.findOneAndUpdate({ _id: req.params.id },
+                const updateData = await Group.findOneAndUpdate(
+                    {
+                        _id: req.params.id
+                    },
                     {
                         $set: {
                             group_name: req.body.group_name,
                             group_desc: req.body.group_desc,
                             group_type: req.body.group_type,
                         }
-                    })
+                    });
+
+                const editGroupListData = await GroupList.updateMany(
+                    {
+                        group_id: req.params.id
+                    },
+                    {
+                        $set: {
+                            group_name: req.body.group_name,
+                            group_type: req.body.group_type
+                        }
+                    });
+                console.log("updateGroupData:::", editGroupListData);
+
+                const editGroupChatRoom = await GroupChatRoom.updateOne(
+                    {
+                        groupId: req.params.id
+                    },
+                    {
+                        $set: {
+                            groupName: req.body.group_name
+                        }
+                    }
+                );
+                console.log("editGroupChatRoom:::", editGroupChatRoom);
+
+                const editChatData = await GroupChat.updateOne(
+                    {
+                        groupId: req.params.id
+                    },
+                    {
+                        $set: {
+                            groupName: req.body.group_name
+                        }
+                    }
+                );
+                console.log("editChatData:::", editChatData);
 
                 res.status(status.OK).json(
                     {
@@ -153,7 +192,7 @@ exports.updateGroup = async (req, res) => {
 
                 const { path } = file
 
-                const newPath = await cloudinaryImageUploadMethod(path)
+                const newPath = await cloudinaryImageUploadMethod(path);
 
                 const updateData = await Group.findOneAndUpdate({ _id: req.params.id },
                     {
@@ -164,6 +203,19 @@ exports.updateGroup = async (req, res) => {
                             group_type: req.body.group_type
                         }
                     })
+
+                const editGroupListData = await GroupList.updateMany(
+                    {
+                        group_id: req.params.id
+                    },
+                    {
+                        $set: {
+                            group_img: newPath.res,
+                            group_name: req.body.group_name,
+                            group_type: req.body.group_type
+                        }
+                    });
+                console.log("updateGroupData:::", editGroupListData);
 
                 res.status(status.OK).json(
                     {
