@@ -258,6 +258,7 @@ exports.groupListByChat = async (req, res) => {
                 if (findChats.length == 0) {
 
                     const chatData = {
+                        groupId: getGroupData._id,
                         groupName: getGroupData.group_name,
                         groupImage: getGroupData.group_img,
                         unReadCount: 0,
@@ -292,6 +293,7 @@ exports.groupListByChat = async (req, res) => {
                         }
 
                         const chatData = {
+                            groupId: getGroupData._id,
                             groupName: getGroupData.group_name,
                             groupImage: getGroupData.group_img,
                             unReadCount: unReadCount,

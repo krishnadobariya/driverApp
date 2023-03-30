@@ -1201,6 +1201,7 @@ exports.removeMember = async (req, res) => {
         let groupId = req.params.groupId;
         let userId = req.params.userId;
 
+
         const delMemberList = await GroupMemberList.updateOne(
             {
                 group_id: groupId
@@ -1220,6 +1221,35 @@ exports.removeMember = async (req, res) => {
             user_id: userId
         });
         console.log('delMember::', delMember);
+
+        const updateGroupData = await Group.updateOne(
+            {
+                _id: groupId
+            },
+            {
+                $inc: {
+                    group_members: -1
+                }
+            }
+        )
+
+        const updateGroupList = await GroupList.updateOne(
+            {
+                group_id: groupId,
+                user_id: userId
+            },
+            {
+                $inc: {
+                    group_members: -1
+                }
+            }
+        );
+        console.log("updateGroupList::", updateGroupList);
+
+        const delNotiData = await Notification.deleteOne({
+            group_id: groupId,
+            user_id: userId
+        });
 
         const delGroupChatRoom = await GroupChatRoom.updateOne(
             {
@@ -1252,6 +1282,7 @@ exports.removeMember = async (req, res) => {
             const removePostComment = await GroupPostComment.deleteOne({ post_id: respData._id });
             console.log("removePostComment::", removePostComment);
         }
+
 
         res.status(status.OK).json(
             {
