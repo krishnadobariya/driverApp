@@ -1305,7 +1305,7 @@ exports.removeMember = async (req, res) => {
 
         const delGroupChatRoom = await GroupChatRoom.updateOne(
             {
-                group_id: groupId
+                groupId: groupId
             },
             {
                 $pull: {

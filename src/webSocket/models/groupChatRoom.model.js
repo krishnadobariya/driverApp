@@ -6,7 +6,7 @@ const groupChatRoomSchema = mongoose.Schema({
         type: objectId,
         required: true
     },
-    groupName: {
+    groupName: {    
         type: String,
         required: true
     },
