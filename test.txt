@@ -1,0 +1,42 @@
+        userPostList - API
+---------------------------------------------------
+demo16 = 6426aad1382909befb38eabf
+demo17 = 6426aadd382909befb38ead1
+demo18 = 6426aaee382909befb38eae7
+
+        Request
+demo16 ~~> demo17, demo18
+demo17 ~~> demo16
+demo18 ~~> demo16, 
+
+        Accept
+demo16 ~~> demo17, demo18
+demo17 ~~> 
+demo18 ~~> demo16
+
+
+demo16 ~~> 16-1, 16-2
+demo18 ~~> lorem, aaaaaa, wwwww
+demo17 ~~> 17-1, 17-2
+
+what i see 
+demo16 ~~> 17-1, 17-2, lorem, aaaaaa, wwwww
+demo17 ~~> 16-1, 16-2
+demo18 ~~> 16-1, 16-2, 17-1, 17-2 
+
+====================================================
+        groupChat - Socket
+---------------------------------------------------
+demo16 = 6426aad1382909befb38eabf - admin
+demo17 = 6426aadd382909befb38ead1 - user1
+demo18 = 6426aaee382909befb38eae7 - user2
+
+demoUser = 6426bac269c9ba33533dbdc0 - group
+
+- Socket : groupChat
+{
+    "groupId": "6426bac269c9ba33533dbdc0",
+    "groupName": "demoUser",
+    "sender_id": "6426aaee382909befb38eae7",
+    "message": "Hello!-18"
+}

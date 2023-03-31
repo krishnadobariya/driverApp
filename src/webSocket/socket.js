@@ -948,12 +948,16 @@ function socket(io) {
         // ----- groupChat ----- //
         socket.on("groupChat", async (arg) => {
 
-            const findGroup = await GroupChat.findOne({ groupId: arg.groupId });
-            const getUserData = await authModel.findOne({ _id: arg.sender_id });
-            // memeber list and sender id sivay na data io.to(userRoom).emit("getStatus", 1)
+            const findGroup = await GroupChat.findOne({ groupId: arg.groupId }); // For Group Chat
+            const getUserData = await authModel.findOne({ _id: arg.sender_id }); // For User
 
             const getMemberList = await GroupMemberList.findOne({ group_id: arg.groupId });
 
+            // console.log("findGroup:::", findGroup);
+            // console.log("getUserData::", getUserData);
+            // console.log("getMemberList::", getMemberList);
+
+            
             if (findGroup == null) {
 
                 if (getUserData == null) {
@@ -976,6 +980,21 @@ function socket(io) {
                             }
                         });
                         const saveData = await addGroupChatData.save();
+
+                        const updateChat = await GroupChat.updateOne(
+                            {
+                                groupId: arg.groupId
+                            },
+                            {
+                                $push: {
+                                    "chat.$[].read": {
+                                        reader: arg.sender_id,
+                                        readerName: getUserData.username
+                                    }
+                                }
+                            }
+                        )
+
                         console.log("saveData:::----", saveData);
 
                         for (const userData of getMemberList.users) {
@@ -1021,7 +1040,7 @@ function socket(io) {
                 }
 
             } else {
-
+                console.log('chhe ho aaya ek group');
                 const updateGroupChat = await GroupChat.updateOne(
                     {
                         groupId: arg.groupId
@@ -1038,6 +1057,20 @@ function socket(io) {
                     }
                 );
                 console.log("updateGroupChat:::----", updateGroupChat);
+
+                const updateChat = await GroupChat.updateOne(
+                    {
+                        groupId: arg.groupId
+                    },
+                    {
+                        $push: {
+                            "chat.$[].read": {
+                                reader: arg.sender_id,
+                                readerName: getUserData.username
+                            }
+                        }
+                    }
+                )
 
                 for (const userData of getMemberList.users) {
                     console.log("userData:::", userData);
@@ -1077,6 +1110,7 @@ function socket(io) {
                 }
 
             }
+            
 
         });
         // ----- End groupChat ----- //
@@ -1088,7 +1122,6 @@ function socket(io) {
             let userId = arg.userId;
             let groupId = arg.groupId;
             const userRoom = `User${userId}`;
-            console.log("userRoom::", userRoom);
 
             const findUser = await authModel.findOne({ _id: userId });
             if (findUser == null) {

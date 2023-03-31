@@ -48,8 +48,8 @@
 [If group_type-1 (1/2 (1-Public, 2-Private))]
 - Socket : joinGroup
 {
-    "group_id": "640acfef21839985e4d6d241",
-    "user_id": "6409267cba8f793e28c86183",
+    "group_id": "6426bac269c9ba33533dbdc0",
+    "user_id": "6426aaee382909befb38eae7",
     "group_type": 1
 }
 - emit : groupJoin
@@ -103,30 +103,4 @@
     "action": 1
 }
 - emit : requestAccept
-
-
-=============================================
-
-demo16 = 6426aad1382909befb38eabf
-demo17 = 6426aadd382909befb38ead1
-demo18 = 6426aaee382909befb38eae7
-
-        Request
-demo16 ~~> demo17, demo18
-demo17 ~~> demo16
-demo18 ~~> demo16, 
-
-        Accept
-demo16 ~~> demo17, demo18
-demo17 ~~> 
-demo18 ~~> demo16
-
-
-demo16 ~~> 16-1, 16-2
-demo18 ~~> lorem, aaaaaa, wwwww
-demo17 ~~> 17-1, 17-2
-
-what i see 
-demo16 ~~> 17-1, 17-2, lorem, aaaaaa, wwwww
-demo17 ~~> 16-1, 16-2
-demo18 ~~> 16-1, 16-2, 17-1, 17-2
+ 
