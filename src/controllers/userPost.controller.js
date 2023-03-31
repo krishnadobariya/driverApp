@@ -2,6 +2,8 @@ const User = require("../models/auth.model");
 const UserPost = require("../models/userPost.model");
 const UserPostComment = require("../models/userPostComment.model");
 const UserPostLike = require("../models/userPostLike.model");
+const Notification = require("../models/notification.model");
+const FriendRequest = require("../models/frdReq.model");
 const cloudinary = require("../utils/cloudinary.utils");
 const status = require("http-status");
 
@@ -120,10 +122,42 @@ exports.userPostList = async (req, res) => {
 
         } else {
 
-            const getUserPost = await UserPost.find({ user_id: userId }).sort({ createdAt: -1 });
+            const getAccess = await FriendRequest.find(
+                {
+                    user_id: userId,
+                    status: 2
+                }
+            ).select('requested_user_id');
+            console.log('getAccess::', getAccess);
+
+            const getAccessReq = await FriendRequest.find(
+                {
+                    requested_user_id: userId,
+                    status: 2
+                }
+            ).select('user_id');
+            console.log("getAccessReq::", getAccessReq);
+
+            const postResp = [];
+            for (const respData of getAccess) {
+
+                const getAccessPost = await UserPost.find({ user_id: respData.requested_user_id });
+                postResp.push(getAccessPost);
+
+            }
+
+            for (const respData of getAccessReq) {
+
+                const getAccessPost = await UserPost.find({ user_id: respData.user_id });
+                postResp.push(getAccessPost);
+
+            }
+            console.log("postResp::", postResp);
+
+            const data = postResp.flat(1);
 
             const response = [];
-            for (const respData of getUserPost) {
+            for (const respData of data) {
 
                 /* To show how long a post has been posted */
                 var now = new Date();

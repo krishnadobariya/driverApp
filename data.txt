@@ -90,19 +90,43 @@
 
 - Socket : friendRequest
 {
-    "user_id": "6422dd21d505c01c29560506",
-    "req_user_id": "6422dd10d505c01c295604ee"
+    "user_id": "6426aadd382909befb38ead1",
+    "req_user_id": "6426aaee382909befb38eae7"
 }
 - emit : followRequest
 
 
 - Socket : friendReqAccept [action: 1-accept, 2-decline]
 {
-    "user_id": "63d8ffe2a436ea28cdd0ecc1",
-    "req_user_id": "63da52c0a436ea28cdd0ee0b",
+    "user_id": "6426aaee382909befb38eae7",
+    "req_user_id": "6426aadd382909befb38ead1",
     "action": 1
 }
 - emit : requestAccept
 
 
 =============================================
+
+demo16 = 6426aad1382909befb38eabf
+demo17 = 6426aadd382909befb38ead1
+demo18 = 6426aaee382909befb38eae7
+
+        Request
+demo16 ~~> demo17, demo18
+demo17 ~~> demo16
+demo18 ~~> demo16, 
+
+        Accept
+demo16 ~~> demo17, demo18
+demo17 ~~> 
+demo18 ~~> demo16
+
+
+demo16 ~~> 16-1, 16-2
+demo18 ~~> lorem, aaaaaa, wwwww
+demo17 ~~> 17-1, 17-2
+
+what i see 
+demo16 ~~> 17-1, 17-2, lorem, aaaaaa, wwwww
+demo17 ~~> 16-1, 16-2
+demo18 ~~> 16-1, 16-2, 17-1, 17-2
