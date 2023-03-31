@@ -1,5 +1,19 @@
         userPostList - API
 ---------------------------------------------------
+
+- Socket : friendRequest
+{
+    "user_id": "6426aad1382909befb38eabf",
+    "req_user_id": "6426aaee382909befb38eae7"
+}
+
+- Socket : friendReqAccept [action: 1-accept, 2-decline]
+{
+    "user_id": "6426aad1382909befb38eabf",
+    "req_user_id": "6426aadd382909befb38ead1",
+    "action": 1
+}
+
 demo16 = 6426aad1382909befb38eabf
 demo17 = 6426aadd382909befb38ead1
 demo18 = 6426aaee382909befb38eae7

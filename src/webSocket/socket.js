@@ -952,11 +952,6 @@ function socket(io) {
             const getUserData = await authModel.findOne({ _id: arg.sender_id }); // For User
 
             const getMemberList = await GroupMemberList.findOne({ group_id: arg.groupId });
-
-            // console.log("findGroup:::", findGroup);
-            // console.log("getUserData::", getUserData);
-            // console.log("getMemberList::", getMemberList);
-
             
             if (findGroup == null) {
 

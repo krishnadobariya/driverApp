@@ -2,7 +2,6 @@ const User = require("../models/auth.model");
 const UserPost = require("../models/userPost.model");
 const UserPostComment = require("../models/userPostComment.model");
 const UserPostLike = require("../models/userPostLike.model");
-const Notification = require("../models/notification.model");
 const FriendRequest = require("../models/frdReq.model");
 const cloudinary = require("../utils/cloudinary.utils");
 const status = require("http-status");
@@ -715,3 +714,26 @@ exports.userPostLikedList = async (req, res) => {
 
     }
 }
+
+/*
+exports.followingList = async (req, res) => {
+    try {
+
+
+
+    } catch (error) {
+
+        console.log("followingList--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
+*/

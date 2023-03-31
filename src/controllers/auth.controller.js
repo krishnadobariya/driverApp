@@ -413,11 +413,19 @@ exports.userProfile = async (req, res) => {
             });
             console.log("getFriendRequest::", getFriendRequest);
 
+            // 1 - by default
+            // 2 - request sent
+            // 3 - request accepted
+
             var request;
             if (getFriendRequest == null) {
-                request = false
+                request = 1
             } else {
-                request = true                
+                if (getFriendRequest.status == 1) {
+                    request = 2
+                } else {
+                    request = 3
+                }
             }
 
             const resp = {
