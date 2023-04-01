@@ -714,26 +714,3 @@ exports.userPostLikedList = async (req, res) => {
 
     }
 }
-
-/*
-exports.followingList = async (req, res) => {
-    try {
-
-
-
-    } catch (error) {
-
-        console.log("followingList--Error::", error);
-        res.status(status.INTERNAL_SERVER_ERROR).json(
-            {
-                message: "Something Went Wrong",
-                status: false,
-                code: 500,
-                statusCode: 0,
-                error: error.message
-            }
-        )
-
-    }
-}
-*/

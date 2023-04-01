@@ -15,7 +15,8 @@ const {
     updateUserVehicleData,
     changePassword,
     forgetPassword,
-    checkMail
+    checkMail,
+    followingList
 } = require("../controllers/auth.controller");
 
 const {
@@ -37,10 +38,13 @@ router.put("/update/vehicle-old/:id", userVehicleUpdateData);
 router.put("/update/vehicle-data/:id", updateUserVehicleData);
 router.post("/change-password/:id", changePassword);
 router.post("/forget-password", forgetPassword);
-router.get("/check-mail/:email", checkMail)
+router.get("/check-mail/:email", checkMail);
+router.get("/following/:userId", followingList)
 
 /* ----- For Block Unblock Controller ----- */
 router.post("/block-user/:user_id/:block_user_id", blockUnblock);
 router.get("/block-user-list/:user_id", blockUnblockList)
+
+
 
 module.exports = router;

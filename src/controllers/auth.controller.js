@@ -1095,3 +1095,52 @@ exports.checkMail = async (req, res) => {
 
     }
 }
+
+exports.followingList = async (req, res) => {
+    try {
+
+        const userId = req.params.userId;
+
+        const getFollowing = await FriendRequest.find(
+            {
+                user_id: userId
+            }
+        );
+
+        const response = [];
+        for (const respData of getFollowing) {
+
+            const finalRes = {
+                userImage: respData.requested_user_img,
+                userName: respData.requested_user_name
+            }
+            response.push(finalRes);
+
+        }
+
+        res.status(status.OK).json(
+            {
+                message: "Your Following User List",
+                status: true,
+                code: 200,
+                statusCode: 1,
+                data: response
+            }
+        )
+
+
+    } catch (error) {
+
+        console.log("followingList--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
