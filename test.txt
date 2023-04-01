@@ -1,19 +1,6 @@
         userPostList - API
 ---------------------------------------------------
 
-- Socket : friendRequest
-{
-    "user_id": "6426aad1382909befb38eabf",
-    "req_user_id": "6426aaee382909befb38eae7"
-}
-
-- Socket : friendReqAccept [action: 1-accept, 2-decline]
-{
-    "user_id": "6426aad1382909befb38eabf",
-    "req_user_id": "6426aadd382909befb38ead1",
-    "action": 1
-}
-
 demo16 = 6426aad1382909befb38eabf
 demo17 = 6426aadd382909befb38ead1
 demo18 = 6426aaee382909befb38eae7
@@ -29,14 +16,14 @@ demo17 ~~>
 demo18 ~~> demo16
 
 
-demo16 ~~> 16-1, 16-2
+demo16 ~~> 16-1, 16-2, 16-3
 demo18 ~~> lorem, aaaaaa, wwwww
-demo17 ~~> 17-1, 17-2
+demo17 ~~> 17-1, 17-2, 17-3
 
 what i see 
 demo16 ~~> 17-1, 17-2, lorem, aaaaaa, wwwww
-demo17 ~~> 16-1, 16-2
-demo18 ~~> 16-1, 16-2, 17-1, 17-2 
+demo17 ~~> 16-1, 16-2, 16-3
+demo18 ~~> 16-1, 16-2, 16-3,  
 
 ====================================================
         groupChat - Socket
@@ -46,11 +33,3 @@ demo17 = 6426aadd382909befb38ead1 - user1
 demo18 = 6426aaee382909befb38eae7 - user2
 
 demoUser = 6426bac269c9ba33533dbdc0 - group
-
-- Socket : groupChat
-{
-    "groupId": "6426bac269c9ba33533dbdc0",
-    "groupName": "demoUser",
-    "sender_id": "6426aaee382909befb38eae7",
-    "message": "Hello!-18"
-}

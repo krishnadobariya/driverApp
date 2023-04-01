@@ -126,37 +126,39 @@ exports.userPostList = async (req, res) => {
                     user_id: userId,
                     status: 2
                 }
-            ).select('requested_user_id');
-            console.log('getAccess::', getAccess);
+            ).select('requested_user_id').sort({ createdAt: -1 });
+            // console.log('getAccess::', getAccess);
 
             const getAccessReq = await FriendRequest.find(
                 {
                     requested_user_id: userId,
                     status: 2
                 }
-            ).select('user_id');
-            console.log("getAccessReq::", getAccessReq);
+            ).select('user_id').sort({ createdAt: -1 });
+            // console.log("getAccessReq::", getAccessReq);
 
             const postResp = [];
             for (const respData of getAccess) {
 
-                const getAccessPost = await UserPost.find({ user_id: respData.requested_user_id });
+                const getAccessPost = await UserPost.find({ user_id: respData.requested_user_id }).sort({ createdAt: -1 });
                 postResp.push(getAccessPost);
 
             }
 
             for (const respData of getAccessReq) {
 
-                const getAccessPost = await UserPost.find({ user_id: respData.user_id });
+                const getAccessPost = await UserPost.find({ user_id: respData.user_id }).sort({ createdAt: -1 });
                 postResp.push(getAccessPost);
 
             }
-            console.log("postResp::", postResp);
 
             const data = postResp.flat(1);
+            const resData = data.sort((date1, date2) => {
+                return date1.createdAt - date2.createdAt
+            }).reverse();
 
             const response = [];
-            for (const respData of data) {
+            for (const respData of resData) {
 
                 /* To show how long a post has been posted */
                 var now = new Date();
@@ -252,8 +254,6 @@ exports.userPostList = async (req, res) => {
                     response.push(data)
 
                 }
-
-
 
             }
 
