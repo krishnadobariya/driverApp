@@ -256,6 +256,14 @@ exports.userPostList = async (req, res) => {
                 }
 
             }
+            
+            let page = parseInt(req.query.page) || 1;
+            let limit = parseInt(req.query.limit) || 10;
+
+            const startIndex = (page - 1) * limit;
+            const endIndex = page * limit;
+
+            console.log(`Pagination :- ${startIndex}, ${endIndex}`);
 
             res.status(status.OK).json(
                 {
@@ -263,7 +271,7 @@ exports.userPostList = async (req, res) => {
                     status: true,
                     code: 200,
                     statusCode: 1,
-                    data: response
+                    data: response.slice(startIndex, endIndex)
                 }
             )
 
