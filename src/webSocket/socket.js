@@ -952,7 +952,7 @@ function socket(io) {
             const getUserData = await authModel.findOne({ _id: arg.sender_id }); // For User
 
             const getMemberList = await GroupMemberList.findOne({ group_id: arg.groupId });
-            
+
             if (findGroup == null) {
 
                 if (getUserData == null) {
@@ -1105,7 +1105,7 @@ function socket(io) {
                 }
 
             }
-            
+
 
         });
         // ----- End groupChat ----- //
@@ -1264,7 +1264,7 @@ function socket(io) {
         //frdreqaccept ->  
         // accept thay atle frdRequest na table ma status change
         // sender ne notification mlavi joiye
-        // notification na tbale ma change avse --> old entry delete 
+        // notification na table ma change avse --> old entry delete 
 
         socket.on('friendReqAccept', async (arg) => {
 
@@ -1324,6 +1324,22 @@ function socket(io) {
                 );
 
             } else {
+                
+                const deleteNotification = await NotificationModel.deleteOne(
+                    {
+                        user_id: reqUserId,
+                        req_user_id: userId,
+                    }
+                );
+                // console.log("deleteNotification", deleteNotification);
+
+                const deleteFriendRequest = await FriendRequest.deleteOne(
+                    {
+                        user_id: userId,
+                        requested_user_id: reqUserId
+                    }
+                );
+                // console.log("deleteFriendRequest", deleteFriendRequest);
 
             }
 
