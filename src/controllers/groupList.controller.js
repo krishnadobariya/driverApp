@@ -181,6 +181,13 @@ exports.remainingList = async (req, res) => {
             }
 
         }
+        console.log("response", response);
+
+        let page = parseInt(req.query.page) || 1;
+        let limit = parseInt(req.query.limit) || 10;
+
+        const startIndex = (page - 1) * limit;
+        const endIndex = page * limit;
 
         res.status(status.OK).json(
             {
@@ -188,7 +195,7 @@ exports.remainingList = async (req, res) => {
                 status: true,
                 code: 200,
                 statusCode: 1,
-                data: response
+                data: response.slice(startIndex, endIndex)
             }
         )
 
@@ -231,9 +238,6 @@ exports.groupListByChat = async (req, res) => {
             )
 
         } else {
-
-            // const findGroup = await GroupList.find({ user_id: userId });
-            // console.log("findGroup::", findGroup); // chatRoom walu fix karvanu chhe
 
             const findGroup = await GroupChatRoom.find(
                 {
