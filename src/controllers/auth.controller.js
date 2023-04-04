@@ -401,6 +401,7 @@ exports.userProfile = async (req, res) => {
             else {
 
             }
+            console.log("getChatRoom", getChatRoom);
 
             const getAnswer = await Question.findOne({ user_id: req.params.id }).select({ 'que_one': 1, 'que_two': 1, 'que_three': 1, 'que_four': 1, '_id': 0 });
 
@@ -1103,20 +1104,24 @@ exports.followingList = async (req, res) => {
 
         const getFollowing = await FriendRequest.find(
             {
-                user_id: userId
+                user_id: userId,
+                status: 2
             }
         );
+        console.log("getFollowing", getFollowing);
 
         const response = [];
         for (const respData of getFollowing) {
 
             const finalRes = {
+                userId: userId,
                 userImage: respData.requested_user_img,
                 userName: respData.requested_user_name
             }
             response.push(finalRes);
 
         }
+        console.log("response", response);
 
         res.status(status.OK).json(
             {

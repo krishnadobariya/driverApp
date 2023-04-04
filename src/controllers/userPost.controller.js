@@ -107,6 +107,7 @@ exports.userPostList = async (req, res) => {
 
         let userId = req.params.userId;
         const findUser = await User.findOne({ _id: userId });
+        console.log("findUser", findUser);
 
         if (findUser == null) {
 
@@ -127,17 +128,20 @@ exports.userPostList = async (req, res) => {
                     status: 2
                 }
             ).select('requested_user_id').sort({ createdAt: -1 });
-            // console.log('getAccess::', getAccess);
+            console.log('getAccess::', getAccess);
 
-            const getAccessReq = await FriendRequest.find(
-                {
-                    requested_user_id: userId,
-                    status: 2
-                }
-            ).select('user_id').sort({ createdAt: -1 });
+            // const getAccessReq = await FriendRequest.find(
+            //     {
+            //         requested_user_id: userId,
+            //         status: 2
+            //     }
+            // ).select('user_id').sort({ createdAt: -1 });
             // console.log("getAccessReq::", getAccessReq);
 
             const postResp = [];
+            const getAccessPost = await UserPost.find({ user_id: userId }).sort({ createdAt: -1 });
+            postResp.push(getAccessPost);
+
             for (const respData of getAccess) {
 
                 const getAccessPost = await UserPost.find({ user_id: respData.requested_user_id }).sort({ createdAt: -1 });
@@ -145,12 +149,12 @@ exports.userPostList = async (req, res) => {
 
             }
 
-            for (const respData of getAccessReq) {
+            // for (const respData of getAccessReq) {
 
-                const getAccessPost = await UserPost.find({ user_id: respData.user_id }).sort({ createdAt: -1 });
-                postResp.push(getAccessPost);
+            //     const getAccessPost = await UserPost.find({ user_id: respData.user_id }).sort({ createdAt: -1 });
+            //     postResp.push(getAccessPost);
 
-            }
+            // }
 
             const data = postResp.flat(1);
             const resData = data.sort((date1, date2) => {
@@ -256,7 +260,7 @@ exports.userPostList = async (req, res) => {
                 }
 
             }
-            
+
             let page = parseInt(req.query.page) || 1;
             let limit = parseInt(req.query.limit) || 10;
 
