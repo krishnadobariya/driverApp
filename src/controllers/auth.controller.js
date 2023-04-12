@@ -245,11 +245,10 @@ exports.logout = async (req, res) => {
 
             res.status(status.OK).json(
                 {
-                    message: "User Login Successfully",
+                    message: "User Logout Successfully",
                     status: true,
                     code: 200,
-                    statusCode: 1,
-                    data: response
+                    statusCode: 1
                 }
             )
 

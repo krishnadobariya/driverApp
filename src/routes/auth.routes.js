@@ -5,6 +5,7 @@ const {
     registration,
     addImage,
     login,
+    logout,
     userList,
     userProfile,
     getLatLong,
@@ -28,6 +29,7 @@ const {
 router.post("/register", registration);
 router.post("/add-image/:id", upload.array('profile'), addImage)
 router.post("/login", login);
+router.post("/logout/:userId", logout);
 router.get("/user-profile/:id/:user_id", userProfile);
 router.post("/all-user/:id", userList);
 router.get("/get-lat-long/:id", getLatLong);
