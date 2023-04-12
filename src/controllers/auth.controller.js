@@ -214,6 +214,61 @@ exports.login = async (req, res) => {
     }
 }
 
+exports.logout = async (req, res) => {
+    try {
+
+        let userId = req.params.userId;
+
+        const getUserData = await authModel.findOne({ _id: userId });
+
+        if (getUserData == null) {
+            res.status(status.NOT_FOUND).json(
+                {
+                    message: "Data Not Exist",
+                    status: false,
+                    code: 404,
+                    statusCode: 0
+                }
+            )
+        } else {
+
+            const userLogout = await authModel.updateOne(
+                {
+                    _id: userId
+                },
+                {
+                    $set: {
+                        fcm_token: null
+                    }
+                }
+            )
+
+            res.status(status.OK).json(
+                {
+                    message: "User Login Successfully",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: response
+                }
+            )
+
+        }
+
+    } catch (error) {
+        console.log("Error:", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+    }
+}
+
 exports.userList = async (req, res) => {
     try {
 
