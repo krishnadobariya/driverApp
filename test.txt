@@ -33,3 +33,16 @@ demo17 = 6426aadd382909befb38ead1 - user1
 demo18 = 6426aaee382909befb38eae7 - user2
 
 demoUser = 6426bac269c9ba33533dbdc0 - group
+
+
+=====================================================
+group ~~> 64368f3563377db9f779d939
+user ~~> 6426aad1382909befb38eabf - admin
+
+- Socket : inviteGroup
+{
+    "user_id": "6422dd21d505c01c29560506",
+    "group_id": "64368f3563377db9f779d939",
+    "notification_img": "https://res.cloudinary.com/dat4u94dd/image/upload/v1679914509/iu3cqrawd96lm7b8jw3t.jpg",
+    "user_name": "demo2"
+}
