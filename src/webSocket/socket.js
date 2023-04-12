@@ -707,7 +707,8 @@ function socket(io) {
                     console.log("groupId::--", groupId);
                     const updateNoti = await NotificationModel.updateOne(
                         {
-                            group_id: groupId
+                            group_id: groupId,
+                            req_user_id: userId
                         },
                         {
                             $set: {

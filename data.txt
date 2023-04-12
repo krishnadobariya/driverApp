@@ -57,11 +57,11 @@
 [If group_type-2]
 - Socket : joinGroup
 {
-    "group_id": "640585b30afa74ab9e4f1142",
-    "user_id": "63c9157b4becc06796221948",
+    "group_id": "64243d01cb2ba2880ab589f4",
+    "user_id": "6422dd10d505c01c295604ee",
     "group_type": 2,
-    "notification_img": "https://res.cloudinary.com/tcloud/image/upload/v1678083507/gcmefsf11cbpgcgwjxcg.png",
-    "user_name": "test"
+    "notification_img": "https://res.cloudinary.com/tcloud/image/upload/v1673262748/lcnbz5ch2domvf40jmta.png",
+    "user_name": "demo1"
 }
 - emit : groupJoin
 
@@ -86,6 +86,7 @@
 
 
 ============== REQUEST TO FRIEND ==============
+
 
 
 - Socket : friendRequest

@@ -2,13 +2,18 @@ const mongoose = require("mongoose");
 const authModel = require("../models/auth.model");
 const chatRoomModel = require("../webSocket/models/chatRoom.model");
 const chatModel = require("../webSocket/models/chat.model");
+const Group = require("../models/group.model");
 const Block = require("../models/blockUnblock.model");
 const GroupList = require("../models/groupList.model");
 const Question = require("../models/userQuestion.model");
 const FriendRequest = require("../models/frdReq.model");
+const UserPost = require("../models/userPost.model");
+const UserPostComment = require("../models/userPostComment.model");
+const UserPostLike = require("../models/userPostLike.model");
 const cloudinary = require("../utils/cloudinary.utils");
 const { mailService } = require("../services/email.service");
 const status = require("http-status");
+
 
 exports.registration = async (req, res) => {
     try {
@@ -607,6 +612,24 @@ exports.userLogout = async (req, res, next) => {
             await chatRoomModel.deleteOne({
                 user2: req.params.id
             })
+
+            // post delete - by me(harvi)
+            const findPostData = await UserPost.find({ user_id: req.params.id })
+            // console.log("findPostData", findPostData);
+
+            await UserPost.deleteMany({
+                user_id: req.params.id
+            })
+
+            for (const postId of findPostData) {
+                await UserPostComment.deleteOne({
+                    post_id: postId._id
+                })
+
+                await UserPostLike.deleteOne({
+                    post_id: postId._id
+                })
+            }
 
             res.status(status.OK).json(
                 {

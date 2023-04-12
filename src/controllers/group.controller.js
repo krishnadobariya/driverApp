@@ -1253,7 +1253,6 @@ exports.removeMember = async (req, res) => {
         let groupId = req.params.groupId;
         let userId = req.params.userId;
 
-
         const delMemberList = await GroupMemberList.updateOne(
             {
                 group_id: groupId
