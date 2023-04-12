@@ -789,22 +789,32 @@ exports.inviteList = async (req, res) => {
 
             if (checkNotification == null) {
 
-                const getGroupData = await GroupList.find({
-                    user_id: getUserData._id,
+
+                const checkNotiForReq = await Notification.findOne({
+                    req_user_id: getUserData._id,
                     group_id: groupId
                 });
-                console.log("getGroupData::", getGroupData);
 
-                if (getGroupData.length == 0) {
-                    const findUser = await Auth.findOne({
-                        _id: getUserData._id
-                    }).sort({ createdAt: -1 });
-                    const respData = {
-                        userId: findUser._id,
-                        profile: findUser.profile[0] ? findUser.profile[0].res : "",
-                        userName: findUser.username
+                if (checkNotiForReq == null) {
+
+                    const getGroupData = await GroupList.find({
+                        user_id: getUserData._id,
+                        group_id: groupId
+                    });
+                    console.log("getGroupData::", getGroupData);
+
+                    if (getGroupData.length == 0) {
+                        const findUser = await Auth.findOne({
+                            _id: getUserData._id
+                        }).sort({ createdAt: -1 });
+                        const respData = {
+                            userId: findUser._id,
+                            profile: findUser.profile[0] ? findUser.profile[0].res : "",
+                            userName: findUser.username
+                        }
+                        response.push(respData);
                     }
-                    response.push(respData);
+
                 }
 
             }
