@@ -19,7 +19,8 @@ const blogRouter = require("./routes/blog.routes");
 const groupRouter = require("./routes/group.routes");
 const groupListRouter = require("./routes/groupList.routes");
 const userPost = require("./routes/userPost.routes");
-const bannerPost = require("./routes/banner.routes")
+const bannerPost = require("./routes/banner.routes");
+const activityRouter = require('./routes/activity.routes');
 
 app.use("/auth", authRouter);
 app.use("/blog", blogRouter);
@@ -28,7 +29,8 @@ app.use("/event", eventRouter);
 app.use("/group", groupRouter);
 app.use("/groupList", groupListRouter);
 app.use("/userPost", userPost);
-app.use("/banner", bannerPost)
+app.use("/banner", bannerPost);
+app.use('/activity', activityRouter);
 // ---------- End Define Routes Here ---------- //
 
 

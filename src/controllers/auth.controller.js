@@ -10,6 +10,7 @@ const FriendRequest = require("../models/frdReq.model");
 const UserPost = require("../models/userPost.model");
 const UserPostComment = require("../models/userPostComment.model");
 const UserPostLike = require("../models/userPostLike.model");
+const activity = require("../models/activity.model");
 const cloudinary = require("../utils/cloudinary.utils");
 const { mailService } = require("../services/email.service");
 const status = require("http-status");
@@ -488,6 +489,8 @@ exports.userProfile = async (req, res) => {
                 }
             }
 
+            const getActivity = await activity.find({ user_id: user_id });
+
             const resp = {
                 user_id: getUserData._id,
                 chatRoomId: getChatRoom[0] ? getChatRoom[0]._id : "",
@@ -510,7 +513,8 @@ exports.userProfile = async (req, res) => {
 
             const response = {
                 userData: resp,
-                groupData: getGroupData
+                groupData: getGroupData,
+                activity: getActivity
             }
 
             res.status(status.OK).json(

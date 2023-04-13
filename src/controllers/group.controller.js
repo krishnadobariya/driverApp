@@ -1005,7 +1005,7 @@ exports.notificationList = async (req, res) => {
 
         const respList = [];
         for (const respData of getData) {
-
+            
             var now = new Date();
             var addingDate = new Date(respData.createdAt);
             var sec_num = (now - addingDate) / 1000;
