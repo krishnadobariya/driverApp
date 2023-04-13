@@ -1,4 +1,4 @@
-const activity = require('../models/activity.model')
+const Activity = require('../models/activity.model')
 const status = require("http-status");
 const authModel = require('../models/auth.model');
 const cloudinary = require("../utils/cloudinary.utils");
@@ -36,7 +36,7 @@ exports.insert = async (req, res) => {
             const { path } = file;
             const newPath = await cloudinaryImageUploadMethod(path);
 
-            const insertActivity = new activity({
+            const insertActivity = new Activity({
                 user_id: req.params.user_id,
                 activity_type: req.body.activity_type,
                 duration: req.body.duration,

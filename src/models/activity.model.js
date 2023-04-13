@@ -1,8 +1,9 @@
 const mongoose = require('mongoose')
+const ObjectId = mongoose.Types.ObjectId;
 
 const activity_schema = mongoose.Schema({
     user_id: {
-        type: String,
+        type: ObjectId,
         required: true,
         ref : 'auth'
     },

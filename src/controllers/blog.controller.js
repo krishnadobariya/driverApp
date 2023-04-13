@@ -629,7 +629,7 @@ exports.likedUser = async (req, res) => {
         const findBlogData = await likeModel.find({
             blogId: blogId
         });
-        console.log("findBlogData::", findBlogData[0].reqAuthId);
+        // console.log("findBlogData::", findBlogData[0].reqAuthId);
 
         if (findBlogData.length == 0) {
 

@@ -3,7 +3,14 @@ const authModel = require("../models/auth.model");
 const chatRoomModel = require("../webSocket/models/chatRoom.model");
 const chatModel = require("../webSocket/models/chat.model");
 const Group = require("../models/group.model");
+const GroupPost = require("../models/groupPost.model");
+const GroupPostLike = require("../models/groupPostLike.model");
+const GroupPostComm = require("../models/groupPostComment.model");
+const Activity = require('../models/activity.model');
 const Block = require("../models/blockUnblock.model");
+const Blog = require("../models/blog.model");
+const Comment = require("../models/comment.model");
+const Like = require("../models/like.model");
 const GroupList = require("../models/groupList.model");
 const Question = require("../models/userQuestion.model");
 const FriendRequest = require("../models/frdReq.model");
@@ -640,53 +647,115 @@ exports.getUserInfo = async (req, res) => {
 exports.userLogout = async (req, res, next) => {
     try {
 
+        /* Find User Data */ 
         const findUser = await authModel.findOne({
             _id: req.params.id
         })
 
-        if (findUser) {
+        if (findUser == null) {
+            
+            res.status(status.NOT_FOUND).json(
+                {
+                    message: "User Not Found",
+                    status: true,
+                    code: 404,
+                    statusCode: 1
+                }
+            )
 
+        } else {
+            
+            /* Delete User By Id */ 
             await authModel.deleteOne({
                 _id: req.params.id
-            })
+            });
 
+            /* Find Chat Room */ 
             const findChatRoom = await chatRoomModel.find({
                 $or: [{
                     user1: req.params.id
                 }, {
                     user2: req.params.id
                 }]
-            })
+            });
 
+            /* Delete Chat */ 
             for (const roomId of findChatRoom) {
                 await chatModel.deleteOne({
                     chatRoomId: roomId._id
                 })
             }
+
+            /* Delete Chat Room Data */ 
             await chatRoomModel.deleteOne({
                 user1: req.params.id
             })
 
+            /* Delete Chat Room */ 
             await chatRoomModel.deleteOne({
                 user2: req.params.id
             })
 
-            // post delete - by me(harvi)
+            /* Find Post Data */ 
             const findPostData = await UserPost.find({ user_id: req.params.id })
-            // console.log("findPostData", findPostData);
+            console.log("findPostData", findPostData);
 
+            /* Delete Post */ 
             await UserPost.deleteMany({
                 user_id: req.params.id
             })
 
-            for (const postId of findPostData) {
+            /* Delete Post Comment/Like */ 
+            for (const postData of findPostData) {
                 await UserPostComment.deleteOne({
-                    post_id: postId._id
+                    post_id: postData._id
                 })
 
                 await UserPostLike.deleteOne({
-                    post_id: postId._id
+                    post_id: postData._id
                 })
+            }
+
+            /* Find Blog Data */ 
+            const findBlogData = await Blog.find({ user_id: req.params.id })
+            console.log("findBlogData", findBlogData);
+
+            /* Delete Many Blog */ 
+            await Blog.deleteMany({
+                user_id: req.params.id
+            })
+
+            /* Delete Blog Comment / Like */ 
+            for (const blogData of findBlogData) {
+                await Comment.deleteOne({
+                    blog_id: blogData._id
+                })
+
+                await Like.deleteOne({
+                    blog_id: blogData._id
+                })
+            }
+
+            /* Delete Activity */ 
+            await Activity.deleteMany({
+                user_id: req.params.id
+            })
+            
+            /* Find Group Data */ 
+            const getGroup = await Group.find({ user_id: req.params.id });
+            
+            /* Delete Group Post /~> Post Related Comment / Like */ 
+            for (const respData of getGroup) {
+                const delGroup = await Group.deleteOne({ _id: respData._id });
+                const groupPost = await GroupPost.find({ group_id: respData._id });
+                for (const respPost of groupPost) {
+                    
+                    const delPost = await GroupPost.deleteOne({ _id: respPost._id });
+                    const delPostLike = await GroupPostLike.deleteOne({ post_id: respPost._id });
+                    const delPostComm = await GroupPostComm.deleteOne({ post_id: respPost._id });
+
+                }
+
             }
 
             res.status(status.OK).json(
@@ -698,16 +767,6 @@ exports.userLogout = async (req, res, next) => {
                 }
             )
 
-
-        } else {
-            res.status(status.NOT_FOUND).json(
-                {
-                    message: "User Not Found",
-                    status: true,
-                    code: 404,
-                    statusCode: 1
-                }
-            )
         }
 
     } catch (error) {
