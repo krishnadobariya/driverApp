@@ -3,15 +3,19 @@ const authModel = require("../models/auth.model");
 const chatRoomModel = require("../webSocket/models/chatRoom.model");
 const chatModel = require("../webSocket/models/chat.model");
 const Group = require("../models/group.model");
+const GroupList = require("../models/groupList.model");
+const GroupMember = require("../models/groupMemberList.model");
+const Notification = require("../models/notification.model");
 const GroupPost = require("../models/groupPost.model");
 const GroupPostLike = require("../models/groupPostLike.model");
 const GroupPostComm = require("../models/groupPostComment.model");
+const GroupChatRoom = require("../webSocket/models/groupChatRoom.model");
+const GroupChat = require("../webSocket/models/groupChat.model");
 const Activity = require('../models/activity.model');
 const Block = require("../models/blockUnblock.model");
 const Blog = require("../models/blog.model");
 const Comment = require("../models/comment.model");
 const Like = require("../models/like.model");
-const GroupList = require("../models/groupList.model");
 const Question = require("../models/userQuestion.model");
 const FriendRequest = require("../models/frdReq.model");
 const UserPost = require("../models/userPost.model");
@@ -647,13 +651,13 @@ exports.getUserInfo = async (req, res) => {
 exports.userLogout = async (req, res, next) => {
     try {
 
-        /* Find User Data */ 
+        /* Find User Data */
         const findUser = await authModel.findOne({
             _id: req.params.id
-        })
+        });
 
         if (findUser == null) {
-            
+
             res.status(status.NOT_FOUND).json(
                 {
                     message: "User Not Found",
@@ -664,13 +668,13 @@ exports.userLogout = async (req, res, next) => {
             )
 
         } else {
-            
-            /* Delete User By Id */ 
+
+            /* Delete User By Id */
             await authModel.deleteOne({
                 _id: req.params.id
             });
 
-            /* Find Chat Room */ 
+            /* Find Chat Room */
             const findChatRoom = await chatRoomModel.find({
                 $or: [{
                     user1: req.params.id
@@ -679,33 +683,32 @@ exports.userLogout = async (req, res, next) => {
                 }]
             });
 
-            /* Delete Chat */ 
+            /* Delete Chat */
             for (const roomId of findChatRoom) {
                 await chatModel.deleteOne({
                     chatRoomId: roomId._id
                 })
             }
 
-            /* Delete Chat Room Data */ 
+            /* Delete Chat Room Data */
             await chatRoomModel.deleteOne({
                 user1: req.params.id
             })
 
-            /* Delete Chat Room */ 
+            /* Delete Chat Room */
             await chatRoomModel.deleteOne({
                 user2: req.params.id
             })
 
-            /* Find Post Data */ 
+            /* Find Post Data */
             const findPostData = await UserPost.find({ user_id: req.params.id })
-            console.log("findPostData", findPostData);
 
-            /* Delete Post */ 
+            /* Delete Post */
             await UserPost.deleteMany({
                 user_id: req.params.id
             })
 
-            /* Delete Post Comment/Like */ 
+            /* Delete Post Comment/Like */
             for (const postData of findPostData) {
                 await UserPostComment.deleteOne({
                     post_id: postData._id
@@ -716,16 +719,15 @@ exports.userLogout = async (req, res, next) => {
                 })
             }
 
-            /* Find Blog Data */ 
+            /* Find Blog Data */
             const findBlogData = await Blog.find({ user_id: req.params.id })
-            console.log("findBlogData", findBlogData);
 
-            /* Delete Many Blog */ 
+            /* Delete Many Blog */
             await Blog.deleteMany({
                 user_id: req.params.id
             })
 
-            /* Delete Blog Comment / Like */ 
+            /* Delete Blog Comment & Like */
             for (const blogData of findBlogData) {
                 await Comment.deleteOne({
                     blog_id: blogData._id
@@ -736,20 +738,50 @@ exports.userLogout = async (req, res, next) => {
                 })
             }
 
-            /* Delete Activity */ 
+            /* Delete Activity */
             await Activity.deleteMany({
                 user_id: req.params.id
             })
-            
-            /* Find Group Data */ 
+
+            /* Find Group Data */
             const getGroup = await Group.find({ user_id: req.params.id });
-            
-            /* Delete Group Post /~> Post Related Comment / Like */ 
+
+            /* Delete Group Member */
+            await GroupMember.updateOne({
+                users: {
+                    $elemMatch: {
+                        user_id: req.params.id
+                    }
+                }
+            }, {
+                $pull: {
+                    users: {
+                        user_id: req.params.id
+                    }
+                }
+            });
+
+            /* Delete Notification Data BY UserId */
+            await Notification.deleteMany(
+                {
+                    user_id: req.params.id
+                });
+
+            /* Delete Group Post /~> Post Related Comment,Like /~> GroupMemeberList  */
             for (const respData of getGroup) {
+
+                /* Delete Group & GroupMember & Notification & GroupChatRoom & GroupChat By GroupId */
                 const delGroup = await Group.deleteOne({ _id: respData._id });
+                const delGroupMemberList = await GroupMember.deleteOne({ group_id: respData._id });
+                const delGroupNoti = await Notification.deleteOne({ group_id: respData._id });
+                const delGroupChatRoom = await GroupChatRoom.deleteOne({ groupId: respData._id });
+                const delGroupChat = await GroupChat.deleteOne({ groupId: respData._id });
+
+                /* Find Group Post By GroupId */
                 const groupPost = await GroupPost.find({ group_id: respData._id });
                 for (const respPost of groupPost) {
-                    
+
+                    /* Delete GroupPost & GroupPostLike & GroupPostComment By PostId */
                     const delPost = await GroupPost.deleteOne({ _id: respPost._id });
                     const delPostLike = await GroupPostLike.deleteOne({ post_id: respPost._id });
                     const delPostComm = await GroupPostComm.deleteOne({ post_id: respPost._id });
@@ -757,6 +789,36 @@ exports.userLogout = async (req, res, next) => {
                 }
 
             }
+
+            /* Delete Group Chat Room By UserId */
+            await GroupChatRoom.updateOne({
+                users: {
+                    $elemMatch: {
+                        userId: req.params.id
+                    }
+                }
+            }, {
+                $pull: {
+                    users: {
+                        userId: req.params.id
+                    }
+                }
+            });
+
+            /* Delete Group Chat By UserId */
+            await GroupChat.updateOne({
+                chat: {
+                    $elemMatch: {
+                        sender: req.params.id
+                    }
+                }
+            }, {
+                $pull: {
+                    chat: {
+                        sender: req.params.id
+                    }
+                }
+            });
 
             res.status(status.OK).json(
                 {
