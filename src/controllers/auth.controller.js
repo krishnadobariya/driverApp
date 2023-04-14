@@ -505,6 +505,113 @@ exports.userProfile = async (req, res) => {
 
             const getActivity = await activity.find({ user_id: user_id });
 
+            const getUserPost = await UserPost.find({ user_id: req.params.id }).sort();
+            console.log("getUserPost::", getUserPost);
+
+            const resPost = [];
+            if (getUserPost.length == 0) {
+            } else {
+            for (const respPost of getUserPost) {
+                console.log('respPost:::', respPost);
+
+                /* To show how long a post has been posted */
+                var now = new Date();
+                var addingDate = new Date(respPost.createdAt);
+                var sec_num = (now - addingDate) / 1000;
+                var days = Math.floor(sec_num / (3600 * 24));
+                var hours = Math.floor((sec_num - (days * (3600 * 24))) / 3600);
+                var minutes = Math.floor((sec_num - (days * (3600 * 24)) - (hours * 3600)) / 60);
+                var seconds = Math.floor(sec_num - (days * (3600 * 24)) - (hours * 3600) - (minutes * 60));
+
+                if (hours < 10) { hours = "0" + hours; }
+                if (minutes < 10) { minutes = "0" + minutes; }
+                if (seconds < 10) { seconds = "0" + seconds; }
+
+                var time;
+                if (days > 28) {
+
+                    time = new Date(addingDate).toDateString()
+
+                } else if (days > 21 && days < 28) {
+
+                    time = "3 Week Ago"
+
+                } else if (days > 14 && days < 21) {
+
+                    time = "2 Week Ago"
+
+                } else if (days > 7 && days < 14) {
+
+                    time = "1 Week Ago"
+
+                } else if (days > 0 && days < 7) {
+
+                    time = days == 1 ? `${days} day ago` : `${days} days ago`
+
+                } else if (hours > 0 && days == 0) {
+
+                    time = hours == 1 ? `${hours} hour ago` : `${hours} hours ago`
+
+                } else if (minutes > 0 && hours == 0) {
+
+                    time = minutes == 1 ? `${minutes} minute ago` : `${minutes} minutes ago`
+
+                } else if (seconds > 0 && minutes == 0 && hours == 0 && days === 0) {
+
+                    time = seconds == 1 ? `${seconds} second ago` : `${seconds} seconds ago`
+
+                } else if (seconds == 0 && minutes == 0 && hours == 0 && days === 0) {
+
+                    time = `Just Now`
+
+                }
+                /* End Of to show how long a post has been posted */
+
+                var findLikedUser = await UserPostLike.findOne({
+                    post_id: respPost._id,
+                    "reqAuthId._id": req.params.id
+                });
+
+                if (findLikedUser == null) {
+
+                    const data = {
+                        postId: respPost._id,
+                        userId: respPost.user_id,
+                        user_img: respPost.user_img,
+                        user_name: respPost.user_name,
+                        desc: respPost.desc,
+                        image_video: respPost.image_video,
+                        likes: respPost.likes,
+                        comments: respPost.comments,
+                        media_type: respPost.media_type,
+                        isLike: false,
+                        time: time
+                    }
+                    resPost.push(data);
+
+                } else {
+
+                    const data = {
+                        postId: respPost._id,
+                        userId: respPost.user_id,
+                        user_img: respPost.user_img,
+                        user_name: respPost.user_name,
+                        desc: respPost.desc,
+                        image_video: respPost.image_video,
+                        likes: respPost.likes,
+                        comments: respPost.comments,
+                        media_type: respPost.media_type,
+                        isLike: true,
+                        time: time
+                    }
+                    resPost.push(data)
+
+                }
+
+            }
+
+            }
+
             const resp = {
                 user_id: getUserData._id,
                 chatRoomId: getChatRoom[0] ? getChatRoom[0]._id : "",
@@ -525,10 +632,12 @@ exports.userProfile = async (req, res) => {
                 vehicle: getUserData.vehicle
             }
 
+            console.log("resPost::", resPost);
             const response = {
                 userData: resp,
                 groupData: getGroupData,
-                activity: getActivity
+                activity: getActivity,
+                userPost: resPost
             }
 
             res.status(status.OK).json(
@@ -1531,7 +1640,7 @@ exports.followingList = async (req, res) => {
 exports.testing = async (req, res) => {
     try {
 
-
+        console.log('hello');
 
     } catch (error) {
         console.log("Error::", error);
