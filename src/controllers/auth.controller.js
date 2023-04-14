@@ -852,6 +852,9 @@ exports.userLogout = async (req, res, next) => {
                 user_id: req.params.id
             })
 
+            /* Find Group Data */
+            const getGroup = await Group.find({ user_id: req.params.id });
+
             /* Delete Group Member */
             await GroupMember.updateOne({
                 users: {
@@ -873,9 +876,6 @@ exports.userLogout = async (req, res, next) => {
                     user_id: req.params.id
                 });
 
-            /* Find Group Data */
-            const getGroup = await Group.find({ user_id: req.params.id });
-
             /* Delete Group Post /~> Post Related Comment,Like /~> GroupMemeberList  */
             for (const respData of getGroup) {
 
@@ -888,7 +888,6 @@ exports.userLogout = async (req, res, next) => {
 
                 /* Find Group Post By GroupId */
                 const groupPost = await GroupPost.find({ group_id: respData._id });
-
                 for (const respPost of groupPost) {
 
                     /* Delete GroupPost & GroupPostLike & GroupPostComment By PostId */
