@@ -14,14 +14,17 @@ const GroupChat = require("../webSocket/models/groupChat.model");
 const Activity = require('../models/activity.model');
 const Block = require("../models/blockUnblock.model");
 const Blog = require("../models/blog.model");
-const Comment = require("../models/comment.model");
-const Like = require("../models/like.model");
+const BlogComment = require("../models/comment.model");
+const BlogLike = require("../models/like.model");
+const ReportBlog = require("../models/reportBlog.model");
 const Question = require("../models/userQuestion.model");
 const FriendRequest = require("../models/frdReq.model");
 const UserPost = require("../models/userPost.model");
 const UserPostComment = require("../models/userPostComment.model");
 const UserPostLike = require("../models/userPostLike.model");
 const activity = require("../models/activity.model");
+const Event = require("../models/event.model");
+const JoinEvent = require("../models/joinEvent.model");
 const cloudinary = require("../utils/cloudinary.utils");
 const { mailService } = require("../services/email.service");
 const status = require("http-status");
@@ -778,10 +781,140 @@ exports.userLogout = async (req, res, next) => {
 
         } else {
 
+
             /* Delete User By Id */
             await authModel.deleteOne({
                 _id: req.params.id
             });
+
+
+            /* - - - - - - - Start Event Portion - - - - - - - */
+
+            /* Find Event Data By UserId */
+            const getEvent = await Event.find({ user_id: req.params.id });
+            for (const respData of getEvent) {
+
+                /* Delete Event Data By EventId */
+                const delEvent = await Event.deleteOne({
+                    _id: respData._id
+                });
+
+                /* Delete Join Event Data By EventId */
+                const delJoinEvent = await JoinEvent.deleteOne({
+                    event_id: respData._id
+                })
+
+            }
+
+            /* Delete Joining Event By UserId*/
+            const delJoinEvent = await JoinEvent.deleteMany({
+                user_id: req.params.id
+            });
+
+            /* - - - - - - - End Event Portion - - - - - - - */
+
+
+            /* - - - - - - - Start Blog Portion - - - - - - - 
+
+            const findBlog = await Blog.find({ user_id: req.params.id });
+            console.log("findBlog::", findBlog);
+
+            if (findBlog.length == 0) {
+            } else {
+
+                for (const respData of findBlog) {
+                    console.log("respData::", respData._id);
+
+                    const delBlog = await Blog.deleteOne({ _id: respData._id });
+                    const delBlogLike = await BlogLike.deleteOne({ blogId: respData._id });
+                    const delBlogComment = await BlogComment.deleteOne({ blog_id: respData._id });
+                    const delReportBlog = await ReportBlog.deleteMany({ blog_id: respData._id });
+
+                }
+
+                const findBlogComm = await BlogComment.find({
+                    comment: {
+                        $elemMatch: {
+                            user_id: mongoose.Types.ObjectId(req.params.id)
+                        }
+                    }
+                });
+                console.log("findBlog::::", findBlogComm);
+
+                if (findBlogComm.length == 0) {
+                } else {
+
+                    for (const respCommt of findBlogComm) {
+
+                        const delComtBlog = await BlogComment.findByIdAndUpdate({
+                            _id: respCommt._id
+                        }, {
+                            $pull: {
+                                comment: {
+                                    user_id: req.params.id
+                                }
+                            }
+                        });
+                        console.log("delComtBlog::", delComtBlog);
+
+                        await Blog.updateOne(
+                            {
+                                _id: respCommt.blog_id
+                            },
+                            {
+                                $inc: {
+                                    comment: -1
+                                }
+                            }
+                        );
+
+                    }
+
+                }
+
+                const findBlogLike = await BlogLike.find({
+                    reqAuthId: {
+                        $elemMatch: {
+                            _id: mongoose.Types.ObjectId(req.params.id)
+                        }
+                    }
+                });
+
+                if (findBlogLike.length == 0) {
+                } else {
+
+
+                    for (const respLike of findBlogLike) {
+
+                        const delLikeBlog = await BlogLike.findByIdAndUpdate({
+                            _id: respLike._id
+                        }, {
+                            $pull: {
+                                reqAuthId: {
+                                    _id: req.params.id
+                                }
+                            }
+                        });
+
+                        await Blog.updateOne(
+                            {
+                                _id: respLike.blog_id
+                            },
+                            {
+                                $inc: {
+                                    like: -1
+                                }
+                            }
+                        );
+
+                    }
+
+                }
+
+            }
+
+             - - - - - - - End Blog Portion - - - - - - - */
+
 
             /* Find Chat Room */
             const findChatRoom = await chatRoomModel.find({
@@ -838,11 +971,11 @@ exports.userLogout = async (req, res, next) => {
 
             /* Delete Blog Comment & Like */
             for (const blogData of findBlogData) {
-                await Comment.deleteOne({
+                await BlogComment.deleteOne({
                     blog_id: blogData._id
                 })
 
-                await Like.deleteOne({
+                await BlogLike.deleteOne({
                     blog_id: blogData._id
                 })
             }
@@ -851,9 +984,6 @@ exports.userLogout = async (req, res, next) => {
             await Activity.deleteMany({
                 user_id: req.params.id
             })
-
-            /* Find Group Data */
-            const getGroup = await Group.find({ user_id: req.params.id });
 
             /* Delete Group Member */
             await GroupMember.updateOne({
@@ -876,6 +1006,48 @@ exports.userLogout = async (req, res, next) => {
                     user_id: req.params.id
                 });
 
+            /* Find Group By UserId */
+            const findGroup = await GroupMember.find({
+                users: {
+                    $elemMatch: {
+                        user_id: req.params.id
+                    }
+                }
+            });
+            console.log("findGroup::", findGroup);
+
+            /* Descrease Group Memeber Number */
+            for (const groupResp of findGroup) {
+
+                await Group.updateOne(
+                    {
+                        _id: groupResp.group_id
+                    },
+                    {
+                        $inc: {
+                            group_members: -1
+                        }
+                    }
+                );
+
+            }
+
+            /* Decrease Group Memeber Number */
+            await GroupMember.updateOne({
+                users: {
+                    $elemMatch: {
+                        user_id: req.params.id
+                    }
+                }
+            }, {
+                $inc: {
+                    like: 1
+                }
+            })
+
+            /* Find Group Data */
+            const getGroup = await Group.find({ user_id: req.params.id });
+
             /* Delete Group Post /~> Post Related Comment,Like /~> GroupMemeberList  */
             for (const respData of getGroup) {
 
@@ -888,6 +1060,7 @@ exports.userLogout = async (req, res, next) => {
 
                 /* Find Group Post By GroupId */
                 const groupPost = await GroupPost.find({ group_id: respData._id });
+
                 for (const respPost of groupPost) {
 
                     /* Delete GroupPost & GroupPostLike & GroupPostComment By PostId */
@@ -914,7 +1087,7 @@ exports.userLogout = async (req, res, next) => {
                 }
             });
 
-            /* Delete Group Chat By UserId */
+            // /* Delete Group Chat By UserId */
             await GroupChat.updateOne({
                 chat: {
                     $elemMatch: {
@@ -928,6 +1101,8 @@ exports.userLogout = async (req, res, next) => {
                     }
                 }
             });
+
+
 
             res.status(status.OK).json(
                 {
