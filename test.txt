@@ -48,13 +48,9 @@ user ~~> 6426aad1382909befb38eabf - admin
 }
 
 
-- user_id
-- activity_type (1- Running/Walking, 2 - Cycling, 3 - Driving)
-- duration
-- distance
-- calories (optional)
-- steps (optional)
-- date
-- time
-- vehicle_id (optional)
-- map_image
+- auth
+- event
+- blog 
+- group
+- group chat  
+- chat 
