@@ -804,7 +804,6 @@ exports.userLogout = async (req, res, next) => {
                 const delJoinEvent = await JoinEvent.deleteOne({
                     event_id: respData._id
                 })
-
             }
 
             /* Delete Joining Event By UserId*/
@@ -1044,7 +1043,10 @@ exports.userLogout = async (req, res, next) => {
                 $inc: {
                     like: 1
                 }
-            })
+            });
+
+            /* Delete From Group List */
+            const delGroupList = await GroupList.deleteMany({ user_id: req.params.id });
 
             /* Find Group Data */
             const getGroup = await Group.find({ user_id: req.params.id });
@@ -1054,6 +1056,7 @@ exports.userLogout = async (req, res, next) => {
 
                 /* Delete Group & GroupMember & Notification & GroupChatRoom & GroupChat By GroupId */
                 const delGroup = await Group.deleteOne({ _id: respData._id });
+                const delGroupList = await GroupList.deleteOne({ group_id: respData._id });
                 const delGroupMemberList = await GroupMember.deleteOne({ group_id: respData._id });
                 const delGroupNoti = await Notification.deleteOne({ group_id: respData._id });
                 const delGroupChatRoom = await GroupChatRoom.deleteOne({ groupId: respData._id });
@@ -1073,6 +1076,16 @@ exports.userLogout = async (req, res, next) => {
                 }
 
             }
+
+            /* Delete User From Friend Request Table */
+            const delFrdData = await FriendRequest.deleteMany({
+                user_id: req.params.id
+            });
+
+            const delReqFrdData = await FriendRequest.deleteMany({
+                requested_user_id: req.params.id
+            });
+
 
             /* Delete Group Chat Room By UserId */
             await GroupChatRoom.updateOne({
