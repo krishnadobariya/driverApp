@@ -503,7 +503,8 @@ exports.userProfile = async (req, res) => {
                 }
             }
 
-            const getActivity = await activity.find({ user_id: user_id });
+            const getActivity = await activity.find({ user_id: profile_id });
+            console.log("getActivity::", getActivity);
 
             const getUserPost = await UserPost.find({ user_id: req.params.id }).sort();
             console.log("getUserPost::", getUserPost);
@@ -511,104 +512,104 @@ exports.userProfile = async (req, res) => {
             const resPost = [];
             if (getUserPost.length == 0) {
             } else {
-            for (const respPost of getUserPost) {
-                console.log('respPost:::', respPost);
+                for (const respPost of getUserPost) {
+                    console.log('respPost:::', respPost);
 
-                /* To show how long a post has been posted */
-                var now = new Date();
-                var addingDate = new Date(respPost.createdAt);
-                var sec_num = (now - addingDate) / 1000;
-                var days = Math.floor(sec_num / (3600 * 24));
-                var hours = Math.floor((sec_num - (days * (3600 * 24))) / 3600);
-                var minutes = Math.floor((sec_num - (days * (3600 * 24)) - (hours * 3600)) / 60);
-                var seconds = Math.floor(sec_num - (days * (3600 * 24)) - (hours * 3600) - (minutes * 60));
+                    /* To show how long a post has been posted */
+                    var now = new Date();
+                    var addingDate = new Date(respPost.createdAt);
+                    var sec_num = (now - addingDate) / 1000;
+                    var days = Math.floor(sec_num / (3600 * 24));
+                    var hours = Math.floor((sec_num - (days * (3600 * 24))) / 3600);
+                    var minutes = Math.floor((sec_num - (days * (3600 * 24)) - (hours * 3600)) / 60);
+                    var seconds = Math.floor(sec_num - (days * (3600 * 24)) - (hours * 3600) - (minutes * 60));
 
-                if (hours < 10) { hours = "0" + hours; }
-                if (minutes < 10) { minutes = "0" + minutes; }
-                if (seconds < 10) { seconds = "0" + seconds; }
+                    if (hours < 10) { hours = "0" + hours; }
+                    if (minutes < 10) { minutes = "0" + minutes; }
+                    if (seconds < 10) { seconds = "0" + seconds; }
 
-                var time;
-                if (days > 28) {
+                    var time;
+                    if (days > 28) {
 
-                    time = new Date(addingDate).toDateString()
+                        time = new Date(addingDate).toDateString()
 
-                } else if (days > 21 && days < 28) {
+                    } else if (days > 21 && days < 28) {
 
-                    time = "3 Week Ago"
+                        time = "3 Week Ago"
 
-                } else if (days > 14 && days < 21) {
+                    } else if (days > 14 && days < 21) {
 
-                    time = "2 Week Ago"
+                        time = "2 Week Ago"
 
-                } else if (days > 7 && days < 14) {
+                    } else if (days > 7 && days < 14) {
 
-                    time = "1 Week Ago"
+                        time = "1 Week Ago"
 
-                } else if (days > 0 && days < 7) {
+                    } else if (days > 0 && days < 7) {
 
-                    time = days == 1 ? `${days} day ago` : `${days} days ago`
+                        time = days == 1 ? `${days} day ago` : `${days} days ago`
 
-                } else if (hours > 0 && days == 0) {
+                    } else if (hours > 0 && days == 0) {
 
-                    time = hours == 1 ? `${hours} hour ago` : `${hours} hours ago`
+                        time = hours == 1 ? `${hours} hour ago` : `${hours} hours ago`
 
-                } else if (minutes > 0 && hours == 0) {
+                    } else if (minutes > 0 && hours == 0) {
 
-                    time = minutes == 1 ? `${minutes} minute ago` : `${minutes} minutes ago`
+                        time = minutes == 1 ? `${minutes} minute ago` : `${minutes} minutes ago`
 
-                } else if (seconds > 0 && minutes == 0 && hours == 0 && days === 0) {
+                    } else if (seconds > 0 && minutes == 0 && hours == 0 && days === 0) {
 
-                    time = seconds == 1 ? `${seconds} second ago` : `${seconds} seconds ago`
+                        time = seconds == 1 ? `${seconds} second ago` : `${seconds} seconds ago`
 
-                } else if (seconds == 0 && minutes == 0 && hours == 0 && days === 0) {
+                    } else if (seconds == 0 && minutes == 0 && hours == 0 && days === 0) {
 
-                    time = `Just Now`
+                        time = `Just Now`
+
+                    }
+                    /* End Of to show how long a post has been posted */
+
+                    var findLikedUser = await UserPostLike.findOne({
+                        post_id: respPost._id,
+                        "reqAuthId._id": req.params.id
+                    });
+
+                    if (findLikedUser == null) {
+
+                        const data = {
+                            postId: respPost._id,
+                            userId: respPost.user_id,
+                            user_img: respPost.user_img,
+                            user_name: respPost.user_name,
+                            desc: respPost.desc,
+                            image_video: respPost.image_video,
+                            likes: respPost.likes,
+                            comments: respPost.comments,
+                            media_type: respPost.media_type,
+                            isLike: false,
+                            time: time
+                        }
+                        resPost.push(data);
+
+                    } else {
+
+                        const data = {
+                            postId: respPost._id,
+                            userId: respPost.user_id,
+                            user_img: respPost.user_img,
+                            user_name: respPost.user_name,
+                            desc: respPost.desc,
+                            image_video: respPost.image_video,
+                            likes: respPost.likes,
+                            comments: respPost.comments,
+                            media_type: respPost.media_type,
+                            isLike: true,
+                            time: time
+                        }
+                        resPost.push(data)
+
+                    }
 
                 }
-                /* End Of to show how long a post has been posted */
-
-                var findLikedUser = await UserPostLike.findOne({
-                    post_id: respPost._id,
-                    "reqAuthId._id": req.params.id
-                });
-
-                if (findLikedUser == null) {
-
-                    const data = {
-                        postId: respPost._id,
-                        userId: respPost.user_id,
-                        user_img: respPost.user_img,
-                        user_name: respPost.user_name,
-                        desc: respPost.desc,
-                        image_video: respPost.image_video,
-                        likes: respPost.likes,
-                        comments: respPost.comments,
-                        media_type: respPost.media_type,
-                        isLike: false,
-                        time: time
-                    }
-                    resPost.push(data);
-
-                } else {
-
-                    const data = {
-                        postId: respPost._id,
-                        userId: respPost.user_id,
-                        user_img: respPost.user_img,
-                        user_name: respPost.user_name,
-                        desc: respPost.desc,
-                        image_video: respPost.image_video,
-                        likes: respPost.likes,
-                        comments: respPost.comments,
-                        media_type: respPost.media_type,
-                        isLike: true,
-                        time: time
-                    }
-                    resPost.push(data)
-
-                }
-
-            }
 
             }
 
@@ -814,7 +815,7 @@ exports.userLogout = async (req, res, next) => {
             /* - - - - - - - End Event Portion - - - - - - - */
 
 
-            /* - - - - - - - Start Blog Portion - - - - - - - 
+            /* - - - - - - - Start Blog Portion - - - - - - - */
 
             const findBlog = await Blog.find({ user_id: req.params.id });
             console.log("findBlog::", findBlog);
@@ -913,7 +914,7 @@ exports.userLogout = async (req, res, next) => {
 
             }
 
-             - - - - - - - End Blog Portion - - - - - - - */
+            /* - - - - - - - End Blog Portion - - - - - - - */
 
 
             /* Find Chat Room */
@@ -1062,6 +1063,7 @@ exports.userLogout = async (req, res, next) => {
                 const groupPost = await GroupPost.find({ group_id: respData._id });
 
                 for (const respPost of groupPost) {
+                    console.log("respPost:::", respPost);
 
                     /* Delete GroupPost & GroupPostLike & GroupPostComment By PostId */
                     const delPost = await GroupPost.deleteOne({ _id: respPost._id });
