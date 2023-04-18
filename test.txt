@@ -48,13 +48,12 @@ user ~~> 6426aad1382909befb38eabf - admin
 }
 
 
-- user_id
-- activity_type (1- Running/Walking, 2 - Cycling, 3 - Driving)
-- duration
-- distance
-- calories (optional)
-- steps (optional)
-- date
-- time
-- vehicle_id (optional)
-- map_image
+user1 = 643e7187f3ab6de4d67517b7 = demo25
+user2 = 643e718ff3ab6de4d67517c4 = demo26
+
+~~~~~~~~> Blog
+blog1 = user1 = 643e74b8f3ab6de4d6751af2 ~like~> user2 
+blog1 = user1 = 643e74b8f3ab6de4d6751af2 ~comment-2~> user2 
+
+~~~~~~~~> Event
+even1 = user1 = 643e7187f3ab6de4d67517b7

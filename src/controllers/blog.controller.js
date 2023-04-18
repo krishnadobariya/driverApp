@@ -260,6 +260,7 @@ exports.blogLikeDislike = async (req, res) => {
 
         let userId = req.params.user_id;
         let blogId = req.params.blog_id;
+        console.log("userId::", userId, blogId);
 
         const findBlog = await blogModel.findOne({
             _id: blogId
@@ -281,7 +282,7 @@ exports.blogLikeDislike = async (req, res) => {
 
 
             if (req.query.like == 1) {
-
+                console.log("Helooooooo");
                 if (blogInLikeModel && reqUserInLikeModel) {
 
                     res.status(status.CONFLICT).json({
@@ -348,7 +349,7 @@ exports.blogLikeDislike = async (req, res) => {
                 }
 
             } else if (req.query.like == 0) {
-
+                console.log('helooooo--2');
                 if (blogInLikeModel && reqUserInLikeModel) {
 
                     await blogModel.updateOne({
@@ -425,19 +426,23 @@ exports.commentInsert = async (req, res) => {
 
         let userId = req.params.user_id;
         let blogId = req.params.blog_id;
+        console.log("data::", userId, blogId);
 
         const findBlog = await blogModel.findOne({
             _id: blogId
-        })
+        });
+        console.log("findBlog::", findBlog);
 
         const findUser = await authModel.findOne({
             _id: userId
-        })
+        });
+        console.log("findUser::", findUser);
+
         if (findBlog && findUser) {
 
             const blogInCommentModel = await commentModel.findOne({
                 blog_id: blogId
-            })
+            });
 
             if (blogInCommentModel) {
 
@@ -447,7 +452,7 @@ exports.commentInsert = async (req, res) => {
                     $inc: {
                         comment: 1
                     }
-                })
+                });
 
                 await commentModel.updateOne({
                     blog_id: blogId
@@ -469,6 +474,7 @@ exports.commentInsert = async (req, res) => {
                 })
 
             } else {
+
                 await blogModel.updateOne({
                     _id: blogId
                 }, {
@@ -477,7 +483,7 @@ exports.commentInsert = async (req, res) => {
                     }
                 })
 
-                const insertComment = new commentModel({
+                const insertComment = commentModel({
                     blog_id: blogId,
                     author_id: findBlog?.user_id,
                     comment: {
@@ -485,14 +491,16 @@ exports.commentInsert = async (req, res) => {
                         text: req.body.text
                     }
                 })
-                await insertComment.save()
+                const saveData = await insertComment.save();
+                console.log("saveData::", saveData);
 
                 res.status(status.OK).json({
                     message: "Comment added!",
                     status: true,
                     code: 200,
                     statusCode: 1,
-                })
+                });
+
             }
 
 

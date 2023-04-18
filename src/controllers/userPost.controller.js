@@ -473,7 +473,8 @@ exports.userPostLikeDislike = async (req, res) => {
                     } else if (userPostLikeModel) {
 
                         const updateLike = await UserPost.updateOne({
-                            group_id: groupId
+                            // group_id: groupId
+                            user_id: userId
                         }, {
                             $inc: {
                                 like_count: 1
