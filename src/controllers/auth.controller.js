@@ -841,6 +841,87 @@ exports.userLogout = async (req, res, next) => {
                 });
                 console.log("findBlog::::", findBlogComm);
 
+                /* Find Blog Data By Liked Collection Using UserId */
+                const findBlogData = await BlogLike.find({
+                    reqAuthId: {
+                        $elemMatch: {
+                            _id: req.params.id
+                        }
+                    }
+                }).select('blogId');
+
+                for (const getBlogId of findBlogData) {
+                    console.log('getBlogId::', getBlogId);
+
+                    await Blog.updateOne(
+                        {
+                            _id: getBlogId.blogId
+                        },
+                        {
+                            $inc: {
+                                like: -1
+                            }
+                        }
+                    );
+
+                }
+
+                /* Delete User Like Data From BLog Like Collection */
+                await BlogLike.updateMany({
+                    reqAuthId: {
+                        $elemMatch: {
+                            _id: req.params.id
+                        }
+                    }
+                }, {
+                    $pull: {
+                        reqAuthId: {
+                            _id: req.params.id
+                        }
+                    }
+                });
+
+
+                /* Find Blog Data By Liked Collection Using UserId */
+                const findBlogDataCmt = await BlogComment.find({
+                    comment: {
+                        $elemMatch: {
+                            user_id: req.params.id
+                        }
+                    }
+                }).select('blog_id');
+
+                for (const getBlogId of findBlogDataCmt) {
+
+                    await Blog.updateOne(
+                        {
+                            _id: getBlogId.blogId
+                        },
+                        {
+                            $inc: {
+                                comment: -1
+                            }
+                        }
+                    );
+
+                }
+
+                /* Delete User Like Data From BLog Like Collection */
+                await BlogComment.updateMany({
+                    comment: {
+                        $elemMatch: {
+                            user_id: req.params.id
+                        }
+                    }
+                }, {
+                    $pull: {
+                        comment: {
+                            user_id: req.params.id
+                        }
+                    }
+                });
+
+
                 if (findBlogComm.length == 0) {
                 } else {
 
@@ -944,11 +1025,108 @@ exports.userLogout = async (req, res, next) => {
 
             /* Find Post Data */
             const findPostData = await UserPost.find({ user_id: req.params.id })
+            console.log("findPostData", findPostData);
 
             /* Delete Post */
             await UserPost.deleteMany({
                 user_id: req.params.id
             })
+
+
+            /* Find User Post Data By UserId */
+            const getUserPostCmt = await UserPostComment.find({
+                comment: {
+                    $elemMatch: {
+                        user_id: req.params.id
+                    }
+                }
+            }).select('post_id');
+
+            /* Update Comment In User Post Collection */
+            for (const commentData of getUserPostCmt) {
+
+                await UserPost.updateOne(
+                    {
+                        _id: commentData.post_id
+                    },
+                    {
+                        $inc: {
+                            comments: -1
+                        }
+                    }
+                );
+
+            }
+
+            /* Delete User Post Comment */
+            await UserPostComment.updateOne({
+                comment: {
+                    $elemMatch: {
+                        user_id: req.params.id
+                    }
+                }
+            }, {
+                $pull: {
+                    comment: {
+                        user_id: req.params.id
+                    }
+                }
+            });
+
+
+            /* Find User Post Data By UserId For UserPost Like*/
+            const getUserPostLike = await UserPostLike.find({
+                reqAuthId: {
+                    $elemMatch: {
+                        _id: req.params.id
+                    }
+                }
+            }).select('post_id');
+
+            /* Update Comment In User Post Collection For UserPost Like */
+            for (const likeData of getUserPostLike) {
+
+                await UserPost.updateOne(
+                    {
+                        _id: likeData.post_id
+                    },
+                    {
+                        $inc: {
+                            likes: -1
+                        }
+                    }
+                );
+
+            }
+
+            /* Delete User Post Like */
+            await UserPostLike.updateOne({
+                reqAuthId: {
+                    $elemMatch: {
+                        _id: req.params.id
+                    }
+                }
+            }, {
+                $pull: {
+                    reqAuthId: {
+                        _id: req.params.id
+                    }
+                }
+            });
+
+
+            /* Decrease Comment Count */
+            await UserPost.updateOne(
+                {
+                    _id: groupResp.group_id
+                },
+                {
+                    $inc: {
+                        group_members: -1
+                    }
+                }
+            );
+
 
             /* Delete Post Comment/Like */
             for (const postData of findPostData) {
@@ -1032,16 +1210,66 @@ exports.userLogout = async (req, res, next) => {
 
             }
 
+
             /* Decrease Group Memeber Number */
-            await GroupMember.updateOne({
+            const findMember = await GroupMember.find({
+                users: {
+                    $elemMatch: {
+                        user_id: req.params.id
+                    }
+                }
+            }).select('group_id');
+            console.log("findMember::", findMember);
+
+            for (const getGroupId of findMember) {
+                console.log('getGroupId::', getGroupId);
+
+                await Group.updateOne({
+                    _id: getGroupId.group_id
+                }, {
+                    $inc: {
+                        group_members: -1
+                    }
+                });
+
+                await GroupList.updateOne({
+                    group_id: getGroupId.group_id
+                }, {
+                    $inc: {
+                        group_members: -1
+                    }
+                });
+
+            }
+
+            /* Delete GroupMember On List By UserId */
+            await GroupMember.updateMany({
                 users: {
                     $elemMatch: {
                         user_id: req.params.id
                     }
                 }
             }, {
-                $inc: {
-                    like: 1
+                $pull: {
+                    users: {
+                        user_id: req.params.id
+                    }
+                }
+            });
+
+
+            /* Delete Comment From Group Post By UserId */
+            await GroupPostComm.updateOne({
+                comment: {
+                    $elemMatch: {
+                        user_id: req.params.id
+                    }
+                }
+            }, {
+                $pull: {
+                    comment: {
+                        user_id: req.params.id
+                    }
                 }
             });
 
@@ -1102,7 +1330,7 @@ exports.userLogout = async (req, res, next) => {
                 }
             });
 
-            // /* Delete Group Chat By UserId */
+            /* Delete Group Chat By UserId */
             await GroupChat.updateOne({
                 chat: {
                     $elemMatch: {
@@ -1116,7 +1344,6 @@ exports.userLogout = async (req, res, next) => {
                     }
                 }
             });
-
 
 
             res.status(status.OK).json(
