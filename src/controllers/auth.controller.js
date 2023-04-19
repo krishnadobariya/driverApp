@@ -430,7 +430,7 @@ exports.userProfile = async (req, res) => {
                 _id: req.params.id
             }
         );
-        console.log("userProfile:::", getUserData);
+        // console.log("userProfile:::", getUserData);
 
         if (getUserData == null) {
 
@@ -471,22 +471,20 @@ exports.userProfile = async (req, res) => {
                     user1: user_id,
                     user2: profile_id,
                 });
+            } else {
             }
-            else {
-
-            }
-            console.log("getChatRoom", getChatRoom);
+            // console.log("getChatRoom", getChatRoom);
 
             const getAnswer = await Question.findOne({ user_id: req.params.id }).select({ 'que_one': 1, 'que_two': 1, 'que_three': 1, 'que_four': 1, '_id': 0 });
 
             const getGroupData = await GroupList.find({ user_id: req.params.id });
-            console.log("getGroupData::--", getGroupData);
+            // console.log("getGroupData::--", getGroupData);
 
             const getFriendRequest = await FriendRequest.findOne({
                 user_id: req.params.user_id,
                 requested_user_id: req.params.id,
             });
-            console.log("getFriendRequest::", getFriendRequest);
+            // console.log("getFriendRequest::", getFriendRequest);
 
             // 1 - by default
             // 2 - request sent
@@ -504,10 +502,10 @@ exports.userProfile = async (req, res) => {
             }
 
             const getActivity = await activity.find({ user_id: profile_id });
-            console.log("getActivity::", getActivity);
+            // console.log("getActivity::", getActivity);
 
             const getUserPost = await UserPost.find({ user_id: req.params.id }).sort();
-            console.log("getUserPost::", getUserPost);
+            // console.log("getUserPost::", getUserPost);
 
             const resPost = [];
             if (getUserPost.length == 0) {
@@ -613,6 +611,39 @@ exports.userProfile = async (req, res) => {
 
             }
 
+            /* Count User Post, Follower, Following */
+            const postCount = await UserPost.find({ user_id: getUserData._id }).count();
+            console.log('postCount::', postCount);
+
+            const countFollower = await FriendRequest.find({
+                $or: [{
+                    user_id: getUserData._id
+                }, {
+                    requested_user_id: getUserData._id
+                }],
+                status: 2
+            }).count();
+
+            const countFollowerReq = await FriendRequest.find({
+                requested_user_id: getUserData._id,
+                status: 1
+            }).count();
+
+            const followerCount = countFollower + countFollowerReq;
+            console.log("followerCount::", followerCount);
+
+            const followingCount = await FriendRequest.find({
+                user_id: getUserData._id,
+                status: 1
+            }).count();
+            console.log("followingCount::", followingCount);
+
+            const count = {
+                post: postCount,
+                follower: followerCount,
+                following: followingCount
+            }
+
             const resp = {
                 user_id: getUserData._id,
                 chatRoomId: getChatRoom[0] ? getChatRoom[0]._id : "",
@@ -633,8 +664,9 @@ exports.userProfile = async (req, res) => {
                 vehicle: getUserData.vehicle
             }
 
-            console.log("resPost::", resPost);
+            // console.log("resPost::", resPost);
             const response = {
+                countData: count,
                 userData: resp,
                 groupData: getGroupData,
                 activity: getActivity,
@@ -1115,19 +1147,6 @@ exports.userLogout = async (req, res, next) => {
             });
 
 
-            /* Decrease Comment Count */
-            await UserPost.updateOne(
-                {
-                    _id: groupResp.group_id
-                },
-                {
-                    $inc: {
-                        group_members: -1
-                    }
-                }
-            );
-
-
             /* Delete Post Comment/Like */
             for (const postData of findPostData) {
                 await UserPostComment.deleteOne({
@@ -1358,6 +1377,7 @@ exports.userLogout = async (req, res, next) => {
         }
 
     } catch (error) {
+        console.log("userLogout:::error", error);
         res.status(status.INTERNAL_SERVER_ERROR).json(
             {
                 message: "Somthing Went Wrong",
