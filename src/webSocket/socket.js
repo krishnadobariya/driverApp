@@ -620,17 +620,26 @@ function socket(io) {
 
             let userId = arg.user_id;
             let groupId = arg.group_id;
+            const userRoom = `User${userId}`;
 
             const getUserData = await authModel.findOne({ _id: userId });
             if (getUserData == null) {
 
-                io.emit("User Not Found");
+                const response = {
+                    message: "User Not Found",
+                    status: 0
+                }
+                io.to(userRoom).emit("communityReceive", response);
 
             } else {
                 const getGroupData = await Group.findOne({ _id: groupId });
                 if (getGroupData == null) {
 
-                    io.emit("Group Not Found");
+                    const response = {
+                        message: "Group Not Found",
+                        status: 0
+                    }
+                    io.to(userRoom).emit("communityReceive", response);
 
                 } else {
 
@@ -643,6 +652,20 @@ function socket(io) {
                         notification_type: 1
                     })
                     const saveData = await insertData.save();
+
+                    const response = {
+                        message: "Notification Data",
+                        status: 1,
+                        id: saveData._id,
+                        group_id: saveData.group_id,
+                        user_id: saveData.user_id,
+                        req_user_id: saveData.req_user_id ? saveData.req_user_id : "",
+                        notification_msg: saveData.notification_msg,
+                        notification_img: saveData.notification_img,
+                        user_name: saveData.user_name,
+                        notification_type: saveData.notification_type
+                    }
+                    io.to(userRoom).emit("communityReceive", response);
 
                     const title = `Invited you!`;
                     const body = `You're invited for this ${getGroupData.group_name}`;
@@ -670,6 +693,7 @@ function socket(io) {
             let groupId = arg.group_id;
             let userId = arg.user_id;
             let action = arg.action;
+            const userRoom = `User${userId}`;
 
             if (action == 1) {
 
@@ -771,7 +795,7 @@ function socket(io) {
 
                 }
 
-                const updateData = await NotificationModel.updateOne(
+                const updateData = await NotificationModel.findByIdAndUpdate(
                     {
                         group_id: groupId,
                         user_id: userId
@@ -783,7 +807,20 @@ function socket(io) {
                         }
                     }
                 );
-                io.emit("Invite Accept");
+
+                const response = {
+                    message: "Invite Accept",
+                    status: 1,
+                    id: updateData._id,
+                    group_id: updateData.group_id,
+                    user_id: updateData.user_id,
+                    req_user_id: updateData.req_user_id ? updateData.req_user_id : "",
+                    notification_msg: updateData.notification_msg,
+                    notification_img: updateData.notification_img,
+                    user_name: updateData.user_name,
+                    notification_type: updateData.notification_type
+                }
+                io.to(userRoom).emit("communityReceive", response);
 
             } else if (action == 2) {
 
@@ -793,7 +830,25 @@ function socket(io) {
                         user_id: userId
                     }
                 );
-                io.emit("Invite Reject");
+
+                const getNotificationData = await NotificationModel.findOne({
+                    group_id: groupId,
+                    user_id: userId
+                });
+
+                const response = {
+                    message: "Invite Reject",
+                    status: 1,
+                    id: getNotificationData._id,
+                    group_id: getNotificationData.group_id,
+                    user_id: getNotificationData.user_id,
+                    req_user_id: getNotificationData.req_user_id ? getNotificationData.req_user_id : "",
+                    notification_msg: getNotificationData.notification_msg,
+                    notification_img: getNotificationData.notification_img,
+                    user_name: getNotificationData.user_name,
+                    notification_type: getNotificationData.notification_type
+                }
+                io.to(userRoom).emit("communityReceive", response);
 
             }
 
@@ -806,6 +861,8 @@ function socket(io) {
 
             let groupId = arg.group_id;
             let userId = arg.user_id;
+
+            const userRoom = `User${userId}`;
 
             if (arg.group_type == 1) {
 
@@ -895,6 +952,9 @@ function socket(io) {
 
                     }
 
+
+
+                    io.emit("groupJoin", "Group Not Found");
                 }
 
             }
@@ -903,13 +963,26 @@ function socket(io) {
 
                 const findGroup = await Group.findOne({ _id: groupId });
                 if (findGroup == null) {
-                    io.emit("groupJoin", "Group Not Found");
+
+                    const response = {
+                        message: "Group Not Found",
+                        status: 0
+                    }
+                    io.to(userRoom).emit("communityReceive", response);
+
                 } else {
                     const findUser = await authModel.findOne({ _id: userId });
 
                     if (findUser == null) {
-                        io.emit("groupJoin", "User Not Found");
+
+                        const response = {
+                            message: "User Not Found",
+                            status: 0
+                        }
+                        io.to(userRoom).emit("communityReceive", response);
+
                     } else {
+
                         console.log('else---part-----');
                         const insertData = NotificationModel({
                             group_id: groupId,
@@ -921,6 +994,20 @@ function socket(io) {
                             notification_type: 2
                         });
                         const saveData = await insertData.save();
+
+                        const response = {
+                            message: "Notification Data",
+                            status: 1,
+                            id: saveData._id,
+                            group_id: saveData.group_id,
+                            user_id: saveData.user_id,
+                            req_user_id: saveData.req_user_id ? saveData.req_user_id : "",
+                            notification_msg: saveData.notification_msg,
+                            notification_img: saveData.notification_img,
+                            user_name: saveData.user_name,
+                            notification_type: saveData.notification_type
+                        }
+                        io.to(userRoom).emit("communityReceive", response);
 
                         const title = `Join Group`;
                         const body = `${arg.user_name} sending you a request for join your group`;
@@ -1194,16 +1281,16 @@ function socket(io) {
         // ----- friendRequest ----- //
         socket.on("friendRequest", async (arg) => {
 
-            const userRoom = `User${arg.req_user_id}`;
             const userId = arg.user_id;
+            const userRoom = `User${userId}`;
             const reqUserId = arg.req_user_id;
 
             const findUserData = await authModel.findOne({ _id: userId });
-            console.log("findUserData::--", findUserData);
+            
             if (findUserData) {
 
                 const findRequestUser = await authModel.findOne({ _id: reqUserId });
-                console.log("findRequestUser::--::", findRequestUser);
+                
                 if (findRequestUser) {
 
                     const sendFriendRequest = FriendRequest({
@@ -1215,7 +1302,7 @@ function socket(io) {
                         requested_user_name: findRequestUser.username,
                     });
                     const saveData = await sendFriendRequest.save();
-                    console.log("saveChatData::", saveData);
+                    
 
                     const insertNotifi = NotificationModel({
                         user_id: reqUserId,
@@ -1251,11 +1338,23 @@ function socket(io) {
                     );
 
                 } else {
-                    io.emit("followRequest", "RequestedUser Not Exist")
+
+                    const response = {
+                        message: "RequestedUser Not Exist",
+                        status: 0
+                    }
+                    io.to(userRoom).emit("followRequest", response)
+
                 }
 
             } else {
-                io.emit("followRequest", "User Not Exist")
+
+                const response = {
+                    message: "User Not Exist",
+                    status: 0
+                }
+                io.to(userRoom).emit("followRequest", response);
+
             }
 
         })
@@ -1308,7 +1407,7 @@ function socket(io) {
                 });
                 const saveData = await insertNotifi.save();
 
-                io.to(userRoom).emit("requestAccept", `Request Accept By ${reqUserId}`)
+                io.to(userRoom).emit("followRequest", `Request Accept By ${reqUserId}`)
 
                 const title = `Request Accepted`;
                 const body = `Request Accept By ${reqUserId}`;
@@ -1325,7 +1424,7 @@ function socket(io) {
                 );
 
             } else {
-                
+
                 const deleteNotification = await NotificationModel.deleteOne(
                     {
                         user_id: reqUserId,
@@ -1341,6 +1440,8 @@ function socket(io) {
                     }
                 );
                 // console.log("deleteFriendRequest", deleteFriendRequest);
+
+                io.to(userRoom).emit("followRequest", `Request Reject By ${reqUserId}`)
 
             }
 
