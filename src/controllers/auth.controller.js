@@ -1898,6 +1898,52 @@ exports.followingList = async (req, res) => {
     }
 }
 
+exports.followerList = async (req, res) => {
+    try {
+
+        const userId = req.params.userId;
+
+        const listFollower = await FriendRequest.find({
+            $or: [{
+                user_id: userId
+            }, {
+                requested_user_id: userId
+            }],
+            status: 2
+        });
+
+        const followerReqList = await FriendRequest.find({
+            requested_user_id: userId,
+            status: 1
+        });
+
+        const response = listFollower.concat(followerReqList);
+
+        res.status(status.OK).json(
+            {
+                message: "Your Follower User List",
+                status: true,
+                code: 200,
+                statusCode: 1,
+                data: response
+            }
+        )
+
+    } catch (error) {
+
+        console.log("followingList--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
 
 
 exports.testing = async (req, res) => {
