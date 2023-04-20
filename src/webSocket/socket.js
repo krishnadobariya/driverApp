@@ -738,6 +738,7 @@ function socket(io) {
                             $set: {
                                 user_id: userId,
                                 req_user_id: null,
+                                notification_type: 3
                             }
                         }
                     )
