@@ -726,25 +726,6 @@ function socket(io) {
                 const saveData = await addData.save();
                 console.log("saveData:::", saveData);
 
-                if (getGroupData.group_type == 2) {
-                    console.log("getGroupData.group_type:::", getGroupData.group_type);
-                    console.log("groupId::--", groupId);
-                    const updateNoti = await NotificationModel.updateOne(
-                        {
-                            group_id: groupId,
-                            req_user_id: userId
-                        },
-                        {
-                            $set: {
-                                user_id: userId,
-                                req_user_id: null,
-                                notification_type: 3
-                            }
-                        }
-                    )
-
-                }
-
                 /* Get Group Member List */
                 const getUserData = await authModel.findOne({ _id: userId });
                 const updateGroupChat = await GroupMemberList.updateOne(
@@ -796,32 +777,67 @@ function socket(io) {
 
                 }
 
-                const updateData = await NotificationModel.findByIdAndUpdate(
-                    {
-                        group_id: groupId,
-                        user_id: userId
-                    },
-                    {
-                        $set: {
-                            notification_msg: "Accepted",
-                            notification_type: 3
+                var updateData;
+                if (getGroupData.group_type == 2) {
+                    console.log("getGroupData.group_type:::", getGroupData.group_type);
+                    console.log("groupId::--", groupId);
+                    updateData = await NotificationModel.findOneAndUpdate(
+                        {
+                            group_id: groupId,
+                            req_user_id: userId
+                        },
+                        {
+                            $set: {
+                                user_id: userId,
+                                req_user_id: null,
+                                notification_msg: "Accepted",
+                                notification_type: 3
+                            }
                         }
-                    }
-                );
+                    )
 
-                const response = {
-                    message: "Invite Accept",
-                    status: 1,
-                    id: updateData._id,
-                    group_id: updateData.group_id,
-                    user_id: updateData.user_id,
-                    req_user_id: updateData.req_user_id ? updateData.req_user_id : "",
-                    notification_msg: updateData.notification_msg,
-                    notification_img: updateData.notification_img,
-                    user_name: updateData.user_name,
-                    notification_type: updateData.notification_type
                 }
-                io.to(userRoom).emit("communityReceive", response);
+                else {
+                    updateData = await NotificationModel.findOneAndUpdate(
+                        {
+                            group_id: groupId,
+                            user_id: userId
+                        },
+                        {
+                            $set: {
+                                notification_msg: "Accepted",
+                                notification_type: 3
+                            }
+                        },
+                        {
+                            new: true
+                        }
+                    );
+                }
+
+                if (updateData != null) {
+                    const response = {
+                        message: "Invite Accept",
+                        status: 1,
+                        id: updateData._id,
+                        group_id: updateData.group_id,
+                        user_id: updateData.user_id,
+                        req_user_id: updateData.req_user_id ? updateData.req_user_id : "",
+                        notification_msg: updateData.notification_msg,
+                        notification_img: updateData.notification_img,
+                        user_name: updateData.user_name,
+                        notification_type: updateData.notification_type
+                    }
+                    io.to(userRoom).emit("communityReceive", response);
+                }
+                else {
+                    console.log("Not called");
+                    const response = {
+                        message: "Notification data not updated",
+                        status: 0
+                    }
+                    io.to(userRoom).emit("communityReceive", response);
+                }
 
             } else if (action == 2) {
 
@@ -1287,11 +1303,11 @@ function socket(io) {
             const reqUserId = arg.req_user_id;
 
             const findUserData = await authModel.findOne({ _id: userId });
-            
+
             if (findUserData) {
 
                 const findRequestUser = await authModel.findOne({ _id: reqUserId });
-                
+
                 if (findRequestUser) {
 
                     const sendFriendRequest = FriendRequest({
@@ -1303,7 +1319,7 @@ function socket(io) {
                         requested_user_name: findRequestUser.username,
                     });
                     const saveData = await sendFriendRequest.save();
-                    
+
 
                     const insertNotifi = NotificationModel({
                         user_id: reqUserId,
