@@ -779,22 +779,46 @@ function socket(io) {
 
                 var updateData;
                 if (getGroupData.group_type == 2) {
-                    console.log("getGroupData.group_type:::", getGroupData.group_type);
-                    console.log("groupId::--", groupId);
-                    updateData = await NotificationModel.findOneAndUpdate(
-                        {
-                            group_id: groupId,
-                            req_user_id: userId
-                        },
-                        {
-                            $set: {
-                                user_id: userId,
-                                req_user_id: null,
-                                notification_msg: "Accepted",
-                                notification_type: 3
+                    
+                    const getNotificationData = await NotificationModel.findOne({
+                        group_id: groupId,
+                        user_id: userId
+                    });
+                    
+                    if(getNotificationData.req_user_id != null)
+                    {
+                        updateData = await NotificationModel.findOneAndUpdate(
+                            {
+                                group_id: groupId,
+                                req_user_id: userId
+                            },
+                            {
+                                $set: {
+                                    user_id: userId,
+                                    req_user_id: null,
+                                    notification_msg: "Accepted",
+                                    notification_type: 3
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
+                    else{
+                        updateData = await NotificationModel.findOneAndUpdate(
+                            {
+                                group_id: groupId,
+                                user_id: userId
+                            },
+                            {
+                                $set: {
+                                    notification_msg: "Accepted",
+                                    notification_type: 3
+                                }
+                            },
+                            {
+                                new: true
+                            }
+                        );
+                    }
 
                 }
                 else {
@@ -1108,7 +1132,7 @@ function socket(io) {
 
                                 const response = {
                                     sender: arg.sender_id,
-                                    user_name: userData.user_name,
+                                    user_name: getUserData.username,
                                     message: arg.message
                                 }
 
@@ -1140,7 +1164,7 @@ function socket(io) {
                 }
 
             } else {
-                console.log('chhe ho aaya ek group');
+                
                 const updateGroupChat = await GroupChat.updateOne(
                     {
                         groupId: arg.groupId
@@ -1183,7 +1207,7 @@ function socket(io) {
 
                         const response = {
                             sender: arg.sender_id,
-                            user_name: userData.user_name,
+                            user_name: getUserData.username,
                             message: arg.message
                         }
 
