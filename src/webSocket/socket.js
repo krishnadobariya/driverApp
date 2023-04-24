@@ -781,43 +781,47 @@ function socket(io) {
                 if (getGroupData.group_type == 2) {
                     
                     const getNotificationData = await NotificationModel.findOne({
-                        group_id: groupId,
-                        user_id: userId
+                        group_id: groupId
                     });
-                    
-                    if(getNotificationData.req_user_id != null)
+                    if(getNotificationData != null)
                     {
-                        updateData = await NotificationModel.findOneAndUpdate(
-                            {
-                                group_id: groupId,
-                                req_user_id: userId
-                            },
-                            {
-                                $set: {
-                                    user_id: userId,
-                                    req_user_id: null,
-                                    notification_msg: "Accepted",
-                                    notification_type: 3
+                        if(getNotificationData.req_user_id != null)
+                        {
+                            updateData = await NotificationModel.findOneAndUpdate(
+                                {
+                                    group_id: groupId,
+                                    req_user_id: userId
+                                },
+                                {
+                                    $set: {
+                                        user_id: userId,
+                                        req_user_id: null,
+                                        notification_msg: "Accepted",
+                                        notification_type: 3
+                                    }
                                 }
-                            }
-                        )
+                            )
+                        }
+                        else{
+                            updateData = await NotificationModel.findOneAndUpdate(
+                                {
+                                    group_id: groupId,
+                                    user_id: userId
+                                },
+                                {
+                                    $set: {
+                                        notification_msg: "Accepted",
+                                        notification_type: 3
+                                    }
+                                },
+                                {
+                                    new: true
+                                }
+                            );
+                        }
                     }
                     else{
-                        updateData = await NotificationModel.findOneAndUpdate(
-                            {
-                                group_id: groupId,
-                                user_id: userId
-                            },
-                            {
-                                $set: {
-                                    notification_msg: "Accepted",
-                                    notification_type: 3
-                                }
-                            },
-                            {
-                                new: true
-                            }
-                        );
+                        console.log("Group not found");
                     }
 
                 }
@@ -1012,7 +1016,7 @@ function socket(io) {
                     io.to(userRoom).emit("communityReceive", response);
 
                 } else {
-                    const findUser = await authModel.findOne({ _id: userId });
+                    const findUser = await authModel.findOne({ _id: findGroup.user_id });
 
                     if (findUser == null) {
 
