@@ -304,17 +304,7 @@ exports.groupPostLike = async (req, res) => {
 
                 } else if (groupPostLikeModel) {
 
-                    const updateLike = await GroupPost.updateOne({
-                        group_id: groupId
-                    }, {
-                        $inc: {
-                            like_count: 1
-                        }
-                    });
-                    console.log("updateLike::", updateLike);
-
-
-                    const updateLikedUser = await GroupPostLike.updateOne({
+                    const updateLikedUser = await GroupPostLike.findOneAndUpdate({
                         group_id: groupId
                     }, {
                         $push: {
@@ -322,8 +312,19 @@ exports.groupPostLike = async (req, res) => {
                                 _id: userId
                             }
                         }
+                    }, {
+                        new: true
                     });
                     console.log("updateLikedUser::", updateLikedUser);
+
+                    const updateLike = await GroupPost.updateOne({
+                        group_id: groupId
+                    }, {
+                        $set: {
+                            like_count: updateLikedUser.reqAuthId.length
+                        }
+                    });
+                    console.log("updateLike::", updateLike);
 
                     res.status(status.OK).json({
                         message: "Like added!",
@@ -371,16 +372,7 @@ exports.groupPostLike = async (req, res) => {
 
                 if (groupPostLikeModel && reqUserInLikeModel) {
 
-                    const updateLike = await GroupPost.updateOne({
-                        group_id: groupId
-                    }, {
-                        $inc: {
-                            like_count: -1
-                        }
-                    });
-                    console.log("updateLike::-", updateLike);
-
-                    const updateLikedUser = await GroupPostLike.updateOne({
+                    const updateLikedUser = await GroupPostLike.findOneAndUpdate({
                         groupId: groupId
                     }, {
                         $pull: {
@@ -388,13 +380,19 @@ exports.groupPostLike = async (req, res) => {
                                 _id: userId
                             }
                         }
+                    }, {
+                        new: true
                     });
-                    console.log("updateLikedUser::--", updateLikedUser);
+                    console.log("updateLikedUser::--", updateLikedUser.reqAuthId.length);
 
-                    const deleteLikedUser = await GroupPostLike.deleteOne({
-                        groupId: groupId
+                    const updateLike = await GroupPost.updateOne({
+                        group_id: groupId
+                    }, {
+                        $set: {
+                            like_count: updateLikedUser.reqAuthId.length
+                        }
                     });
-                    console.log("deleteLikedUser::---", deleteLikedUser);
+                    console.log("updateLike::-", updateLike);
 
                     res.status(status.OK).json({
                         message: "Dislike added!",
@@ -1005,7 +1003,7 @@ exports.notificationList = async (req, res) => {
 
         const respList = [];
         for (const respData of getData) {
-            
+
             var now = new Date();
             var addingDate = new Date(respData.createdAt);
             var sec_num = (now - addingDate) / 1000;
