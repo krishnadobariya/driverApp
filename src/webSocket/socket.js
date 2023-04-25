@@ -628,7 +628,8 @@ function socket(io) {
 
                 const userRoom = `User${getGroupData.user_id}`;
                 const response = {
-                    message: "User Not Found",
+                    title: "Invite User",
+                    message: "User not available!",
                     status: 0
                 }
                 io.to(userRoom).emit("communityReceive", response);
@@ -636,9 +637,12 @@ function socket(io) {
             } else {
                 
                 if (getGroupData == null) {
+
+                    console.log("Ashish Check :: ", getGroupData.user_id);
                     const userRoom = `User${getGroupData.user_id}`;
                     const response = {
-                        message: "Group Not Found",
+                        title: "Invite User",
+                        message: "This group is deleted by admin!",
                         status: 0
                     }
                     io.to(userRoom).emit("communityReceive", response);
@@ -656,7 +660,8 @@ function socket(io) {
                     const saveData = await insertData.save();
 
                     const response = {
-                        message: "Notification Data",
+                        title: "Invite User",
+                        message: `You're invited to ${getGroupData.group_name}`,
                         status: 1,
                         id: saveData._id,
                         group_id: saveData.group_id,
@@ -670,7 +675,7 @@ function socket(io) {
                     io.to(userRoom).emit("communityReceive", response);
 
                     const title = `Invited you!`;
-                    const body = `You're invited for this ${getGroupData.group_name}`;
+                    const body = `You're invited to ${getGroupData.group_name}`;
                     const text = 'User Invited';
                     const sendBy = userId;
                     const registrationToken = getUserData.fcm_token;
@@ -698,7 +703,7 @@ function socket(io) {
             
             if (action == 1) {
 
-                const getGroupData = await Group.findOne({ _id: groupId }).select({ 'group_members': 1, 'group_type': 1, 'user_id': 1 });
+                const getGroupData = await Group.findOne({ _id: groupId }).select({ 'group_members': 1, 'group_type': 1, 'user_id': 1, 'group_name': 1 });
                 const addMemenber = parseInt(getGroupData.group_members) + 1;
                 const updateGroupData = await Group.findByIdAndUpdate(
                     {
@@ -781,17 +786,28 @@ function socket(io) {
                 var updateData;
                 var notification_type;
 
-                const getNotificationData = await NotificationModel.findOne({
+                const getNotificationModelData = await NotificationModel.findOne({
                     group_id: groupId
                 });
 
-                notification_type = getNotificationData.notification_type;
+                notification_type = getNotificationModelData.notification_type;
 
                 if (getGroupData.group_type == 2) {
                     
-                    const getNotificationData = await NotificationModel.findOne({
-                        group_id: groupId
+                    var getNotificationData = await NotificationModel.findOne({
+                        group_id: groupId,
+                        user_id: userId
                     });
+
+                    if(getNotificationData == null)
+                    {
+                        getNotificationData = await NotificationModel.findOne({
+                            group_id: groupId,
+                            req_user_id: userId
+                        });
+                    }
+
+                    console.log("updateData::", getNotificationData);
                     if(getNotificationData != null)
                     {
                         if(getNotificationData.req_user_id != null)
@@ -851,10 +867,12 @@ function socket(io) {
                         }
                     );
                 }
-
+                
                 if (updateData != null) {
+                    
                     const response = {
-                        message: "Invite Accept",
+                        title: "Request Accepted",
+                        message: `Admin accepted your ${getGroupData.group_name} join request.`,
                         status: 1,
                         id: updateData._id,
                         group_id: updateData.group_id,
@@ -868,8 +886,8 @@ function socket(io) {
                     
                     if(notification_type == 1)
                     {
-                        const userRoom = `User${getGroupData.user_id}`;
-                        io.to(userRoom).emit("communityReceive", response);
+                        /*const userRoom = `User${getGroupData.user_id}`;
+                        io.to(userRoom).emit("communityReceive", response);*/
                     }
                     else{
                         const userRoom = `User${userId}`;
@@ -878,7 +896,9 @@ function socket(io) {
 
                 }
                 else {
+                    console.log("updateData Else::");
                     const response = {
+                        title: "Request Accepted",
                         message: "Notification data not updated",
                         status: 0
                     }
@@ -903,7 +923,7 @@ function socket(io) {
                     }
                 );
 
-                const getNotificationData = await NotificationModel.findOne({
+                /*const getNotificationData = await NotificationModel.findOne({
                     group_id: groupId,
                     user_id: userId
                 });
@@ -920,7 +940,7 @@ function socket(io) {
                     user_name: getNotificationData.user_name,
                     notification_type: getNotificationData.notification_type
                 }
-                io.to(userRoom).emit("communityReceive", response);
+                io.to(userRoom).emit("communityReceive", response);*/
 
             }
 
@@ -939,6 +959,7 @@ function socket(io) {
                 const getGroupData = await Group.findOne({ _id: groupId }).select('group_members');
                 if (getGroupData == null) {
                     const response = {
+                        title: "Join Group",
                         message: "Group Not Found",
                         status: 0
                     }
@@ -1038,6 +1059,7 @@ function socket(io) {
                     const userRoom = `User${userId}`;
 
                     const response = {
+                        title: "Join Group",
                         message: "Group Not Found",
                         status: 0
                     }
@@ -1051,7 +1073,8 @@ function socket(io) {
                         const userRoom = `User${userId}`;
 
                         const response = {
-                            message: "User Not Found",
+                            title: "Join Group",
+                            message: "User not available!",
                             status: 0
                         }
                         io.to(userRoom).emit("communityReceive", response);
@@ -1073,7 +1096,8 @@ function socket(io) {
                         const saveData = await insertData.save();
 
                         const response = {
-                            message: "Notification Data",
+                            title: "Join Group",
+                            message: `${arg.user_name} sent a request to join ${findGroup.group_name}`,
                             status: 1,
                             id: saveData._id,
                             group_id: saveData.group_id,
@@ -1087,7 +1111,7 @@ function socket(io) {
                         io.to(userRoom).emit("communityReceive", response);
 
                         const title = `Join Group`;
-                        const body = `${arg.user_name} sending you a request for join your group`;
+                        const body = `${arg.user_name} sent a request to join ${findGroup.group_name}`;
                         const text = "Join With Group";
                         const sendBy = userId;
                         const registrationToken = findUser.fcm_token;
