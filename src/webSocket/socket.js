@@ -620,11 +620,13 @@ function socket(io) {
 
             let userId = arg.user_id;
             let groupId = arg.group_id;
-            const userRoom = `User${userId}`;
-
+            
             const getUserData = await authModel.findOne({ _id: userId });
+            const getGroupData = await Group.findOne({ _id: groupId });
+
             if (getUserData == null) {
 
+                const userRoom = `User${getGroupData.user_id}`;
                 const response = {
                     message: "User Not Found",
                     status: 0
@@ -632,9 +634,9 @@ function socket(io) {
                 io.to(userRoom).emit("communityReceive", response);
 
             } else {
-                const getGroupData = await Group.findOne({ _id: groupId });
+                
                 if (getGroupData == null) {
-
+                    const userRoom = `User${getGroupData.user_id}`;
                     const response = {
                         message: "Group Not Found",
                         status: 0
@@ -642,7 +644,7 @@ function socket(io) {
                     io.to(userRoom).emit("communityReceive", response);
 
                 } else {
-
+                    const userRoom = `User${userId}`;
                     const insertData = NotificationModel({
                         group_id: groupId,
                         user_id: userId,
@@ -693,11 +695,10 @@ function socket(io) {
             let groupId = arg.group_id;
             let userId = arg.user_id;
             let action = arg.action;
-            const userRoom = `User${userId}`;
-
+            
             if (action == 1) {
 
-                const getGroupData = await Group.findOne({ _id: groupId }).select({ 'group_members': 1, 'group_type': 1 });
+                const getGroupData = await Group.findOne({ _id: groupId }).select({ 'group_members': 1, 'group_type': 1, 'user_id': 1 });
                 const addMemenber = parseInt(getGroupData.group_members) + 1;
                 const updateGroupData = await Group.findByIdAndUpdate(
                     {
@@ -778,6 +779,14 @@ function socket(io) {
                 }
 
                 var updateData;
+                var notification_type;
+
+                const getNotificationData = await NotificationModel.findOne({
+                    group_id: groupId
+                });
+
+                notification_type = getNotificationData.notification_type;
+
                 if (getGroupData.group_type == 2) {
                     
                     const getNotificationData = await NotificationModel.findOne({
@@ -856,19 +865,37 @@ function socket(io) {
                         user_name: updateData.user_name,
                         notification_type: updateData.notification_type
                     }
-                    io.to(userRoom).emit("communityReceive", response);
+                    
+                    if(notification_type == 1)
+                    {
+                        const userRoom = `User${getGroupData.user_id}`;
+                        io.to(userRoom).emit("communityReceive", response);
+                    }
+                    else{
+                        const userRoom = `User${userId}`;
+                        io.to(userRoom).emit("communityReceive", response);
+                    }
+
                 }
                 else {
-                    console.log("Not called");
                     const response = {
                         message: "Notification data not updated",
                         status: 0
                     }
-                    io.to(userRoom).emit("communityReceive", response);
+                    if(notification_type == 1)
+                    {
+                        const userRoom = `User${userId}`;
+                        io.to(userRoom).emit("communityReceive", response);
+                    }
+                    else{
+                        const userRoom = `User${getGroupData.user_id}`;
+                        io.to(userRoom).emit("communityReceive", response);
+                    }
+                    
                 }
 
             } else if (action == 2) {
-
+                const userRoom = `User${userId}`;
                 const rejectInvite = await NotificationModel.deleteOne(
                     {
                         group_id: groupId,
@@ -907,13 +934,16 @@ function socket(io) {
             let groupId = arg.group_id;
             let userId = arg.user_id;
 
-            const userRoom = `User${userId}`;
-
             if (arg.group_type == 1) {
 
                 const getGroupData = await Group.findOne({ _id: groupId }).select('group_members');
                 if (getGroupData == null) {
-                    io.emit("groupJoin", "Group Not Found");
+                    const response = {
+                        message: "Group Not Found",
+                        status: 0
+                    }
+                    const userRoom = `User${userId}`;
+                    io.to(userRoom).emit("communityReceive", response);
                 } else {
 
                     // add group memenber + 1
@@ -996,10 +1026,6 @@ function socket(io) {
                         )
 
                     }
-
-
-
-                    io.emit("groupJoin", "Group Not Found");
                 }
 
             }
@@ -1008,6 +1034,8 @@ function socket(io) {
 
                 const findGroup = await Group.findOne({ _id: groupId });
                 if (findGroup == null) {
+
+                    const userRoom = `User${userId}`;
 
                     const response = {
                         message: "Group Not Found",
@@ -1020,6 +1048,8 @@ function socket(io) {
 
                     if (findUser == null) {
 
+                        const userRoom = `User${userId}`;
+
                         const response = {
                             message: "User Not Found",
                             status: 0
@@ -1028,6 +1058,8 @@ function socket(io) {
 
                     } else {
 
+                        const userRoom = `User${findGroup.user_id}`;
+                        
                         console.log('else---part-----');
                         const insertData = NotificationModel({
                             group_id: groupId,
