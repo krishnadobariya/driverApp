@@ -1862,7 +1862,7 @@ exports.followingList = async (req, res) => {
         for (const respData of getFollowing) {
 
             const finalRes = {
-                userId: userId,
+                userId: respData.requested_user_id,
                 userImage: respData.requested_user_img,
                 userName: respData.requested_user_name
             }
@@ -1903,21 +1903,25 @@ exports.followerList = async (req, res) => {
 
         const userId = req.params.userId;
 
-        const listFollower = await FriendRequest.find({
-            $or: [{
-                user_id: userId
-            }, {
-                requested_user_id: userId
-            }],
-            status: 2
-        });
+        const getFollowing = await FriendRequest.find(
+            {
+                requested_user_id: userId,
+                status: 2
+            }
+        );
+        console.log("getFollowing", getFollowing);
 
-        const followerReqList = await FriendRequest.find({
-            requested_user_id: userId,
-            status: 1
-        });
+        const response = [];
+        for (const respData of getFollowing) {
 
-        const response = listFollower.concat(followerReqList);
+            const finalRes = {
+                userId: respData.user_id,
+                userImage: respData.user_img,
+                userName: respData.user_name
+            }
+            response.push(finalRes);
+
+        }
 
         res.status(status.OK).json(
             {
