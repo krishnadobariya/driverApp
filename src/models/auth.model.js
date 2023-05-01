@@ -39,7 +39,7 @@ const authSchema = mongoose.Schema({
     status: {
         type: String,
         required: true,
-        default: "active" 
+        default: "active"
     },
     user_type: {
         type: Number, //1-Public,2-Private
@@ -53,6 +53,10 @@ const authSchema = mongoose.Schema({
     end_time: {
         type: String,
         required: true,
+        default: "0000-00-00T00:00:00"
+    },
+    notification_time: {
+        type: String,
         default: "0000-00-00T00:00:00"
     },
     password: {
@@ -73,4 +77,4 @@ const authSchema = mongoose.Schema({
     collection: 'auth'
 });
 
-    module.exports = mongoose.model('auth', authSchema);
+module.exports = mongoose.model('auth', authSchema);

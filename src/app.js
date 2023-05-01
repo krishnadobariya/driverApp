@@ -39,6 +39,10 @@ const { userStatus } = require("./controllers/cronJob.controller");
 cron.schedule('*/1 * * * * *', async () => {
     userStatus()
 });
+// const { userStatusWithNoti } = require("./webSocket/socket");
+// cron.schedule('*/1 * * * * *', async () => {
+//     userStatusWithNoti()
+// });
 // ---------- End For cron that starts continuously ---------- //
 
 module.exports = app;

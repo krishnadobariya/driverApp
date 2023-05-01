@@ -93,6 +93,7 @@ function socket(io) {
                         const response = {
                             sender: arg.sender_id,
                             receiver: arg.receiver_id,
+                            user_name: findUserForNotiy.username,
                             message: arg.message
                         }
 
@@ -105,8 +106,7 @@ function socket(io) {
                             const text = arg.message;
                             const sendBy = arg.sender_id;
                             const registrationToken = findUserForNotiy.fcm_token
-                            if(registrationToken != null)
-                            {
+                            if (registrationToken != null) {
                                 Notification.sendPushNotificationFCM(
                                     registrationToken,
                                     title,
@@ -135,6 +135,7 @@ function socket(io) {
                         const response = {
                             sender: arg.sender_id,
                             receiver: arg.receiver_id,
+                            user_name: findUserForNotiy.username,
                             message: arg.message
                         }
 
@@ -146,8 +147,7 @@ function socket(io) {
                             const text = arg.message;
                             const sendBy = arg.sender_id;
                             const registrationToken = findUserForNotiy.fcm_token;
-                            if(registrationToken != null)
-                            {
+                            if (registrationToken != null) {
                                 Notification.sendPushNotificationFCM(
                                     registrationToken,
                                     title,
@@ -209,6 +209,7 @@ function socket(io) {
                             const response = {
                                 sender: arg.sender_id,
                                 receiver: arg.receiver_id,
+                                user_name: findUserForNotiy.username,
                                 message: arg.message
                             }
 
@@ -220,8 +221,7 @@ function socket(io) {
                                 const text = arg.message;
                                 const sendBy = arg.sender_id;
                                 const registrationToken = findUserForNotiy.fcm_token
-                                if(registrationToken != null)
-                                {
+                                if (registrationToken != null) {
                                     Notification.sendPushNotificationFCM(
                                         registrationToken,
                                         title,
@@ -263,6 +263,7 @@ function socket(io) {
                             const response = {
                                 sender: arg.sender_id,
                                 receiver: arg.receiver_id,
+                                user_name: findUserForNotiy.username,
                                 message: arg.message
                             }
 
@@ -274,8 +275,7 @@ function socket(io) {
                                 const text = arg.message;
                                 const sendBy = arg.sender_id;
                                 const registrationToken = findUserForNotiy.fcm_token
-                                if(registrationToken != null)
-                                {
+                                if (registrationToken != null) {
                                     Notification.sendPushNotificationFCM(
                                         registrationToken,
                                         title,
@@ -316,6 +316,7 @@ function socket(io) {
                             const response = {
                                 sender: arg.sender_id,
                                 receiver: arg.receiver_id,
+                                user_name: findUserForNotiy.username,
                                 message: arg.message
                             }
 
@@ -327,8 +328,7 @@ function socket(io) {
                                 const text = arg.message;
                                 const sendBy = arg.sender_id;
                                 const registrationToken = findUserForNotiy.fcm_token
-                                if(registrationToken != null)
-                                {
+                                if (registrationToken != null) {
                                     Notification.sendPushNotificationFCM(
                                         registrationToken,
                                         title,
@@ -370,6 +370,7 @@ function socket(io) {
                             const response = {
                                 sender: arg.sender_id,
                                 receiver: arg.receiver_id,
+                                user_name: findUserForNotiy.username,
                                 message: arg.message
                             }
 
@@ -381,8 +382,7 @@ function socket(io) {
                                 const text = arg.message;
                                 const sendBy = arg.sender_id;
                                 const registrationToken = findUserForNotiy.fcm_token
-                                if(registrationToken != null)
-                                {
+                                if (registrationToken != null) {
                                     Notification.sendPushNotificationFCM(
                                         registrationToken,
                                         title,
@@ -637,7 +637,7 @@ function socket(io) {
 
             let userId = arg.user_id;
             let groupId = arg.group_id;
-            
+
             const getUserData = await authModel.findOne({ _id: userId });
             const getGroupData = await Group.findOne({ _id: groupId });
 
@@ -652,7 +652,7 @@ function socket(io) {
                 io.to(userRoom).emit("communityReceive", response);
 
             } else {
-                
+
                 if (getGroupData == null) {
 
                     console.log("Ashish Check :: ", getGroupData.user_id);
@@ -696,8 +696,7 @@ function socket(io) {
                     const text = 'User Invited';
                     const sendBy = userId;
                     const registrationToken = getUserData.fcm_token;
-                    if(registrationToken != null)
-                    {
+                    if (registrationToken != null) {
                         Notification.sendPushNotificationFCM(
                             registrationToken,
                             title,
@@ -718,7 +717,7 @@ function socket(io) {
             let groupId = arg.group_id;
             let userId = arg.user_id;
             let action = arg.action;
-            
+
             if (action == 1) {
 
                 const getGroupData = await Group.findOne({ _id: groupId }).select({ 'group_members': 1, 'group_type': 1, 'user_id': 1, 'group_name': 1 });
@@ -811,14 +810,13 @@ function socket(io) {
                 notification_type = getNotificationModelData.notification_type;
 
                 if (getGroupData.group_type == 2) {
-                    
+
                     var getNotificationData = await NotificationModel.findOne({
                         group_id: groupId,
                         user_id: userId
                     });
 
-                    if(getNotificationData == null)
-                    {
+                    if (getNotificationData == null) {
                         getNotificationData = await NotificationModel.findOne({
                             group_id: groupId,
                             req_user_id: userId
@@ -826,10 +824,8 @@ function socket(io) {
                     }
 
                     console.log("updateData::", getNotificationData);
-                    if(getNotificationData != null)
-                    {
-                        if(getNotificationData.req_user_id != null)
-                        {
+                    if (getNotificationData != null) {
+                        if (getNotificationData.req_user_id != null) {
                             updateData = await NotificationModel.findOneAndUpdate(
                                 {
                                     group_id: groupId,
@@ -845,7 +841,7 @@ function socket(io) {
                                 }
                             )
                         }
-                        else{
+                        else {
                             updateData = await NotificationModel.findOneAndUpdate(
                                 {
                                     group_id: groupId,
@@ -863,7 +859,7 @@ function socket(io) {
                             );
                         }
                     }
-                    else{
+                    else {
                         console.log("Group not found");
                     }
 
@@ -885,9 +881,9 @@ function socket(io) {
                         }
                     );
                 }
-                
+
                 if (updateData != null) {
-                    
+
                     const response = {
                         title: "Request Accepted",
                         message: `Admin accepted your ${getGroupData.group_name} join request.`,
@@ -901,13 +897,12 @@ function socket(io) {
                         user_name: updateData.user_name,
                         notification_type: updateData.notification_type
                     }
-                    
-                    if(notification_type == 1)
-                    {
+
+                    if (notification_type == 1) {
                         /*const userRoom = `User${getGroupData.user_id}`;
                         io.to(userRoom).emit("communityReceive", response);*/
                     }
-                    else{
+                    else {
                         const userRoom = `User${userId}`;
                         io.to(userRoom).emit("communityReceive", response);
                     }
@@ -920,16 +915,15 @@ function socket(io) {
                         message: "Notification data not updated",
                         status: 0
                     }
-                    if(notification_type == 1)
-                    {
+                    if (notification_type == 1) {
                         const userRoom = `User${userId}`;
                         io.to(userRoom).emit("communityReceive", response);
                     }
-                    else{
+                    else {
                         const userRoom = `User${getGroupData.user_id}`;
                         io.to(userRoom).emit("communityReceive", response);
                     }
-                    
+
                 }
 
             } else if (action == 2) {
@@ -1100,7 +1094,7 @@ function socket(io) {
                     } else {
 
                         const userRoom = `User${findGroup.user_id}`;
-                        
+
                         console.log('else---part-----');
                         const insertData = NotificationModel({
                             group_id: groupId,
@@ -1133,8 +1127,7 @@ function socket(io) {
                         const text = "Join With Group";
                         const sendBy = userId;
                         const registrationToken = findUser.fcm_token;
-                        if(registrationToken != null)
-                        {
+                        if (registrationToken != null) {
                             Notification.sendPushNotificationFCM(
                                 registrationToken,
                                 title,
@@ -1183,7 +1176,7 @@ function socket(io) {
                                 message: arg.message
                             }
                         });
-                        
+
                         const saveData = await addGroupChatData.save();
 
                         const updateChat = await GroupChat.updateOne(
@@ -1227,8 +1220,7 @@ function socket(io) {
                                 const text = arg.message;
                                 const sendBy = JSON.stringify(userData.user_id);
                                 const registrationToken = getUserToken.fcm_token
-                                if(registrationToken != null)
-                                {
+                                if (registrationToken != null) {
                                     Notification.sendPushNotificationFCM(
                                         registrationToken,
                                         title,
@@ -1245,7 +1237,7 @@ function socket(io) {
                 }
 
             } else {
-                
+
                 const updateGroupChat = await GroupChat.updateOne(
                     {
                         groupId: arg.groupId
@@ -1302,8 +1294,7 @@ function socket(io) {
                         const text = arg.message;
                         const sendBy = JSON.stringify(userData.user_id);
                         const registrationToken = getUserToken.fcm_token
-                        if(registrationToken != null)
-                        {
+                        if (registrationToken != null) {
                             Notification.sendPushNotificationFCM(
                                 registrationToken,
                                 title,
@@ -1387,9 +1378,16 @@ function socket(io) {
             let minutes = arg.time;
             let status = arg.status;
 
+            console.log('minutes::', minutes);
 
-            const startTime = new Date().toISOString().slice(0, 19);;
-            const endTime = new Date(new Date().getTime() + minutes * 60000).toISOString().slice(0, 19);;
+            const startTime = new Date().toISOString().slice(0, 19);
+            console.log("startTime", startTime);
+            console.log("endTime::---", new Date(new Date().getTime() + minutes * 60000));
+            const endTime = new Date(new Date().getTime() + minutes * 60000).toISOString().slice(0, 19);
+
+            const endNotificationTime = new Date(new Date().getTime() + (minutes - 5) * 60000).toISOString().slice(0, 19);
+            console.log("endNotificationTime", endNotificationTime);
+
 
             const insertData = await authModel.findByIdAndUpdate(
                 {
@@ -1399,12 +1397,49 @@ function socket(io) {
                     $set: {
                         start_time: startTime,
                         end_time: endTime,
+                        notification_time: endNotificationTime,
                         status: status
                     }
                 }
             );
 
         });
+
+        // ----- userStatus ----- //
+        socket.on("userStatusWithNoti", async (arg) => {
+
+            const presentTime = new Date().toISOString().slice(0, 19);
+            const getUser = await authModel.find({ end_time: presentTime });
+
+            const getNoti = await authModel.find({ notification_time: presentTime });
+            // console.log("notification_time", getNoti[0].notification_time);
+
+            console.log("getNoti", getNoti);
+
+            for (const respData of getNoti) {
+                console.log("respData", respData);
+                const userRoom = `User${respData._id}`;
+                io.to(userRoom).emit("notificationGet", "notificationGet");
+            }
+
+            for (const respData of getUser) {
+                console.log("respData", respData);
+
+                const updateStatus = await authModel.findByIdAndUpdate(
+                    {
+                        _id: respData._id
+                    },
+                    {
+                        $set: {
+                            status: 'Offline'
+                        }
+                    }
+                );
+
+            }
+
+        })
+        // ----- userStatus ----- //
 
         // ----- friendRequest ----- //
         socket.on("friendRequest", async (arg) => {
@@ -1458,8 +1493,7 @@ function socket(io) {
                     const text = 'User Requested';
                     const sendBy = reqUserId;
                     const registrationToken = findRequestUser.fcm_token;
-                    if(registrationToken != null)
-                    {
+                    if (registrationToken != null) {
                         Notification.sendPushNotificationFCM(
                             registrationToken,
                             title,
@@ -1553,8 +1587,7 @@ function socket(io) {
                 const text = 'Request Accepted';
                 const sendBy = userId;
                 const registrationToken = getUserData.fcm_token;
-                if(registrationToken != null)
-                {
+                if (registrationToken != null) {
                     Notification.sendPushNotificationFCM(
                         registrationToken,
                         title,
