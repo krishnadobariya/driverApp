@@ -518,9 +518,10 @@ exports.userProfile = async (req, res) => {
                     var addingDate = new Date(respPost.createdAt);
                     var sec_num = (now - addingDate) / 1000;
                     var days = Math.floor(sec_num / (3600 * 24));
-                    var hours = Math.floor((sec_num - (days(3600 * 24))) / 3600);
-                    var minutes = Math.floor((sec_num - (days(3600 * 24)) - (hours * 3600)) / 60);
-                    var seconds = Math.floor(sec_num - (days(3600 * 24)) - (hours * 3600) - (minutes * 60));
+                    console.log("days", days);
+                    var hours = Math.floor((sec_num - (days * (3600 * 24))) / 3600);
+                    var minutes = Math.floor((sec_num - (days * (3600 * 24)) - (hours * 3600)) / 60);
+                    var seconds = Math.floor(sec_num - (days * (3600 * 24)) - (hours * 3600) - (minutes * 60));
 
                     if (hours < 10) { hours = "0" + hours; }
                     if (minutes < 10) { minutes = "0" + minutes; }
@@ -564,7 +565,7 @@ exports.userProfile = async (req, res) => {
                         time = `Just Now`
 
                     }
-                    / End Of to show how long a post has been posted /
+                    // End Of to show how long a post has been posted //
 
                     var findLikedUser = await UserPostLike.findOne({
                         post_id: respPost._id,
@@ -611,7 +612,7 @@ exports.userProfile = async (req, res) => {
 
             }
 
-            / Count User Post, Follower, Following /
+            // Count User Post, Follower, Following //
             const postCount = await UserPost.find({ user_id: getUserData._id }).count();
             console.log('postCount::', postCount);
 

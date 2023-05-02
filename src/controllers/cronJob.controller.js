@@ -10,7 +10,7 @@ exports.userStatus = async (req, res) => {
         const getNoti = await User.find({ notification_time: presentTime });
         // console.log("notification_time", getNoti[0].notification_time);
 
-        console.log("getNoti",getNoti);
+        // console.log("getNoti",getNoti);
 
         for (const respData of getNoti) {
             // const userRoom = `User${respData._id}`;
