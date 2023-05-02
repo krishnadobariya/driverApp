@@ -15,6 +15,6 @@ router.post("/list/:user_id", eventList);
 router.post("/attendees/:id", eventAttendees);
 router.post("/my/:user_id", myEvent);
 router.post("/delete/:event_id", deleteEvent);
-router.get("/search/:vehicleType", searchEvent)
+router.get("/search", searchEvent)
 
 module.exports = router;

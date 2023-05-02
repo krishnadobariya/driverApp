@@ -2120,7 +2120,16 @@ exports.searchData = async (req, res) => {
                         // console.log("getVehical", getVehical);
                         if (getVehical.vehicle_type == type) {
                             isVehicleData = true;
-                            vehicleDataArr.push(getVehical)
+                            const response = {
+                                vehicleImageId: getVehical.vehicle_img_id,
+                                model: getVehical.model,
+                                type: getVehical.vehicle_type,
+                                year: getVehical.year,
+                                trim: getVehical.trim,
+                                dailyDriving: getVehical.daily_driving,
+                                unit: getVehical.unit
+                            }
+                            vehicleDataArr.push(response)
                         }
 
                     }

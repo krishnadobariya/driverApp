@@ -419,14 +419,45 @@ exports.deleteEvent = async (req, res) => {
 exports.searchEvent = async (req, res) => {
     try {
 
-        const type = req.params.vehicleType
-        console.log("type", type);
+        const type = req.body.vehicleType
+        const longitude = req.body.longitude
+        const latitude = req.body.latitude
+        console.log("longitude", longitude);
 
-        const findEventData = await Event.find({ vehicle_type: type })
-        console.log("findEventData", findEventData);
+        if (type == undefined && latitude == undefined && longitude == undefined) {
 
-        // if()
-        
+            const findAllEvent = await Event.find()
+            res.status(status.OK).json(
+                {
+                    message: "Get All Event Detail Successfully",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: findAllEvent
+                }
+            )
+
+        } else {
+
+
+            const findEventData = await Event.find({
+                vehicle_type: type,
+                location: {
+                    coordinates: {
+                        $elemMatch: {
+                            0: latitude,
+                            1: longitude
+                        }
+                    }
+                }
+            });
+
+
+            // console.log("latitude, longitude:::", latitude, longitude, type);
+            console.log("findEventData", findEventData);
+
+        }
+
     } catch (error) {
 
         console.log("searchEvent--Error::", error);
@@ -439,6 +470,6 @@ exports.searchEvent = async (req, res) => {
                 error: error.message
             }
         )
-        
+
     }
 }
