@@ -18,7 +18,9 @@ const {
     forgetPassword,
     checkMail,
     followingList,
-    followerList
+    followerList,
+    removeFollowing,
+    removeFollower
 } = require("../controllers/auth.controller");
 
 const {
@@ -44,6 +46,8 @@ router.post("/forget-password", forgetPassword);
 router.get("/check-mail/:email", checkMail);
 router.get("/following/:userId", followingList);
 router.get("/follower/:userId", followerList)
+router.delete("/remove-following/:userId/:removeUserId", removeFollowing)
+router.delete("/remove-follower/:userId/:removeUserId", removeFollower)
 
 /* ----- For Block Unblock Controller ----- */
 router.post("/block-user/:user_id/:block_user_id", blockUnblock);

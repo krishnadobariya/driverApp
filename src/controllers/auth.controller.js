@@ -1941,6 +1941,117 @@ exports.followerList = async (req, res) => {
     }
 }
 
+exports.removeFollowing = async (req, res) => {
+    try {
+
+        const userId = req.params.userId;
+        const removeUserId = req.params.removeUserId
+
+        const getFollowing = await FriendRequest.findOne(
+            {
+                userId: userId,
+                requested_user_id: removeUserId
+            }
+        );
+        console.log("getFollowing", getFollowing);
+
+        if (getFollowing == null) {
+
+            res.status(status.NOT_ACCEPTABLE).json(
+                {
+                    message: "This User Is Not Your Following",
+                    status: false,
+                    code: 406,
+                    statusCode: 0
+                }
+            )
+
+        } else {
+
+            const deleteFollower = await FriendRequest.deleteOne({ _id: getFollowing._id })
+
+            res.status(status.OK).json(
+                {
+                    message: "Following Remove Successfully",
+                    status: true,
+                    code: 200,
+                    statusCode: 1
+                }
+            )
+
+        }
+
+    } catch (error) {
+
+        console.log("removeFollower--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
+
+exports.removeFollower = async (req, res) => {
+    try {
+
+        const userId = req.params.userId;
+        const removeUserId = req.params.removeUserId
+
+        const getFollower = await FriendRequest.findOne(
+            {
+                userId: removeUserId,
+                requested_user_id: userId
+            }
+        );
+        console.log("getFollower", getFollower);
+
+        if (getFollower == null) {
+
+            res.status(status.NOT_ACCEPTABLE).json(
+                {
+                    message: "This User Is Not Your Follower",
+                    status: false,
+                    code: 406,
+                    statusCode: 0
+                }
+            )
+
+        } else {
+
+            const deleteFollower = await FriendRequest.deleteOne({ _id: getFollower._id })
+
+            res.status(status.OK).json(
+                {
+                    message: "Follower Remove Successfully",
+                    status: true,
+                    code: 200,
+                    statusCode: 1
+                }
+            )
+
+        }
+
+    } catch (error) {
+
+        console.log("removeFollower--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
 
 exports.testing = async (req, res) => {
     try {
