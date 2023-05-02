@@ -2056,6 +2056,7 @@ exports.removeFollower = async (req, res) => {
 exports.searchData = async (req, res) => {
     try {
 
+        let userId = req.params.id;
         var pattern = `^${req.params.name}`
         var type = req.params.type
 
@@ -2065,8 +2066,6 @@ exports.searchData = async (req, res) => {
         // --- for pagination --- //
         const startIndex = (page - 1) * limit;
         const endIndex = limit * 1;
-        console.log("startIndex", startIndex);
-        console.log("endIndex", endIndex);
 
         const findUserData = await authModel.find({ username: { $regex: pattern, $options: 'i' } }).skip(startIndex).limit(endIndex);
 
@@ -2086,37 +2085,58 @@ exports.searchData = async (req, res) => {
             var userDataArr = []
             for (const findVehicalData of findUserData) {
 
-                var vehicleDataArr = []
-                var isVehicleData = false;
-                // console.log("findVehicalData", findVehicalData);
-                for (const getVehical of findVehicalData.vehicle) {
+                const findBlockUser = await Block.find({
+                    user_id: userId,
+                    block_user_id: findVehicalData._id
+                });
 
-                    // console.log("getVehical", getVehical);
-                    if (getVehical.vehicle_type == type) {
-                        isVehicleData = true;
-                        vehicleDataArr.push(getVehical)
+                if (findBlockUser.length != 0) {
+
+                } else {
+
+                    var finalChatId = "";
+                    finalChatId = await chatRoomModel.find(
+                        {
+                            user1: findVehicalData._id,
+                            user2: userId,
+                        }
+                    );
+
+                    if (finalChatId.length == 0) {
+                        finalChatId = await chatRoomModel.find(
+                            {
+                                user2: findVehicalData._id,
+                                user1: userId,
+                            }
+                        );
+
                     }
 
-                }
-                if (isVehicleData) {
-                    const response = {
-                        user_id: findVehicalData._id,
-                        profile: findVehicalData.profile[0] ? findVehicalData.profile[0].res : "",
-                        userName: findVehicalData.username,
-                        email: findVehicalData.email,
-                        country_code: findVehicalData.country_code,
-                        phone_number: findVehicalData.phone_number,
-                        age: findVehicalData.age,
-                        gender: findVehicalData.gender,
-                        location: findVehicalData.location,
-                        status: findVehicalData.status,
-                        user_type: findVehicalData.user_type,
-                        start_time: findVehicalData.start_time,
-                        end_time: findVehicalData.end_time,
-                        password: findVehicalData.password,
-                        vehicles: vehicleDataArr
+                    var vehicleDataArr = []
+                    var isVehicleData = false;
+                    // console.log("findVehicalData", findVehicalData);
+                    for (const getVehical of findVehicalData.vehicle) {
+
+                        // console.log("getVehical", getVehical);
+                        if (getVehical.vehicle_type == type) {
+                            isVehicleData = true;
+                            vehicleDataArr.push(getVehical)
+                        }
+
                     }
-                    userDataArr.push(response)
+                    if (isVehicleData) {
+                        const response = {
+                            user_id: findVehicalData._id,
+                            profile: findVehicalData.profile[0] ? findVehicalData.profile[0].res : "",
+                            userName: findVehicalData.username,
+                            email: findVehicalData.email,
+                            phone: `${findVehicalData.country_code}${findVehicalData.phone_number}`,
+                            chatRoomId: finalChatId[0] ? finalChatId[0]._id : "",
+                            vehicles: vehicleDataArr
+                        }
+                        userDataArr.push(response)
+                    }
+
                 }
 
             }

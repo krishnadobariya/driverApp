@@ -49,7 +49,7 @@ router.get("/following/:userId", followingList);
 router.get("/follower/:userId", followerList)
 router.delete("/remove-following/:userId/:removeUserId", removeFollowing)
 router.delete("/remove-follower/:userId/:removeUserId", removeFollower);
-router.get("/search/:name/:type", searchData)
+router.get("/search/:id/:name/:type", searchData)
 
 
 /* ----- For Block Unblock Controller ----- */

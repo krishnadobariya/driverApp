@@ -415,3 +415,30 @@ exports.deleteEvent = async (req, res) => {
 
     }
 }
+
+exports.searchEvent = async (req, res) => {
+    try {
+
+        const type = req.params.vehicleType
+        console.log("type", type);
+
+        const findEventData = await Event.find({ vehicle_type: type })
+        console.log("findEventData", findEventData);
+
+        // if()
+        
+    } catch (error) {
+
+        console.log("searchEvent--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+        
+    }
+}
