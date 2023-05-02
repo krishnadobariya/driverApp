@@ -2053,6 +2053,103 @@ exports.removeFollower = async (req, res) => {
     }
 }
 
+exports.searchData = async (req, res) => {
+    try {
+
+        var pattern = `^${req.params.name}`
+        var type = req.params.type
+
+        let page = parseInt(req.query.page);
+        let limit = parseInt(req.query.limit);
+
+        // --- for pagination --- //
+        const startIndex = (page - 1) * limit;
+        const endIndex = limit * 1;
+        console.log("startIndex", startIndex);
+        console.log("endIndex", endIndex);
+
+        const findUserData = await authModel.find({ username: { $regex: pattern, $options: 'i' } }).skip(startIndex).limit(endIndex);
+
+        if (findUserData[0] == undefined) {
+
+            res.status(status.NOT_FOUND).json(
+                {
+                    message: "User Not Found",
+                    status: false,
+                    code: 404,
+                    statusCode: 0
+                }
+            )
+
+        } else {
+
+            var userDataArr = []
+            for (const findVehicalData of findUserData) {
+
+                var vehicleDataArr = []
+                var isVehicleData = false;
+                // console.log("findVehicalData", findVehicalData);
+                for (const getVehical of findVehicalData.vehicle) {
+
+                    // console.log("getVehical", getVehical);
+                    if (getVehical.vehicle_type == type) {
+                        isVehicleData = true;
+                        vehicleDataArr.push(getVehical)
+                    }
+
+                }
+                if (isVehicleData) {
+                    const response = {
+                        user_id: findVehicalData._id,
+                        profile: findVehicalData.profile[0] ? findVehicalData.profile[0].res : "",
+                        userName: findVehicalData.username,
+                        email: findVehicalData.email,
+                        country_code: findVehicalData.country_code,
+                        phone_number: findVehicalData.phone_number,
+                        age: findVehicalData.age,
+                        gender: findVehicalData.gender,
+                        location: findVehicalData.location,
+                        status: findVehicalData.status,
+                        user_type: findVehicalData.user_type,
+                        start_time: findVehicalData.start_time,
+                        end_time: findVehicalData.end_time,
+                        password: findVehicalData.password,
+                        vehicles: vehicleDataArr
+                    }
+                    userDataArr.push(response)
+                }
+
+            }
+            // console.log("userDataArr", userDataArr);
+
+            res.status(status.OK).json(
+                {
+                    message: "User View Successfully",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: userDataArr
+                }
+            )
+
+        }
+
+    } catch (error) {
+
+        console.log("searchByName--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
+
 exports.testing = async (req, res) => {
     try {
 
