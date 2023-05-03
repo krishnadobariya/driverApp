@@ -423,7 +423,7 @@ exports.searchEvent = async (req, res) => {
         const type = req.body.vehicleType
         const longitude = req.body.longitude
         const latitude = req.body.latitude
-        console.log("longitude", longitude);
+        const miles = req.body.miles
 
         if (type == undefined && latitude == undefined && longitude == undefined) {
 
@@ -440,99 +440,132 @@ exports.searchEvent = async (req, res) => {
 
         } else {
 
-            const findEventData = await Event.find({
-                vehicle_type: type
-            });
+            var milesToRadian = function (miles) {
+                var earthRadiusInMiles = 3959;
+                return miles / earthRadiusInMiles;
+            };
+            var landmark = await Event.find({ vehicle_type: type });
+            var query = {
+                location: {
+                    $geoWithin: {
+                        $centerSphere: [landmark.location, milesToRadian(5)]
+                    }
+                }
+            };
+            // Step 3: Query points.
+            const findEventData = await Event.find(query).pretty();
             console.log("findEventData", findEventData);
 
-            var dataArr = [];
-            for (const checkLocation of findEventData) {
-
-                const coordinates = checkLocation.location.coordinates
-                if (coordinates[0] == longitude && coordinates[1] == latitude) {
-
-                    const getJoinUser = await joinEvent.find({ event_id: checkLocation._id }).count();
-                    const userIsJoin = await joinEvent.findOne({
-                        user_id: userId,
-                        event_id: checkLocation._id,
-                    }).sort({ createdAt: -1 });
-
-                    if (userIsJoin == null) { 
-
-                        const response = {
-                            user_id: checkLocation.user_id,
-                            event_id: checkLocation._id,
-                            username: checkLocation.username,
-                            user_profile: checkLocation.user_profile[0] ? checkLocation.user_profile[0].res : "",
-                            event_photo: checkLocation.event_photo[0] ? checkLocation.event_photo[0].res : "",
-                            name: checkLocation.name,
-                            date: checkLocation.date,
-                            time: checkLocation.time,
-                            vehicle_type: checkLocation.vehicle_type,
-                            longitude: checkLocation.location.coordinates[0],
-                            latitude: checkLocation.location.coordinates[1],
-                            address: checkLocation.address,
-                            about: checkLocation.about,
-                            isJoin: false,
-                            join_user: getJoinUser,
-                            mediaType: checkLocation.media_type
+            /* const findEventData = await Event.find(
+                {
+                    vehicle_type: type, 
+                    location:
+                    {
+                        $near:
+                        {
+                            $geometry: { type: "Point", coordinates: [ latitude, longitude ] },
+                            $maxDistance: miles
                         }
-                        dataArr.push(response)
-
-                    } else {
-
-                        const response = {
-                            user_id: checkLocation.user_id,
-                            event_id: checkLocation._id,
-                            username: checkLocation.username,
-                            user_profile: checkLocation.user_profile[0] ? checkLocation.user_profile[0].res : "",
-                            event_photo: checkLocation.event_photo[0] ? checkLocation.event_photo[0].res : "",
-                            name: checkLocation.name,
-                            date: checkLocation.date,
-                            time: checkLocation.time,
-                            vehicle_type: checkLocation.vehicle_type,
-                            longitude: checkLocation.location.coordinates[0],
-                            latitude: checkLocation.location.coordinates[1],
-                            address: checkLocation.address,
-                            about: checkLocation.about,
-                            isJoin: true,
-                            join_user: getJoinUser,
-                            mediaType: checkLocation.media_type
-                        }
-                        dataArr.push(response)
-
                     }
-
                 }
+            )
+            console.log("findEventData", findEventData); */
 
-            }
-            console.log("dataArr", dataArr);
 
-            if (dataArr[0] == undefined) {
 
-                res.status(status.NOT_FOUND).json(
-                    {
-                        message: "Data Not Exist",
-                        status: true,
-                        code: 200,
-                        statusCode: 1,
-                        data: []
-                    }
-                )
+            // const findEventData = await Event.find({
+            //     vehicle_type: type
+            // });
+            // console.log("findEventData", findEventData);
 
-            } else {
+            // var dataArr = [];
+            // for (const checkLocation of findEventData) {
 
-                res.status(status.OK).json(
-                    {
-                        message: "Event View Successfully",
-                        status: true,
-                        code: 200,
-                        statusCode: 1,
-                        data: dataArr
-                    }
-                )
+            //     const coordinates = checkLocation.location.coordinates
+            //     if (coordinates[0] == longitude && coordinates[1] == latitude) {
 
-            }
+            //         const getJoinUser = await joinEvent.find({ event_id: checkLocation._id }).count();
+            //         const userIsJoin = await joinEvent.findOne({
+            //             user_id: userId,
+            //             event_id: checkLocation._id,
+            //         }).sort({ createdAt: -1 });
+
+            //         if (userIsJoin == null) { 
+
+            //             const response = {
+            //                 user_id: checkLocation.user_id,
+            //                 event_id: checkLocation._id,
+            //                 username: checkLocation.username,
+            //                 user_profile: checkLocation.user_profile[0] ? checkLocation.user_profile[0].res : "",
+            //                 event_photo: checkLocation.event_photo[0] ? checkLocation.event_photo[0].res : "",
+            //                 name: checkLocation.name,
+            //                 date: checkLocation.date,
+            //                 time: checkLocation.time,
+            //                 vehicle_type: checkLocation.vehicle_type,
+            //                 longitude: checkLocation.location.coordinates[0],
+            //                 latitude: checkLocation.location.coordinates[1],
+            //                 address: checkLocation.address,
+            //                 about: checkLocation.about,
+            //                 isJoin: false,
+            //                 join_user: getJoinUser,
+            //                 mediaType: checkLocation.media_type
+            //             }
+            //             dataArr.push(response)
+
+            //         } else {
+
+            //             const response = {
+            //                 user_id: checkLocation.user_id,
+            //                 event_id: checkLocation._id,
+            //                 username: checkLocation.username,
+            //                 user_profile: checkLocation.user_profile[0] ? checkLocation.user_profile[0].res : "",
+            //                 event_photo: checkLocation.event_photo[0] ? checkLocation.event_photo[0].res : "",
+            //                 name: checkLocation.name,
+            //                 date: checkLocation.date,
+            //                 time: checkLocation.time,
+            //                 vehicle_type: checkLocation.vehicle_type,
+            //                 longitude: checkLocation.location.coordinates[0],
+            //                 latitude: checkLocation.location.coordinates[1],
+            //                 address: checkLocation.address,
+            //                 about: checkLocation.about,
+            //                 isJoin: true,
+            //                 join_user: getJoinUser,
+            //                 mediaType: checkLocation.media_type
+            //             }
+            //             dataArr.push(response)
+
+            //         }
+
+            //     }
+
+            // }
+            // console.log("dataArr", dataArr);
+
+            // if (dataArr[0] == undefined) {
+
+            //     res.status(status.NOT_FOUND).json(
+            //         {
+            //             message: "Data Not Exist",
+            //             status: true,
+            //             code: 200,
+            //             statusCode: 1,
+            //             data: []
+            //         }
+            //     )
+
+            // } else {
+
+            //     res.status(status.OK).json(
+            //         {
+            //             message: "Event View Successfully",
+            //             status: true,
+            //             code: 200,
+            //             statusCode: 1,
+            //             data: dataArr
+            //         }
+            //     )
+
+            // }
 
 
         }

@@ -2184,16 +2184,12 @@ exports.searchData = async (req, res) => {
 exports.searchByVehical = async (req, res) => {
     try {
 
-        const vehicleImgId = req.params.vehicleImgId
-        const vehicleType = req.params.vehicleType
-        const queOne = req.params.queOne
-        const queTwo = req.params.queTwo
-        const queThree = req.params.queThree
-        const queFour = req.params.queFour
+        const userId = req.params.userId
 
-        const findUserData = await authModel.find({ vehicle: { $elemMatch: { vehicle_img_id: vehicleImgId, vehicle_type: vehicleType } } })
+        const findUser = await authModel.findOne({ _id: userId })
+        console.log("findUser", findUser);
 
-        if (findUserData[0] == undefined) {
+        if (findUser == null) {
 
             res.status(status.NOT_FOUND).json(
                 {
@@ -2206,32 +2202,37 @@ exports.searchByVehical = async (req, res) => {
 
         } else {
 
+            const findOtherUser = await authModel.find({ _id: { $ne: userId } })
+            console.log("findOtherUser", findOtherUser.length);
+
             var userDataArr = []
-            for (const checkVehicalData of findUserData) {
+            for (const checkVehicalData of findOtherUser) {
 
                 // console.log("checkVehicalData", checkVehicalData);
 
-                const findQuestionData = await Question.findOne({ 
-                    user_id: checkVehicalData._id, 
+                const findUserQuestion = await Question.findOne({ user_id: userId })
+                // console.log("findUserQuestion", findUserQuestion);
+
+                const findQuestionData = await Question.findOne({
+                    user_id: checkVehicalData._id,
                     $or: [
-                        { $and: [{que_one: queOne, que_two: queTwo, que_three: queThree}] },
-                        { $and: [{que_two: queTwo, que_three: queThree, que_four: queFour}] },
-                        { $and: [{que_one: queOne, que_three: queThree, que_four: queFour}] },
-                        { $and: [{que_one: queOne, que_two: queTwo, que_four: queFour}] },
-                        { $and: [{que_one: queOne, que_two: queTwo, que_three: queThree, que_four: queFour }] }
+                        { $and: [{ que_one: findUserQuestion.que_one, que_two: findUserQuestion.que_two, que_three: findUserQuestion.que_three }] },
+                        { $and: [{ que_two: findUserQuestion.que_two, que_three: findUserQuestion.que_three, que_four: findUserQuestion.que_four }] },
+                        { $and: [{ que_one: findUserQuestion.que_one, que_three: findUserQuestion.que_three, que_four: findUserQuestion.que_four }] },
+                        { $and: [{ que_one: findUserQuestion.que_one, que_two: findUserQuestion.que_two, que_four: findUserQuestion.que_four }] },
+                        { $and: [{ que_one: findUserQuestion.que_one, que_two: findUserQuestion.que_two, que_three: findUserQuestion.que_three, que_four: findUserQuestion.que_four }] }
                     ]
                 })
-                console.log("findQuestionData", findQuestionData);
+                // console.log("findQuestionData", findQuestionData);
 
                 var vehicleDataArr = []
                 var isVehicleData = false;
-                if(findQuestionData) {
+                if (findQuestionData) {
 
                     for (const getVehical of checkVehicalData.vehicle) {
-    
-                        // console.log("getVehical", getVehical);
-                        if (getVehical.vehicle_img_id == vehicleImgId && getVehical.vehicle_type == vehicleType) {
-    
+
+                        if (getVehical.vehicle_img_id == findUser.vehicle[0].vehicle_img_id && getVehical.vehicle_type == checkVehicalData.vehicle[0].vehicle_type) {
+
                             isVehicleData = true;
                             const response = {
                                 vehicleImageId: getVehical.vehicle_img_id,
@@ -2244,12 +2245,12 @@ exports.searchByVehical = async (req, res) => {
                             }
                             vehicleDataArr.push(response)
                         }
-    
+
                     }
 
                 }
 
-                console.log("vehicleDataArr", vehicleDataArr);
+                // console.log("vehicleDataArr", vehicleDataArr);
                 if (isVehicleData) {
                     const response = {
                         user_id: checkVehicalData._id,
@@ -2267,7 +2268,7 @@ exports.searchByVehical = async (req, res) => {
                 }
 
             }
-            console.log("userDataArr", userDataArr);
+            console.log("userDataArr", userDataArr.length);
 
             res.status(status.OK).json(
                 {

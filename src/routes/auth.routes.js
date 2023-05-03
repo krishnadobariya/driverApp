@@ -51,7 +51,7 @@ router.get("/follower/:userId", followerList)
 router.delete("/remove-following/:userId/:removeUserId", removeFollowing)
 router.delete("/remove-follower/:userId/:removeUserId", removeFollower);
 router.get("/search/:id/:name/:type", searchData)
-router.get("/search-by-vehical/:vehicleImgId/:vehicleType/:queOne/:queTwo/:queThree/:queFour", searchByVehical)
+router.get("/search-by-vehical/:userId", searchByVehical)
 
 
 /* ----- For Block Unblock Controller ----- */
