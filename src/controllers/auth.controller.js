@@ -2210,65 +2210,97 @@ exports.searchByVehical = async (req, res) => {
 
                 // console.log("checkVehicalData", checkVehicalData);
 
-                const findUserQuestion = await Question.findOne({ user_id: userId })
-                // console.log("findUserQuestion", findUserQuestion);
+                const findBlockUser = await Block.find({
+                    user_id: userId,
+                    block_user_id: checkVehicalData._id
+                });
 
-                const findQuestionData = await Question.findOne({
-                    user_id: checkVehicalData._id,
-                    $or: [
-                        { $and: [{ que_one: findUserQuestion.que_one, que_two: findUserQuestion.que_two, que_three: findUserQuestion.que_three }] },
-                        { $and: [{ que_two: findUserQuestion.que_two, que_three: findUserQuestion.que_three, que_four: findUserQuestion.que_four }] },
-                        { $and: [{ que_one: findUserQuestion.que_one, que_three: findUserQuestion.que_three, que_four: findUserQuestion.que_four }] },
-                        { $and: [{ que_one: findUserQuestion.que_one, que_two: findUserQuestion.que_two, que_four: findUserQuestion.que_four }] },
-                        { $and: [{ que_one: findUserQuestion.que_one, que_two: findUserQuestion.que_two, que_three: findUserQuestion.que_three, que_four: findUserQuestion.que_four }] }
-                    ]
-                })
-                // console.log("findQuestionData", findQuestionData);
+                if (findBlockUser.length != 0) {
 
-                var vehicleDataArr = []
-                var isVehicleData = false;
-                if (findQuestionData) {
+                } else {
 
-                    for (const getVehical of checkVehicalData.vehicle) {
+                    var finalChatId = "";
+                    finalChatId = await chatRoomModel.find(
+                        {
+                            user1: checkVehicalData._id,
+                            user2: userId,
+                        }
+                    );
 
-                        if (getVehical.vehicle_img_id == findUser.vehicle[0].vehicle_img_id && getVehical.vehicle_type == checkVehicalData.vehicle[0].vehicle_type) {
-
-                            isVehicleData = true;
-                            const response = {
-                                vehicleImageId: getVehical.vehicle_img_id,
-                                model: getVehical.model,
-                                type: getVehical.vehicle_type,
-                                year: getVehical.year,
-                                trim: getVehical.trim,
-                                dailyDriving: getVehical.daily_driving,
-                                unit: getVehical.unit
+                    if (finalChatId.length == 0) {
+                        finalChatId = await chatRoomModel.find(
+                            {
+                                user2: checkVehicalData._id,
+                                user1: userId,
                             }
-                            vehicleDataArr.push(response)
+                        );
+
+                    }
+
+                    const findUserQuestion = await Question.findOne({ user_id: userId })
+                    // console.log("findUserQuestion", findUserQuestion);
+
+                    const findQuestionData = await Question.findOne({
+                        user_id: checkVehicalData._id,
+                        $or: [
+                            { $and: [{ que_one: findUserQuestion.que_one, que_two: findUserQuestion.que_two, que_three: findUserQuestion.que_three }] },
+                            { $and: [{ que_two: findUserQuestion.que_two, que_three: findUserQuestion.que_three, que_four: findUserQuestion.que_four }] },
+                            { $and: [{ que_one: findUserQuestion.que_one, que_three: findUserQuestion.que_three, que_four: findUserQuestion.que_four }] },
+                            { $and: [{ que_one: findUserQuestion.que_one, que_two: findUserQuestion.que_two, que_four: findUserQuestion.que_four }] },
+                            { $and: [{ que_one: findUserQuestion.que_one, que_two: findUserQuestion.que_two, que_three: findUserQuestion.que_three, que_four: findUserQuestion.que_four }] }
+                        ]
+                    })
+                    // console.log("findQuestionData", findQuestionData);
+
+                    var vehicleDataArr = []
+                    var isVehicleData = false;
+                    if (findQuestionData) {
+
+                        for (const getVehical of checkVehicalData.vehicle) {
+
+                            if (getVehical.vehicle_img_id == findUser.vehicle[0].vehicle_img_id && getVehical.vehicle_type == checkVehicalData.vehicle[0].vehicle_type) {
+
+                                isVehicleData = true;
+                                const response = {
+                                    vehicleImageId: getVehical.vehicle_img_id,
+                                    model: getVehical.model,
+                                    type: getVehical.vehicle_type,
+                                    year: getVehical.year,
+                                    trim: getVehical.trim,
+                                    dailyDriving: getVehical.daily_driving,
+                                    unit: getVehical.unit
+                                }
+                                vehicleDataArr.push(response)
+                            }
+
                         }
 
                     }
 
-                }
-
-                // console.log("vehicleDataArr", vehicleDataArr);
-                if (isVehicleData) {
-                    const response = {
-                        user_id: checkVehicalData._id,
-                        profile: checkVehicalData.profile[0] ? checkVehicalData.profile[0].res : "",
-                        userName: checkVehicalData.username,
-                        email: checkVehicalData.email,
-                        phone: `${checkVehicalData.country_code}${checkVehicalData.phone_number}`,
-                        vehicles: vehicleDataArr,
-                        que_one: findQuestionData.que_one,
-                        que_two: findQuestionData.que_two,
-                        que_three: findQuestionData.que_three,
-                        que_four: findQuestionData.que_four
+                    // console.log("vehicleDataArr", vehicleDataArr);
+                    if (isVehicleData) {
+                        const response = {
+                            user_id: checkVehicalData._id,
+                            profile: checkVehicalData.profile[0] ? checkVehicalData.profile[0].res : "",
+                            userName: checkVehicalData.username,
+                            email: checkVehicalData.email,
+                            phone: `${checkVehicalData.country_code}${checkVehicalData.phone_number}`,
+                            age: checkVehicalData.age,
+                            gender: checkVehicalData.gender,
+                            vehicles: vehicleDataArr,
+                            chatRoomId: finalChatId[0] ? finalChatId[0]._id : "",
+                            que_one: findQuestionData.que_one,
+                            que_two: findQuestionData.que_two,
+                            que_three: findQuestionData.que_three,
+                            que_four: findQuestionData.que_four
+                        }
+                        userDataArr.push(response)
                     }
-                    userDataArr.push(response)
-                }
 
+                }
+                console.log("userDataArr", userDataArr.length);
             }
-            console.log("userDataArr", userDataArr.length);
+
 
             res.status(status.OK).json(
                 {

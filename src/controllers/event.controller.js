@@ -445,15 +445,20 @@ exports.searchEvent = async (req, res) => {
                 return miles / earthRadiusInMiles;
             };
             var landmark = await Event.find({ vehicle_type: type });
-            var query = {
-                location: {
-                    $geoWithin: {
-                        $centerSphere: [landmark.location, milesToRadian(5)]
+
+            for (const checkData of landmark) {
+
+                var query = {
+                    location: {
+                        $geoWithin: {
+                            $centerSphere: [checkData.location.coordinates, milesToRadian(miles)]
+                        }
                     }
-                }
-            };
+                };
+
+            }
             // Step 3: Query points.
-            const findEventData = await Event.find(query).pretty();
+            const findEventData = await Event.find(query);
             console.log("findEventData", findEventData);
 
             /* const findEventData = await Event.find(
