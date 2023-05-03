@@ -2053,6 +2053,7 @@ exports.removeFollower = async (req, res) => {
     }
 }
 
+// search with username and vehical type
 exports.searchData = async (req, res) => {
     try {
 
@@ -2166,6 +2167,123 @@ exports.searchData = async (req, res) => {
     } catch (error) {
 
         console.log("searchByName--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
+
+// search with Vehicle type , vehicle_img_id and questions
+exports.searchByVehical = async (req, res) => {
+    try {
+
+        const vehicleImgId = req.params.vehicleImgId
+        const vehicleType = req.params.vehicleType
+        const queOne = req.params.queOne
+        const queTwo = req.params.queTwo
+        const queThree = req.params.queThree
+        const queFour = req.params.queFour
+
+        const findUserData = await authModel.find({ vehicle: { $elemMatch: { vehicle_img_id: vehicleImgId, vehicle_type: vehicleType } } })
+
+        if (findUserData[0] == undefined) {
+
+            res.status(status.NOT_FOUND).json(
+                {
+                    message: "User Not Found",
+                    status: false,
+                    code: 404,
+                    statusCode: 0
+                }
+            )
+
+        } else {
+
+            var userDataArr = []
+            for (const checkVehicalData of findUserData) {
+
+                // console.log("checkVehicalData", checkVehicalData);
+
+                const findQuestionData = await Question.findOne({ 
+                    user_id: checkVehicalData._id, 
+                    $or: [
+                        { $and: [{que_one: queOne, que_two: queTwo, que_three: queThree}] },
+                        { $and: [{que_two: queTwo, que_three: queThree, que_four: queFour}] },
+                        { $and: [{que_one: queOne, que_three: queThree, que_four: queFour}] },
+                        { $and: [{que_one: queOne, que_two: queTwo, que_four: queFour}] },
+                        { $and: [{que_one: queOne, que_two: queTwo, que_three: queThree, que_four: queFour }] }
+                    ]
+                })
+                console.log("findQuestionData", findQuestionData);
+
+                var vehicleDataArr = []
+                var isVehicleData = false;
+                if(findQuestionData) {
+
+                    for (const getVehical of checkVehicalData.vehicle) {
+    
+                        // console.log("getVehical", getVehical);
+                        if (getVehical.vehicle_img_id == vehicleImgId && getVehical.vehicle_type == vehicleType) {
+    
+                            isVehicleData = true;
+                            const response = {
+                                vehicleImageId: getVehical.vehicle_img_id,
+                                model: getVehical.model,
+                                type: getVehical.vehicle_type,
+                                year: getVehical.year,
+                                trim: getVehical.trim,
+                                dailyDriving: getVehical.daily_driving,
+                                unit: getVehical.unit
+                            }
+                            vehicleDataArr.push(response)
+                        }
+    
+                    }
+
+                }
+
+                console.log("vehicleDataArr", vehicleDataArr);
+                if (isVehicleData) {
+                    const response = {
+                        user_id: checkVehicalData._id,
+                        profile: checkVehicalData.profile[0] ? checkVehicalData.profile[0].res : "",
+                        userName: checkVehicalData.username,
+                        email: checkVehicalData.email,
+                        phone: `${checkVehicalData.country_code}${checkVehicalData.phone_number}`,
+                        vehicles: vehicleDataArr,
+                        que_one: findQuestionData.que_one,
+                        que_two: findQuestionData.que_two,
+                        que_three: findQuestionData.que_three,
+                        que_four: findQuestionData.que_four
+                    }
+                    userDataArr.push(response)
+                }
+
+            }
+            console.log("userDataArr", userDataArr);
+
+            res.status(status.OK).json(
+                {
+                    message: "User View Successfully",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: userDataArr
+                }
+            )
+
+        }
+
+    } catch (error) {
+
+        console.log("searchByVehical--Error::", error);
         res.status(status.INTERNAL_SERVER_ERROR).json(
             {
                 message: "Something Went Wrong",
