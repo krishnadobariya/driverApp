@@ -425,9 +425,16 @@ exports.searchEvent = async (req, res) => {
         const latitude = parseFloat(req.body.latitude);
         const miles = parseFloat(req.body.miles);
 
+        let page = parseInt(req.query.page);
+        let limit = parseInt(req.query.limit);
+
+        // --- for pagination --- //
+        const startIndex = (page - 1) * limit;
+        const endIndex = limit * 1;
+
         if (type == undefined && latitude == undefined && longitude == undefined && miles == undefined) {
 
-            const findAllEvent = await Event.find()
+            const findAllEvent = await Event.find().sort({ createdAt: -1 }).skip(startIndex).limit(endIndex);
             res.status(status.OK).json(
                 {
                     message: "Get All Event Detail Successfully",
@@ -455,7 +462,7 @@ exports.searchEvent = async (req, res) => {
                     },
                 },
                 { $match: { vehicle_type: type } }
-            ]);
+            ]).sort({ createdAt: -1 }).skip(startIndex).limit(endIndex);
             console.log("distance::--", miles * 1000);
             console.log("findEventData::", findEventData);
 

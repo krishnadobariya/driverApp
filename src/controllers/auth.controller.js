@@ -2072,7 +2072,7 @@ exports.searchData = async (req, res) => {
         // const findUserData = await authModel.find({ username: { $regex: pattern, $options: 'i' } }).skip(startIndex).limit(endIndex);
         // console.log("findUserData", findUserData);
 
-        const findUserData = await authModel.findOne({ _id: userId })
+        const findUserData = await authModel.findOne({ _id: userId }).sort({ createdAt: -1 }).skip(startIndex).limit(endIndex)
         console.log("findUserData", findUserData);
 
         if (findUserData == null) {
@@ -2115,7 +2115,7 @@ exports.searchData = async (req, res) => {
                             ]
                     }
                 }
-            ]).skip(startIndex).limit(endIndex);
+            ]).sort({ createdAt: -1 }).skip(startIndex).limit(endIndex);
             console.log("distance::--", miles * 1000);
             console.log("findUser::", findUser);
 
