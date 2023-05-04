@@ -122,12 +122,19 @@ exports.blogList = async (req, res) => {
         let vehicleType = req.body.vehicle_type;
         let userId = req.params.id;
 
+        let page = parseInt(req.query.page);
+        let limit = parseInt(req.query.limit);
+
+        // --- for pagination --- //
+        const startIndex = (page - 1) * limit;
+        const endIndex = limit * 1;
+
         const allBlogData = await Blog.find({
             user_id: {
                 $ne: userId
             },
             category: vehicleType
-        }).sort({ createdAt: -1 });
+        }).sort({ createdAt: -1 }).skip(startIndex).limit(endIndex);
 
         if (allBlogData.length == 0) {
 
