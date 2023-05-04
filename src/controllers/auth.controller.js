@@ -616,19 +616,19 @@ exports.userProfile = async (req, res) => {
             const postCount = await UserPost.find({ user_id: getUserData._id }).count();
             console.log('postCount::', postCount);
 
-            const countFollower = await FriendRequest.find({
+            const followingCount = await FriendRequest.find({
                 user_id: getUserData._id,
                 status: 2
             }).count();
 
-            const followerCount = countFollower
-            console.log("followerCount::", followerCount);
-
-            const followingCount = await FriendRequest.find({
+            console.log("followingCount::", followingCount);
+            
+            const countFollower = await FriendRequest.find({
                 requested_user_id: getUserData._id,
                 status: 2
             }).count();
-            console.log("followingCount::", followingCount);
+            const followerCount = countFollower
+            console.log("followerCount::", followerCount);
 
             const count = {
                 post: postCount,
