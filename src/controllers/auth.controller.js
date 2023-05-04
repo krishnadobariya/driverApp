@@ -2058,8 +2058,10 @@ exports.searchData = async (req, res) => {
     try {
 
         let userId = req.params.id;
-        var pattern = `^${req.params.name}`
-        var type = req.params.type
+        var pattern = `^${req.body.name}`
+        var type = req.body.type
+        const miles = req.body.miles
+        console.log("miles", miles);
 
         let page = parseInt(req.query.page);
         let limit = parseInt(req.query.limit);
@@ -2068,9 +2070,13 @@ exports.searchData = async (req, res) => {
         const startIndex = (page - 1) * limit;
         const endIndex = limit * 1;
 
-        const findUserData = await authModel.find({ username: { $regex: pattern, $options: 'i' } }).skip(startIndex).limit(endIndex);
+        // const findUserData = await authModel.find({ username: { $regex: pattern, $options: 'i' } }).skip(startIndex).limit(endIndex);
+        // console.log("findUserData", findUserData);
 
-        if (findUserData[0] == undefined) {
+        const findUserData = await authModel.findOne({ _id: userId })
+        console.log("findUserData", findUserData);
+
+        if (findUserData == null) {
 
             res.status(status.NOT_FOUND).json(
                 {
@@ -2083,8 +2089,39 @@ exports.searchData = async (req, res) => {
 
         } else {
 
+            let findUser = await authModel.aggregate([
+                {
+                    $geoNear: {
+                        near: {
+                            type: "Point",
+                            coordinates: [findUserData.location.coordinates[0], findUserData.location.coordinates[1]],
+                        },
+                        distanceField: "distanceFrom",
+                        maxDistance: miles * 1000,
+                        uniqueDoc: true,
+                        spherical: true,
+                    },
+                },
+                {
+                    $match: {
+                        _id: { $ne: findUserData._id },
+                        username: { $regex: pattern, $options: 'i' }
+                    }
+                },
+                {
+                    $match: {
+                        $and:
+                            [
+                                { "vehicle.vehicle_type": type }
+                            ]
+                    }
+                }
+            ]).skip(startIndex).limit(endIndex);
+            console.log("distance::--", miles * 1000);
+            console.log("findUser::", findUser);
+
             var userDataArr = []
-            for (const findVehicalData of findUserData) {
+            for (const findVehicalData of findUser) {
 
                 const findBlockUser = await Block.find({
                     user_id: userId,
@@ -2150,7 +2187,7 @@ exports.searchData = async (req, res) => {
                 }
 
             }
-            // console.log("userDataArr", userDataArr);
+            console.log("userDataArr", userDataArr);
 
             res.status(status.OK).json(
                 {
