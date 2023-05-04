@@ -903,6 +903,7 @@ exports.searchBlog = async (req, res) => {
     try {
 
         let userId = req.params.user_id;
+        const category = req.body.category
         const longitude = parseFloat(req.body.longitude);
         const latitude = parseFloat(req.body.latitude);
         const miles = parseFloat(req.body.miles);
@@ -937,7 +938,8 @@ exports.searchBlog = async (req, res) => {
                 },
                 {
                     $match: {
-                        user_id: { $ne:  ObjectId(userId)  }
+                        user_id: { $ne:  ObjectId(userId)  },
+                        category: category
                     }
                 },
             ]);
