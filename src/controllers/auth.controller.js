@@ -2060,8 +2060,7 @@ exports.searchData = async (req, res) => {
         let userId = req.params.id;
         var pattern = `^${req.body.name}`
         var type = req.body.type
-        const miles = req.body.miles
-        console.log("miles", miles);
+        const miles = parseFloat(req.body.miles);
 
         let page = parseInt(req.query.page);
         let limit = parseInt(req.query.limit);

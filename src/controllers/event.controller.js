@@ -420,12 +420,12 @@ exports.searchEvent = async (req, res) => {
     try {
 
         let userId = req.params.user_id;
-        const type = req.body.vehicleType
-        const longitude = req.body.longitude
-        const latitude = req.body.latitude
-        const miles = req.body.miles
+        const type = req.body.vehicleType;
+        const longitude = parseFloat(req.body.longitude);
+        const latitude = parseFloat(req.body.latitude);
+        const miles = parseFloat(req.body.miles);
 
-        if (type == undefined && latitude == undefined && longitude == undefined) {
+        if (type == undefined && latitude == undefined && longitude == undefined && miles == undefined) {
 
             const findAllEvent = await Event.find()
             res.status(status.OK).json(
@@ -522,9 +522,9 @@ exports.searchEvent = async (req, res) => {
                 res.status(status.NOT_FOUND).json(
                     {
                         message: "Data Not Exist",
-                        status: true,
-                        code: 200,
-                        statusCode: 1,
+                        status: false,
+                        code: 404,
+                        statusCode: 0,
                         data: []
                     }
                 )

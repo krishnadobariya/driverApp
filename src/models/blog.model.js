@@ -41,6 +41,18 @@ const blogSchema = mongoose.Schema({
         type: Number, //1-Image 2-Video
         default: 0
     },
+    location: {
+        type: Object,
+        default: {
+            type: "Point",
+            coordinates: [0.0, 0.0],
+        },
+        index: '2dsphere'
+    },
+    address: {
+        type: String,
+        required: true
+    }
 }, {
     timestamps: true
 }, {

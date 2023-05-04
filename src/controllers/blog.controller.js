@@ -10,8 +10,6 @@ const { find } = require("../models/auth.model");
 const Report = require("../models/reportBlog.model")
 const ObjectId = mongoose.Types.ObjectId
 
-///home/kurm/Nodejs/driverApp/src/controllers/blog.controller.js
-
 exports.addBlog = async (req, res) => {
     try {
 
@@ -64,9 +62,33 @@ exports.addBlog = async (req, res) => {
                 category: req.body.category,
                 heading: req.body.heading,
                 description: req.body.description,
-                media_type: req.body.type
+                media_type: req.body.type,
+                location: {
+                    type: "Point",
+                    coordinates: [
+                        parseFloat(req.body.longitude),
+                        parseFloat(req.body.latitude),
+                    ],
+                },
+                address: req.body.address,
             });
             const saveData = await blog.save();
+
+            const response = {
+                user_id: saveData.user_id,
+                username: saveData.username,
+                user_profile: saveData.user_profile[0] ? saveData.user_profile[0].res : "",
+                thumbnail: saveData.thumbnail,
+                category: saveData.category,
+                heading: saveData.heading,
+                description: saveData.description,
+                like: saveData.like,
+                comment: saveData.comment,
+                media_type: saveData.media_type,
+                longitude: saveData.location.coordinates[0],
+                latitude: saveData.location.coordinates[1],
+                address: saveData.address,
+            }
 
             res.status(status.CREATED).json(
                 {
@@ -74,7 +96,7 @@ exports.addBlog = async (req, res) => {
                     status: true,
                     code: 201,
                     statusCode: 1,
-                    data: saveData
+                    data: response
                 }
             )
 
@@ -871,6 +893,205 @@ exports.deleteBlog = async (req, res) => {
                 status: false,
                 code: 501,
                 statusCode: 0
+            }
+        )
+
+    }
+}
+
+exports.searchBlog = async (req, res) => {
+    try {
+
+        let userId = req.params.user_id;
+        const longitude = parseFloat(req.body.longitude);
+        const latitude = parseFloat(req.body.latitude);
+        const miles = parseFloat(req.body.miles);
+
+        if (latitude == undefined && longitude == undefined && miles == undefined) {
+
+            const findAllBlog = await Blog.find()
+            res.status(status.OK).json(
+                {
+                    message: "Get All Blog Detail Successfully",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: findAllBlog
+                }
+            )
+
+        } else {
+
+            let findBlogData = await Blog.aggregate([
+                {
+                    $geoNear: {
+                        near: {
+                            type: "Point",
+                            coordinates: [longitude, latitude],
+                        },
+                        distanceField: "distanceFrom",
+                        maxDistance: miles * 1000,
+                        uniqueDoc: true,
+                        spherical: true,
+                    },
+                },
+                {
+                    $match: {
+                        user_id: { $ne:  ObjectId(userId)  }
+                    }
+                },
+            ]);
+            console.log("distance::--", miles * 1000);
+            // console.log("findBlogData::", findBlogData);
+
+            if (findBlogData[0] == undefined) {
+
+                res.status(status.NOT_FOUND).json(
+                    {
+                        message: "Data Not Exist",
+                        status: false,
+                        code: 404,
+                        statusCode: 0,
+                        data: []
+                    }
+                )
+
+            } else {
+
+                let blogInsertTime = [];
+                for (const getTime of findBlogData) {
+
+                    const allReportBlog = await Report.find({
+                        user_id: userId,
+                        blog_id: getTime._id
+                    });
+
+                    var report;
+                    if (allReportBlog.length == 0) {
+                        report = false;
+                    } else {
+                        report = true;
+                    }
+
+                    var now = new Date();
+                    var addingDate = new Date(getTime.createdAt);
+                    var sec_num = (now - addingDate) / 1000;
+                    var days = Math.floor(sec_num / (3600 * 24));
+                    var hours = Math.floor((sec_num - (days * (3600 * 24))) / 3600);
+                    var minutes = Math.floor((sec_num - (days * (3600 * 24)) - (hours * 3600)) / 60);
+                    var seconds = Math.floor(sec_num - (days * (3600 * 24)) - (hours * 3600) - (minutes * 60));
+
+                    if (hours < 10) { hours = "0" + hours; }
+                    if (minutes < 10) { minutes = "0" + minutes; }
+                    if (seconds < 10) { seconds = "0" + seconds; }
+
+                    var findUserInLikeModel = await likeModel.findOne({
+                        blogId: getTime._id,
+                        "reqAuthId._id": userId
+                    })
+
+                    var time;
+                    if (days > 28) {
+
+                        time = new Date(addingDate).toDateString()
+
+                    } else if (days > 21 && days < 28) {
+
+                        time = "3 Week Ago"
+
+                    } else if (days > 14 && days < 21) {
+
+                        time = "2 Week Ago"
+
+                    } else if (days > 7 && days < 14) {
+
+                        time = "1 Week Ago"
+
+                    } else if (days > 0 && days < 7) {
+
+                        time = days == 1 ? `${days} day ago` : `${days} days ago`
+
+                    } else if (hours > 0 && days == 0) {
+
+                        time = hours == 1 ? `${hours} hour ago` : `${hours} hours ago`
+
+                    } else if (minutes > 0 && hours == 0) {
+
+                        time = minutes == 1 ? `${minutes} minute ago` : `${minutes} minutes ago`
+
+                    } else if (seconds > 0 && minutes == 0 && hours == 0 && days === 0) {
+
+                        time = seconds == 1 ? `${seconds} second ago` : `${seconds} seconds ago`
+
+                    } else if (seconds == 0 && minutes == 0 && hours == 0 && days === 0) {
+
+                        time = `Just Now`
+
+                    }
+
+                    if (findUserInLikeModel) {
+                        const response = {
+                            _id: getTime._id,
+                            userId: getTime.user_id,
+                            username: getTime.username,
+                            user_profile: getTime.user_profile,
+                            thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
+                            category: getTime.category,
+                            heading: getTime.heading,
+                            description: getTime.description,
+                            like: getTime.like,
+                            comment: getTime.comment,
+                            isLike: true,
+                            time: time,
+                            report: report,
+                            mediaType: getTime.media_type
+                        }
+                        blogInsertTime.push(response);
+                    } else {
+                        const response = {
+                            _id: getTime._id,
+                            userId: getTime.user_id,
+                            username: getTime.username,
+                            user_profile: getTime.user_profile,
+                            thumbnail: getTime.thumbnail[0] ? getTime.thumbnail[0].res : "",
+                            category: getTime.category,
+                            heading: getTime.heading,
+                            description: getTime.description,
+                            like: getTime.like,
+                            comment: getTime.comment,
+                            isLike: false,
+                            time: time,
+                            report: report,
+                            mediaType: getTime.media_type
+                        }
+                        blogInsertTime.push(response);
+                    }
+
+                }
+                // console.log("blogInsertTime", blogInsertTime);
+
+                res.status(status.OK).json({
+                    message: "View All List Successfully",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: blogInsertTime
+                })
+
+            }
+
+        }
+
+    } catch (error) {
+
+        console.log("searchBlog--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
             }
         )
 
