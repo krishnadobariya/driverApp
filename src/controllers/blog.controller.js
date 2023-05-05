@@ -235,7 +235,8 @@ exports.blogList = async (req, res) => {
                         isLike: true,
                         time: time,
                         report: report,
-                        mediaType: getTime.media_type
+                        mediaType: getTime.media_type,
+                        address: getTime.address
                     }
                     blogInsertTime.push(response);
                 } else {
@@ -253,7 +254,8 @@ exports.blogList = async (req, res) => {
                         isLike: false,
                         time: time,
                         report: report,
-                        mediaType: getTime.media_type
+                        mediaType: getTime.media_type,
+                        address: getTime.address
                     }
                     blogInsertTime.push(response);
                 }
@@ -922,7 +924,7 @@ exports.searchBlog = async (req, res) => {
         const startIndex = (page - 1) * limit;
         const endIndex = limit * 1;
 
-        if (latitude == undefined && longitude == undefined && miles == undefined) {
+        if (category == undefined &&latitude == undefined && longitude == undefined && miles == undefined) {
 
             const findAllBlog = await Blog.find().sort({ createdAt: -1 }).skip(startIndex).limit(endIndex);
             res.status(status.OK).json(

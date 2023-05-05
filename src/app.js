@@ -39,9 +39,9 @@ const { userStatus } = require("./controllers/cronJob.controller");
 cron.schedule('*/1 * * * * *', async () => {
     userStatus()
 });
-// const { userStatusWithNoti } = require("./webSocket/socket");
+// const io = require('socket.io')(server);
 // cron.schedule('*/1 * * * * *', async () => {
-//     userStatusWithNoti()
+//     io.emit('userStatusWithNoti', 'This is a message from the server!');
 // });
 // ---------- End For cron that starts continuously ---------- //
 
