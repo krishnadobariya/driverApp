@@ -825,7 +825,8 @@ exports.myBlog = async (req, res) => {
                         comment: respSet.comment,
                         isLike: true,
                         time: time,
-                        mediaType: respSet.media_type
+                        mediaType: respSet.media_type,
+                        address: respSet.address
                     }
                     blogInsertTime.push(response);
                 } else {
@@ -842,7 +843,8 @@ exports.myBlog = async (req, res) => {
                         comment: respSet.comment,
                         isLike: false,
                         time: time,
-                        mediaType: respSet.media_type
+                        mediaType: respSet.media_type,
+                        address: respSet.address
                     }
                     blogInsertTime.push(response);
                 }
@@ -1062,7 +1064,8 @@ exports.searchBlog = async (req, res) => {
                             isLike: true,
                             time: time,
                             report: report,
-                            mediaType: getTime.media_type
+                            mediaType: getTime.media_type,
+                            address: getTime.address
                         }
                         blogInsertTime.push(response);
                     } else {
@@ -1080,7 +1083,8 @@ exports.searchBlog = async (req, res) => {
                             isLike: false,
                             time: time,
                             report: report,
-                            mediaType: getTime.media_type
+                            mediaType: getTime.media_type,
+                            address: getTime.address
                         }
                         blogInsertTime.push(response);
                     }

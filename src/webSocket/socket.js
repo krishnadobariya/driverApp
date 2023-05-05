@@ -1618,8 +1618,13 @@ function socket(io) {
 
         })
 
+
     })
 
 }
 
 module.exports = socket
+
+// module.updateStatusNot = async (req,res) => {
+//     console.log("Jay Shree Krishna....");
+// }
