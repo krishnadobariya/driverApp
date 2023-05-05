@@ -36,19 +36,9 @@ app.use('/activity', activityRouter);
 
 // ---------- For cron that starts continuously ---------- //
 const { userStatus } = require("./controllers/cronJob.controller");
-const { updateStatusNot } = require("./webSocket/socket")
-// cron.schedule('*/1 * * * * *', async () => {
-//     userStatus()
-// });
-
 cron.schedule('*/1 * * * * *', async () => {
-    updateStatusNot()
+    userStatus()
 });
-
-// const io = require('socket.io')(server);
-// cron.schedule('*/1 * * * * *', async () => {
-//     io.emit('userStatusWithNoti', 'This is a message from the server!');
-// });
 // ---------- End For cron that starts continuously ---------- //
 
 module.exports = app;

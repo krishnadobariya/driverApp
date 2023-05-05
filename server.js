@@ -15,9 +15,3 @@ server.listen(port, () => {
 
 const io = new Server(server);
 require("./src/webSocket/socket")(io);
-
-// ---------- For cron that starts continuously ---------- //
-cron.schedule('*/1 * * * * *', async () => {
-    // io.emit('userStatusWithNoti', 'This is a message from the server!');
-});
-// ---------- End For cron that starts continuously ---------- //

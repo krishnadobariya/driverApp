@@ -1406,40 +1406,40 @@ function socket(io) {
         });
 
         // ----- userStatus ----- //
-        socket.on("userStatusWithNoti", async (arg) => {
+        // socket.on("userStatusWithNoti", async (arg) => {
 
-            const presentTime = new Date().toISOString().slice(0, 19);
-            const getUser = await authModel.find({ end_time: presentTime });
-            console.log("presentTime", presentTime);
+        //     const presentTime = new Date().toISOString().slice(0, 19);
+        //     const getUser = await authModel.find({ end_time: presentTime });
+        //     console.log("presentTime", presentTime);
 
-            const getNoti = await authModel.find({ notification_time: presentTime });
-            // console.log("notification_time", getNoti[0].notification_time);
+        //     const getNoti = await authModel.find({ notification_time: presentTime });
+        //     // console.log("notification_time", getNoti[0].notification_time);
 
-            console.log("getNoti", getNoti);
+        //     console.log("getNoti", getNoti);
 
-            for (const respData of getNoti) {
-                console.log("respData", respData);
-                const userRoom = `User${respData._id}`;
-                io.to(userRoom).emit("notificationGet", "notificationGet");
-            }
+        //     for (const respData of getNoti) {
+        //         console.log("respData", respData);
+        //         const userRoom = `User${respData._id}`;
+        //         io.to(userRoom).emit("notificationGet", "notificationGet");
+        //     }
 
-            for (const respData of getUser) {
-                console.log("respData", respData);
+        //     for (const respData of getUser) {
+        //         console.log("respData", respData);
 
-                const updateStatus = await authModel.findByIdAndUpdate(
-                    {
-                        _id: respData._id
-                    },
-                    {
-                        $set: {
-                            status: 'Offline'
-                        }
-                    }
-                );
+        //         const updateStatus = await authModel.findByIdAndUpdate(
+        //             {
+        //                 _id: respData._id
+        //             },
+        //             {
+        //                 $set: {
+        //                     status: 'Offline'
+        //                 }
+        //             }
+        //         );
 
-            }
+        //     }
 
-        })
+        // })
         // ----- userStatus ----- //
 
         // ----- friendRequest ----- //
@@ -1624,7 +1624,3 @@ function socket(io) {
 }
 
 module.exports = socket
-
-// module.updateStatusNot = async (req,res) => {
-//     console.log("Jay Shree Krishna....");
-// }

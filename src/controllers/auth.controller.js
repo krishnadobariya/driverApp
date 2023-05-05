@@ -60,7 +60,6 @@ exports.registration = async (req, res) => {
 
         const getData = await authModel.find({ email: email });
 
-
         if (getData.length == 0) {
 
             // --- User's Basic Details Inserting Here --- //
@@ -371,7 +370,9 @@ exports.userList = async (req, res) => {
                                 year: vehicleData.year,
                                 trim: vehicleData.trim,
                                 dailyDriving: vehicleData.daily_driving,
-                                unit: vehicleData.unit
+                                unit: vehicleData.unit,
+                                duration: vehicleData.duration,
+                                distance: vehicleData.distance
                             }
                             arrVehicleData.push(response);
                         }
@@ -622,7 +623,7 @@ exports.userProfile = async (req, res) => {
             }).count();
 
             console.log("followingCount::", followingCount);
-            
+
             const countFollower = await FriendRequest.find({
                 requested_user_id: getUserData._id,
                 status: 2
@@ -2304,7 +2305,9 @@ exports.searchByVehical = async (req, res) => {
                                     year: getVehical.year,
                                     trim: getVehical.trim,
                                     dailyDriving: getVehical.daily_driving,
-                                    unit: getVehical.unit
+                                    unit: getVehical.unit,
+                                    duration: getVehical.duration,
+                                    distance: getVehical.distance
                                 }
                                 vehicleDataArr.push(response)
                             }

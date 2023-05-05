@@ -67,10 +67,39 @@ const authSchema = mongoose.Schema({
         type: String,
         required: true
     },
-    vehicle: {
-        type: Array,
-        required: true
-    }
+    vehicle: [
+        {
+            vehicle_img_id: {
+                type: String
+            },
+            vehicle_type: {
+                type: String
+            },
+            model: {
+                type: String
+            },
+            trim: {
+                type: String
+            },
+            year: {
+                type: String
+            },
+            daily_driving: {
+                type: String
+            },
+            unit: {
+                type: String
+            },
+            duration: {
+                type: String,
+                default: '0'
+            },
+            distance: {
+                type: String,
+                default: '0'
+            }
+        }
+    ]
 }, {
     timestamps: true
 }, {
