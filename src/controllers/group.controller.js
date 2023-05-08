@@ -1000,7 +1000,7 @@ exports.notificationList = async (req, res) => {
         const endIndex = page * limit;
         const getData = await Notification.find({ user_id: req.params.userId }).skip(startIndex).limit(endIndex).sort({ createdAt: -1 });
         console.log("getData:::----", getData);
-
+        
         const respList = [];
         for (const respData of getData) {
 

@@ -13,53 +13,54 @@ const GroupMemberList = require("../models/groupMemberList.model");
 const FriendRequest = require("../models/frdReq.model");
 const Notification = require("../helper/firebaseHelper");
 
-
-var userStatusWithNoti = async (async, arg, io) => {
-    // socket.on("userStatusWithNoti", async (arg) => {
-
-    const presentTime = new Date().toISOString().slice(0, 19);
-    const getUser = await authModel.find({ end_time: presentTime });
-    console.log("getuser", getUser);
-    console.log("presentTime", presentTime);
-
-
-    const getNoti = await authModel.find({ notification_time: presentTime });
-    // console.log("notification_time", getNoti[0].notification_time);
-
-    console.log("getNoti", getNoti);
-
-    for (const respData of getNoti) {
-        console.log("respData", respData);
-        const userRoom = `User${respData._id}`;
-        io.to(userRoom).emit("notificationGet", "notificationGet");
-    }
-
-    for (const respData of getUser) {
-        console.log("respData", respData);
-
-        const updateStatus = await authModel.findByIdAndUpdate(
-            {
-                _id: respData._id
-            },
-            {
-                $set: {
-                    status: 'Offline'
-                }
-            }
-        );
-
-    }
-
-    // })
-}
-
-
 function socket(io) {
+    
     console.log("SETUP :- Socket Loading....");
 
     // ----- userStatusWithNoti ----- //
     cron.schedule('*/1 * * * * *', async () => {
-        userStatusWithNoti()
+        const presentTime = new Date().toISOString().slice(0, 19);
+        const getUser = await authModel.find({ notification_time: presentTime });
+        console.log("getuser", getUser);
+
+        for (const respData of getUser) {
+
+            const updateStatus = await authModel.findByIdAndUpdate(
+                {
+                    _id: respData._id
+                },
+                {
+                    $set: {
+                        status: 'Offline'
+                    }
+                }
+            );
+
+            const respnse = {
+                title: "You will be offline soon!",
+                message: "In 5 minutes, You will be offline on map"
+            }
+
+            const userRoom = `User${respData._id}`;
+            io.to(userRoom).emit("mapOnlineNotification", respnse);
+
+            const title = "You will be offline soon!";
+            const body = "In 5 minutes, You will be offline on map";
+            const text = arg.message;
+            const sendBy = arg.sender_id;
+            const registrationToken = findUserForNotiy.fcm_token
+            if (registrationToken != null) {
+                Notification.sendPushNotificationFCM(
+                    registrationToken,
+                    title,
+                    body,
+                    text,
+                    sendBy,
+                    true
+                );
+            }
+
+        }
     });
     // ----- userStatusWithNoti ----- //
 

@@ -39,7 +39,7 @@
 
 - Socket : acceptInvite
 {
-    "group_id": "640acfc921839985e4d6d23e",
+    "group_id": "640acfc921839985e4d6d23e", 
     "user_id": "6409267cba8f793e28c86183",
     "action": "1" (1-Accept, 2-Reject)
 }
