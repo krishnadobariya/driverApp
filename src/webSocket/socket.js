@@ -13,8 +13,55 @@ const GroupMemberList = require("../models/groupMemberList.model");
 const FriendRequest = require("../models/frdReq.model");
 const Notification = require("../helper/firebaseHelper");
 
+
+var userStatusWithNoti = async (async, arg, io) => {
+    // socket.on("userStatusWithNoti", async (arg) => {
+
+    const presentTime = new Date().toISOString().slice(0, 19);
+    const getUser = await authModel.find({ end_time: presentTime });
+    console.log("getuser", getUser);
+    console.log("presentTime", presentTime);
+
+
+    const getNoti = await authModel.find({ notification_time: presentTime });
+    // console.log("notification_time", getNoti[0].notification_time);
+
+    console.log("getNoti", getNoti);
+
+    for (const respData of getNoti) {
+        console.log("respData", respData);
+        const userRoom = `User${respData._id}`;
+        io.to(userRoom).emit("notificationGet", "notificationGet");
+    }
+
+    for (const respData of getUser) {
+        console.log("respData", respData);
+
+        const updateStatus = await authModel.findByIdAndUpdate(
+            {
+                _id: respData._id
+            },
+            {
+                $set: {
+                    status: 'Offline'
+                }
+            }
+        );
+
+    }
+
+    // })
+}
+
+
 function socket(io) {
     console.log("SETUP :- Socket Loading....");
+
+    // ----- userStatusWithNoti ----- //
+    cron.schedule('*/1 * * * * *', async () => {
+        userStatusWithNoti()
+    });
+    // ----- userStatusWithNoti ----- //
 
     io.on("connection", (socket) => {
         console.log("SETUP :- Socket Connected");
@@ -409,7 +456,7 @@ function socket(io) {
         // ----- readUnread ----- //
         /*
         socket.on("readUnread", async (arg) => {
-
+ 
             const userRoom = `User${arg.receiver_id}`
             console.log("arg::", arg);
             const findChatRoom = await chatModel.findOne(
@@ -420,16 +467,16 @@ function socket(io) {
                 }
             );
             console.log("findChatRoom::", findChatRoom);
-
+ 
             if (findChatRoom == null) {
-
+ 
                 io.to(userRoom).emit("readChat", "ChatRoom Not Found")
-
+ 
             } else {
                 console.log("enter1");
                 for (const getSenderChat of findChatRoom.chat) {
                     console.log("");
-
+ 
                     const updateReadValue = await chatModel.updateOne(
                         {
                             chatRoomId: arg.chat_room_id,
@@ -453,14 +500,14 @@ function socket(io) {
                             ]
                         }
                     );
-
+ 
                 }
-
+ 
                 io.to(userRoom).emit("readChat", "Chat Has Been Read")
-
+ 
             }
-
-
+ 
+ 
         })
         */
 
@@ -595,20 +642,20 @@ function socket(io) {
         // ----- userStatus ----- //
         /*
         socket.on("userStatus", async (arg) => {
-
+ 
             let userId = arg.user_id;
-
+ 
             const findUserData = await authModel.findOne({
                 _id: userId
             });
             console.log("findUserData::", findUserData);
-
+ 
             if (findUserData.status == 'Active') {
                 io.emit("getStatus", 1)
             } else {
                 io.emit("getStatus", 0)
             }
-
+ 
         })
         */
 
@@ -939,7 +986,7 @@ function socket(io) {
                     group_id: groupId,
                     user_id: userId
                 });
-
+ 
                 const response = {
                     message: "Invite Reject",
                     status: 1,
@@ -1405,42 +1452,6 @@ function socket(io) {
 
         });
 
-        // ----- userStatus ----- //
-        // socket.on("userStatusWithNoti", async (arg) => {
-
-        //     const presentTime = new Date().toISOString().slice(0, 19);
-        //     const getUser = await authModel.find({ end_time: presentTime });
-        //     console.log("presentTime", presentTime);
-
-        //     const getNoti = await authModel.find({ notification_time: presentTime });
-        //     // console.log("notification_time", getNoti[0].notification_time);
-
-        //     console.log("getNoti", getNoti);
-
-        //     for (const respData of getNoti) {
-        //         console.log("respData", respData);
-        //         const userRoom = `User${respData._id}`;
-        //         io.to(userRoom).emit("notificationGet", "notificationGet");
-        //     }
-
-        //     for (const respData of getUser) {
-        //         console.log("respData", respData);
-
-        //         const updateStatus = await authModel.findByIdAndUpdate(
-        //             {
-        //                 _id: respData._id
-        //             },
-        //             {
-        //                 $set: {
-        //                     status: 'Offline'
-        //                 }
-        //             }
-        //         );
-
-        //     }
-
-        // })
-        // ----- userStatus ----- //
 
         // ----- friendRequest ----- //
         socket.on("friendRequest", async (arg) => {
@@ -1471,7 +1482,7 @@ function socket(io) {
                     const insertNotifi = NotificationModel({
                         user_id: reqUserId,
                         req_user_id: userId,
-                        notification_msg: `${findRequestUser.username} requested to follow you.`,
+                        notification_msg: `${findUserData.username} requested to follow you.`,
                         notification_img: findUserData.profile[0] ? findUserData.profile[0].res : "",
                         user_name: findUserData.username,
                         notification_type: 5
@@ -1480,7 +1491,7 @@ function socket(io) {
 
                     const respnse = {
                         title: "Follow Request",
-                        message: `${findRequestUser.username} requested to follow you.`,
+                        message: `${findUserData.username} requested to follow you.`,
                         userId: userId,
                         reqUserId: reqUserId,
                         userName: findUserData.username,
@@ -1490,7 +1501,7 @@ function socket(io) {
                     io.to(userRoom).emit("followRequest", respnse)
 
                     const title = "Follow Request";
-                    const body = `${findRequestUser.username} requested to follow you.`;
+                    const body = `${findUserData.username} requested to follow you.`;
                     const text = 'User Requested';
                     const sendBy = reqUserId;
                     const registrationToken = findRequestUser.fcm_token;

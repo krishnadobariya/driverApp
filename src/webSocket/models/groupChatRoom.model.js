@@ -6,7 +6,7 @@ const groupChatRoomSchema = mongoose.Schema({
         type: objectId,
         required: true
     },
-    groupName: {    
+    groupName: {
         type: String,
         required: true
     },
@@ -17,9 +17,9 @@ const groupChatRoomSchema = mongoose.Schema({
             }
         }
     ]
-},{
+}, {
     timestamps: true
-},{
+}, {
     collection: 'groupChatRoom'
 });
 

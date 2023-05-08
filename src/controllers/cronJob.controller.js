@@ -7,7 +7,7 @@ exports.userStatus = async (req, res) => {
         const presentTime = new Date().toISOString().slice(0, 19);
         const getUser = await User.find({ end_time: presentTime });
         // console.log("presentTime", presentTime);
-        
+
         // const getNoti = await User.find({ notification_time: presentTime });
         // console.log("notification_time", getNoti[0].notification_time);
 
@@ -20,7 +20,7 @@ exports.userStatus = async (req, res) => {
 
         for (const respData of getUser) {
             console.log("respData", respData);
-            
+
             const updateStatus = await User.findByIdAndUpdate(
                 {
                     _id: respData._id

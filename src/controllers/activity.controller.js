@@ -113,4 +113,4 @@ exports.insert = async (req, res) => {
             }
         )
     }
-}
+}   

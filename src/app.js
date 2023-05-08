@@ -35,10 +35,10 @@ app.use('/activity', activityRouter);
 
 
 // ---------- For cron that starts continuously ---------- //
-const { userStatus } = require("./controllers/cronJob.controller");
-cron.schedule('*/1 * * * * *', async () => {
-    userStatus()
-});
+// const { userStatus } = require("./controllers/cronJob.controller");
+// cron.schedule('*/1 * * * * *', async () => {
+//     userStatus()
+// });
 // ---------- End For cron that starts continuously ---------- //
 
 module.exports = app;
