@@ -92,7 +92,7 @@ const authSchema = mongoose.Schema({
             },
             duration: {
                 type: String,
-                default: '0'
+                default: '00:00:00'
             },
             distance: {
                 type: String,

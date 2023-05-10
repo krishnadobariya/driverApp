@@ -14,14 +14,14 @@ const FriendRequest = require("../models/frdReq.model");
 const Notification = require("../helper/firebaseHelper");
 
 function socket(io) {
-    
+
     console.log("SETUP :- Socket Loading....");
 
     // ----- userStatusWithNoti ----- //
     cron.schedule('*/1 * * * * *', async () => {
         const presentTime = new Date().toISOString().slice(0, 19);
         const getUser = await authModel.find({ notification_time: presentTime });
-        console.log("getuser", getUser);
+        // console.log("getuser", getUser);
 
         for (const respData of getUser) {
 
@@ -1568,12 +1568,31 @@ function socket(io) {
                     }
                 );
 
+                console.log("updateStatus", updateStatus);
+
+                // const findData = await NotificationModel.find({
+                //     user_id: reqUserId,
+                //     req_user_id: userId,
+                // })
+                // console.log("findData", findData);
+
+
                 const updateNotification = await NotificationModel.deleteOne(
                     {
                         user_id: reqUserId,
                         req_user_id: userId,
                     }
                 );
+
+                console.log("updateNotification", updateNotification);
+
+
+                // const findData1 = await NotificationModel.find({
+                //     user_id: reqUserId,
+                //     req_user_id: userId,
+                // })
+                // console.log("findData1", findData1);
+
 
                 const getReqUserData = await authModel.findOne({ _id: reqUserId });
                 const insertNotifi = NotificationModel({
@@ -1585,6 +1604,7 @@ function socket(io) {
                     notification_type: 6
                 });
                 const saveData = await insertNotifi.save();
+                console.log("saveData", saveData);
 
                 const respnse = {
                     title: "Follow Request Accepted",
@@ -1618,7 +1638,7 @@ function socket(io) {
                         req_user_id: userId,
                     }
                 );
-                // console.log("deleteNotification", deleteNotification);
+                console.log("deleteNotification", deleteNotification);
 
                 const deleteFriendRequest = await FriendRequest.deleteOne(
                     {
@@ -1626,6 +1646,7 @@ function socket(io) {
                         requested_user_id: reqUserId
                     }
                 );
+                console.log("deleteFriendRequest", deleteFriendRequest);
             }
 
         })
