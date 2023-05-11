@@ -1581,6 +1581,7 @@ function socket(io) {
                     {
                         user_id: reqUserId,
                         req_user_id: userId,
+                        notification_type: 5
                     }
                 );
 
