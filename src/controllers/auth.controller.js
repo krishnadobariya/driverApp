@@ -2060,8 +2060,7 @@ exports.searchData = async (req, res) => {
 
         let userId = req.params.id;
         var pattern = `^${req.body.name}`
-        var type = req.body.type
-        const miles = parseFloat(req.body.miles);
+        var type = req.body.type;
 
         let page = parseInt(req.query.page);
         let limit = parseInt(req.query.limit);
@@ -2091,18 +2090,6 @@ exports.searchData = async (req, res) => {
 
             let findUser = await authModel.aggregate([
                 {
-                    $geoNear: {
-                        near: {
-                            type: "Point",
-                            coordinates: [findUserData.location.coordinates[0], findUserData.location.coordinates[1]],
-                        },
-                        distanceField: "distanceFrom",
-                        maxDistance: miles * 1000,
-                        uniqueDoc: true,
-                        spherical: true,
-                    },
-                },
-                {
                     $match: {
                         _id: { $ne: findUserData._id },
                         username: { $regex: pattern, $options: 'i' }
@@ -2117,7 +2104,6 @@ exports.searchData = async (req, res) => {
                     }
                 }
             ]).sort({ createdAt: -1 }).skip(startIndex).limit(endIndex);
-            console.log("distance::--", miles * 1000);
             console.log("findUser::", findUser);
 
             var userDataArr = []
@@ -2356,6 +2342,103 @@ exports.searchByVehical = async (req, res) => {
     } catch (error) {
 
         console.log("searchByVehical--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
+
+exports.topTenUser = async (req, res) => {
+    try {
+
+        let userId = req.params.id;
+        const blockUserId = [];
+        const getUser = await authModel.find({}).limit(10).sort({ createdAt: -1 });
+        console.log("getUser", getUser);
+
+        if (getUser.length == 0) {
+
+            res.status(status.NOT_FOUND).json(
+                {
+                    message: "Data Not Exist",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: []
+                }
+            )
+
+        } else {
+
+            const responseArr = [];
+            for (const userDetails of getUser) {
+
+                const findBlockUser = await Block.find({
+                    user_id: userId,
+                    block_user_id: userDetails._id
+                });
+
+                if (findBlockUser.length != 0) {
+
+                } else {
+
+                    var finalChatId = "";
+                    finalChatId = await chatRoomModel.find(
+                        {
+                            user1: userDetails._id,
+                            user2: userId,
+                        }
+                    );
+
+                    if (finalChatId.length == 0) {
+                        finalChatId = await chatRoomModel.find(
+                            {
+                                user2: userDetails._id,
+                                user1: userId,
+                            }
+                        );
+
+                    }
+
+                    console.log("finalChatId::::", finalChatId);
+
+                    const response = {
+                        user_id: userDetails._id,
+                        profile: userDetails.profile[0] ? userDetails.profile[0].res : "",
+                        userName: userDetails.username,
+                        email: userDetails.email,
+                        phone: `${userDetails.country_code}${userDetails.phone_number}`,
+                        chatRoomId: finalChatId[0] ? finalChatId[0]._id : "",
+                        vehicles: userDetails.vehicle
+                    }
+                    responseArr.push(response)
+
+                }
+                
+            }
+            
+            res.status(status.OK).json(
+                {
+                    message: "Get User Detail Successfully",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: responseArr
+                }
+            )
+
+        }
+
+    } catch (error) {
+
+        console.log("topTenUser--Error::", error);
         res.status(status.INTERNAL_SERVER_ERROR).json(
             {
                 message: "Something Went Wrong",

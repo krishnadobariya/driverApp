@@ -22,7 +22,8 @@ const {
     removeFollowing,
     removeFollower,
     searchData,
-    searchByVehical
+    searchByVehical,
+    topTenUser
 } = require("../controllers/auth.controller");
 
 const {
@@ -52,6 +53,7 @@ router.delete("/remove-following/:userId/:removeUserId", removeFollowing)
 router.delete("/remove-follower/:userId/:removeUserId", removeFollower);
 router.get("/search/:id", searchData)
 router.get("/search-by-vehical/:userId", searchByVehical)
+router.get("/ten-user/:id", topTenUser)
 
 
 /* ----- For Block Unblock Controller ----- */

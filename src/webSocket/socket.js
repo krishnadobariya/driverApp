@@ -1493,6 +1493,7 @@ function socket(io) {
                     const respnse = {
                         title: "Follow Request",
                         message: `${findUserData.username} requested to follow you.`,
+                        
                         userId: userId,
                         reqUserId: reqUserId,
                         userName: findUserData.username,

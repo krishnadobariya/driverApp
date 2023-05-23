@@ -85,8 +85,8 @@ exports.addBlog = async (req, res) => {
                 like: saveData.like,
                 comment: saveData.comment,
                 media_type: saveData.media_type,
-                longitude: saveData.location.coordinates[0],
-                latitude: saveData.location.coordinates[1],
+                // longitude: saveData.location.coordinates[0],
+                // latitude: saveData.location.coordinates[1],
                 address: saveData.address,
             }
 
@@ -236,7 +236,7 @@ exports.blogList = async (req, res) => {
                         time: time,
                         report: report,
                         mediaType: getTime.media_type,
-                        address: getTime.address
+                        // address: getTime.address
                     }
                     blogInsertTime.push(response);
                 } else {
@@ -255,7 +255,7 @@ exports.blogList = async (req, res) => {
                         time: time,
                         report: report,
                         mediaType: getTime.media_type,
-                        address: getTime.address
+                        // address: getTime.address
                     }
                     blogInsertTime.push(response);
                 }
@@ -826,7 +826,7 @@ exports.myBlog = async (req, res) => {
                         isLike: true,
                         time: time,
                         mediaType: respSet.media_type,
-                        address: respSet.address
+                        // address: respSet.address
                     }
                     blogInsertTime.push(response);
                 } else {
@@ -844,7 +844,7 @@ exports.myBlog = async (req, res) => {
                         isLike: false,
                         time: time,
                         mediaType: respSet.media_type,
-                        address: respSet.address
+                        // address: respSet.address
                     }
                     blogInsertTime.push(response);
                 }

@@ -48,7 +48,8 @@ exports.insert = async (req, res) => {
                 date: req.body.date,
                 time: req.body.time,
                 vehicle_id: req.body.vehicle_id,
-                map_image: newPath.res
+                map_image: newPath.res,
+                model: req.body.model
             });
             const saveData = await insertActivity.save();
 

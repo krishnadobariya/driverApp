@@ -39,6 +39,10 @@ const activity_schema = mongoose.Schema({
     map_image: {
         type: String,
         required: true
+    },
+    model: {
+        type: String,
+        required: true
     }
 }, {
     timestamps: true
