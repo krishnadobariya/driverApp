@@ -62,15 +62,7 @@ exports.addBlog = async (req, res) => {
                 category: req.body.category,
                 heading: req.body.heading,
                 description: req.body.description,
-                media_type: req.body.type,
-                location: {
-                    type: "Point",
-                    coordinates: [
-                        parseFloat(req.body.longitude),
-                        parseFloat(req.body.latitude),
-                    ],
-                },
-                address: req.body.address,
+                media_type: req.body.type
             });
             const saveData = await blog.save();
 
@@ -84,10 +76,7 @@ exports.addBlog = async (req, res) => {
                 description: saveData.description,
                 like: saveData.like,
                 comment: saveData.comment,
-                media_type: saveData.media_type,
-                // longitude: saveData.location.coordinates[0],
-                // latitude: saveData.location.coordinates[1],
-                // address: saveData.address,
+                media_type: saveData.media_type
             }
 
             res.status(status.CREATED).json(

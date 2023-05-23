@@ -50,8 +50,7 @@ const blogSchema = mongoose.Schema({
         index: '2dsphere'
     },
     address: {
-        type: String,
-        required: true
+        type: String
     }
 }, {
     timestamps: true
