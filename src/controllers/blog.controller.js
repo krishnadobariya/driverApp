@@ -87,7 +87,7 @@ exports.addBlog = async (req, res) => {
                 media_type: saveData.media_type,
                 // longitude: saveData.location.coordinates[0],
                 // latitude: saveData.location.coordinates[1],
-                address: saveData.address,
+                // address: saveData.address,
             }
 
             res.status(status.CREATED).json(

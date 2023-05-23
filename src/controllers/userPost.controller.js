@@ -12,7 +12,7 @@ exports.addUserPost = async (req, res) => {
         let userId = req.params.userId;
 
         /* Image Uploading */
-        const cloudinaryImageUploadMethod = async file => {
+        /* const cloudinaryImageUploadMethod = async file => {
             return new Promise(resolve => {
                 cloudinary.uploader.upload(file, { resource_type: "auto" }, (err, res) => {
                     if (err) return err
@@ -32,7 +32,56 @@ exports.addUserPost = async (req, res) => {
             const newPath = await cloudinaryImageUploadMethod(path);
             console.log("newPath::---------", newPath);
             urls.push(newPath);
-        }
+        } */
+
+        /* const cloudinaryImageUploadMethod = file => {
+            return new Promise((resolve, reject) => {
+              cloudinary.uploader.upload(file, { resource_type: "auto" }, (err, res) => {
+                if (err) {
+                  reject(err);
+                } else {
+                  resolve(res.secure_url);
+                }
+              });
+            });
+          };
+          
+          const files = req.files;
+          
+          const uploadPromises = files.map(file => {
+            console.log("file::", file);
+            const { path } = file;
+            return cloudinaryImageUploadMethod(path);
+          });
+
+          const uploadedUrls = await Promise.all(uploadPromises); */
+
+          const cloudinaryImageUploadMethod = async (file) => {
+            return new Promise((resolve, reject) => {
+              cloudinary.uploader.upload(
+                file,
+                { resource_type: "auto" },
+                (err, res) => {
+                  if (err) reject(err);
+                  resolve({
+                    res: res.secure_url,
+                  });
+                }
+              );
+            });
+          };
+          
+          const urls = [];
+          const files = req.files;
+          
+          await Promise.all(
+            files.map(async (file) => {
+              const { path } = file;
+              const newPath = await cloudinaryImageUploadMethod(path);
+              urls.push(newPath);
+            })
+          );
+
         /* End Image Uploading */
 
         const getUser = await User.findOne({ _id: userId });
