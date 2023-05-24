@@ -29,7 +29,7 @@ exports.addBlog = async (req, res) => {
                 );
             });
         }; 
-        
+
         const urls = [];
         const files = req.files;
         
@@ -178,15 +178,15 @@ exports.blogList = async (req, res) => {
 
                     time = new Date(addingDate).toDateString()
 
-                } else if (days > 21 && days < 28) {
+                } else if (days >= 21 && days < 28) {
 
                     time = "3 Week Ago"
 
-                } else if (days > 14 && days < 21) {
+                } else if (days >= 14 && days < 21) {
 
                     time = "2 Week Ago"
 
-                } else if (days > 7 && days < 14) {
+                } else if (days >= 7 && days < 14) {
 
                     time = "1 Week Ago"
 
@@ -769,15 +769,15 @@ exports.myBlog = async (req, res) => {
 
                     time = new Date(addingDate).toDateString()
 
-                } else if (days > 21 && days < 28) {
+                } else if (days >= 21 && days < 28) {
 
                     time = "3 Week Ago"
 
-                } else if (days > 14 && days < 21) {
+                } else if (days >= 14 && days < 21) {
 
                     time = "2 Week Ago"
 
-                } else if (days > 7 && days < 14) {
+                } else if (days >= 7 && days < 14) {
 
                     time = "1 Week Ago"
 
@@ -1007,15 +1007,15 @@ exports.searchBlog = async (req, res) => {
 
                         time = new Date(addingDate).toDateString()
 
-                    } else if (days > 21 && days < 28) {
+                    } else if (days >= 21 && days < 28) {
 
                         time = "3 Week Ago"
 
-                    } else if (days > 14 && days < 21) {
+                    } else if (days >= 14 && days < 21) {
 
                         time = "2 Week Ago"
 
-                    } else if (days > 7 && days < 14) {
+                    } else if (days >= 7 && days < 14) {
 
                         time = "1 Week Ago"
 
