@@ -230,6 +230,7 @@ exports.userPostList = async (req, res) => {
             const response = [];
             for (const respData of resData) {
 
+                console.log("respData", respData);
                 /* To show how long a post has been posted */
                 var now = new Date();
                 var addingDate = new Date(respData.createdAt);
@@ -243,20 +244,22 @@ exports.userPostList = async (req, res) => {
                 if (minutes < 10) { minutes = "0" + minutes; }
                 if (seconds < 10) { seconds = "0" + seconds; }
 
+                console.log("day", days, hours, minutes, seconds);
+
                 var time;
                 if (days > 28) {
 
                     time = new Date(addingDate).toDateString()
 
-                } else if (days > 21 && days < 28) {
+                } else if (days >= 21 && days < 28) {
 
                     time = "3 Week Ago"
 
-                } else if (days > 14 && days < 21) {
+                } else if (days >= 14 && days < 21) {
 
                     time = "2 Week Ago"
 
-                } else if (days > 7 && days < 14) {
+                } else if (days >= 7 && days < 14) {
 
                     time = "1 Week Ago"
 
@@ -282,7 +285,7 @@ exports.userPostList = async (req, res) => {
 
                 }
                 /* End Of to show how long a post has been posted */
-
+                console.log("time",time);
 
                 var findLikedUser = await UserPostLike.findOne({
                     post_id: respData._id,
