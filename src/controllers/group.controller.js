@@ -912,29 +912,33 @@ exports.addPost = async (req, res) => {
 
             } else {
 
-                const cloudinaryImageUploadMethod = async file => {
-                    return new Promise(resolve => {
-                        cloudinary.uploader.upload(file, { resource_type: "auto" }, (err, res) => {
-                            if (err) return err
-                            resolve({
-                                res: res.secure_url
-                            })
-                        }
-                        )
-                    })
-                }
-
+                const cloudinaryImageUploadMethod = async (file) => {
+                    return new Promise((resolve, reject) => {
+                        cloudinary.uploader.upload(
+                            file,
+                            { resource_type: "auto" },
+                            (err, res) => {
+                                if (err) reject(err);
+                                resolve({
+                                    res: res.secure_url,
+                                });
+                            }
+                        );
+                    });
+                }; 
+        
                 const urls = [];
                 const files = req.files;
-
-                for (const file of files) {
-                    console.log("file::", file);
+                
+                await Promise.all(
+                  files.map(async (file) => {
                     const { path } = file;
                     const newPath = await cloudinaryImageUploadMethod(path);
-                    console.log("newPath::---------", newPath);
                     urls.push(newPath);
-                }
+                  })
+                ); 
                 console.log("urls:::", urls);
+                
                 const groupPostData = GroupPost({
                     group_id: groupId,
                     user_id: userId,

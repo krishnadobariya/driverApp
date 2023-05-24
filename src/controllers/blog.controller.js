@@ -15,28 +15,31 @@ exports.addBlog = async (req, res) => {
 
         let userId = req.params.id;
 
-        const cloudinaryImageUploadMethod = async file => {
-            return new Promise(resolve => {
-                cloudinary.uploader.upload(file, { resource_type: "auto" }, (err, res) => {
-                    if (err) return err
-                    resolve({
-                        res: res.secure_url
-                    })
-                }
-                )
-            })
-        }
-
-        const urls = []
+        const cloudinaryImageUploadMethod = async (file) => {
+            return new Promise((resolve, reject) => {
+                cloudinary.uploader.upload(
+                    file,
+                    { resource_type: "auto" },
+                    (err, res) => {
+                        if (err) reject(err);
+                        resolve({
+                            res: res.secure_url,
+                        });
+                    }
+                );
+            });
+        }; 
+        
+        const urls = [];
         const files = req.files;
-
-        for (const file of files) {
-            const { path } = file
-            console.log("path::", path);
-
-            const newPath = await cloudinaryImageUploadMethod(path)
-            urls.push(newPath)
-        }
+        
+        await Promise.all(
+          files.map(async (file) => {
+            const { path } = file;
+            const newPath = await cloudinaryImageUploadMethod(path);
+            urls.push(newPath);
+          })
+        ); 
 
         const findUserData = await authModel.findOne({ _id: userId });
 
