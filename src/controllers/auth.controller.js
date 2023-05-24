@@ -2360,7 +2360,11 @@ exports.topTenUser = async (req, res) => {
 
         let userId = req.params.id;
         const blockUserId = [];
-        const getUser = await authModel.find({}).limit(10).sort({ createdAt: -1 });
+        const getUser = await authModel.find({
+            _id: {
+                $ne: userId
+            }
+        }).limit(10).sort({ createdAt: -1 });
         console.log("getUser", getUser);
 
         if (getUser.length == 0) {
@@ -2421,9 +2425,9 @@ exports.topTenUser = async (req, res) => {
                     responseArr.push(response)
 
                 }
-                
+
             }
-            
+
             res.status(status.OK).json(
                 {
                     message: "Get User Detail Successfully",

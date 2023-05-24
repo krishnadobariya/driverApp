@@ -21,7 +21,8 @@
     "node-cron": "^3.0.2",
     "nodemailer": "^6.8.0",
     "p-map": "^6.0.0",
-    "socket.io": "^4.5.1"
+    "socket.io": "^4.5.1",
+    "stream": "^0.0.2"
   },
   "devDependencies": {
     "nodemon": "^2.0.19"

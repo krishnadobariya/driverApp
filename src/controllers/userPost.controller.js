@@ -5,6 +5,8 @@ const UserPostLike = require("../models/userPostLike.model");
 const FriendRequest = require("../models/frdReq.model");
 const cloudinary = require("../utils/cloudinary.utils");
 const status = require("http-status");
+const { Readable } = require('stream');
+
 
 
 exports.addUserPost = async (req, res) => {
@@ -49,7 +51,7 @@ exports.addUserPost = async (req, res) => {
                     }
                 );
             });
-        }; 
+        };
 
         /* const files = req.files;
         
