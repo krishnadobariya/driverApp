@@ -34,53 +34,68 @@ exports.addUserPost = async (req, res) => {
             urls.push(newPath);
         } */
 
-        /* const cloudinaryImageUploadMethod = file => {
+        // --------------------------------------------------------------------------------------------
+
+        const cloudinaryImageUploadMethod = async (file) => {
             return new Promise((resolve, reject) => {
-              cloudinary.uploader.upload(file, { resource_type: "auto" }, (err, res) => {
-                if (err) {
-                  reject(err);
-                } else {
-                  resolve(res.secure_url);
-                }
-              });
+                cloudinary.uploader.upload(
+                    file,
+                    { resource_type: "auto" },
+                    (err, res) => {
+                        if (err) reject(err);
+                        resolve({
+                            res: res.secure_url,
+                        });
+                    }
+                );
             });
-          };
-          
-          const files = req.files;
-          
-          const uploadPromises = files.map(file => {
-            console.log("file::", file);
+        }; 
+
+        /* const files = req.files;
+        
+        const uploadPromises = files.map(file => {
+          console.log("file::", file);
+          const { path } = file;
+          return cloudinaryImageUploadMethod(path);
+        });
+
+        const uploadedUrls = await Promise.all(uploadPromises); */
+
+
+        const urls = [];
+        const files = req.files;
+        
+        await Promise.all(
+          files.map(async (file) => {
             const { path } = file;
-            return cloudinaryImageUploadMethod(path);
-          });
+            const newPath = await cloudinaryImageUploadMethod(path);
+            urls.push(newPath);
+          })
+        ); 
 
-          const uploadedUrls = await Promise.all(uploadPromises); */
 
-          const cloudinaryImageUploadMethod = async (file) => {
-            return new Promise((resolve, reject) => {
-              cloudinary.uploader.upload(
-                file,
-                { resource_type: "auto" },
-                (err, res) => {
-                  if (err) reject(err);
-                  resolve({
-                    res: res.secure_url,
-                  });
-                }
-              );
-            });
-          };
-          
-          const urls = [];
-          const files = req.files;
-          
-          await Promise.all(
+        /* const urls = [];
+        const files = req.files;
+        
+        await Promise.all(files.map(file => cloudinaryImageUploadMethod(file.path)))
+          .then(newPaths => {
+            urls.push(...newPaths);
+          })
+          .catch(err => {
+            // Handle error
+          }); */
+
+
+        /* const urls = [];
+        const files = req.files;
+
+        await Promise.allSettled(
             files.map(async (file) => {
-              const { path } = file;
-              const newPath = await cloudinaryImageUploadMethod(path);
-              urls.push(newPath);
+                const { path } = file;
+                const newPath = await cloudinaryImageUploadMethod(path);
+                urls.push(newPath);
             })
-          );
+        ); */
 
         /* End Image Uploading */
 
