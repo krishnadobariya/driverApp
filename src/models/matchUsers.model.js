@@ -26,6 +26,10 @@ const matchUsers_schema = mongoose.Schema({
     match_id_five: {
         type: ObjectId,
         default: null
+    },
+    credit: {
+        type: String,
+        default: null
     }
 }, {
     timestamps: true

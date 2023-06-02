@@ -26,6 +26,10 @@ const inAppPurchase_schema = mongoose.Schema({
     credit: {
         type: String,
         required: true
+    },
+    subscription_type: {
+        type: String,      // 1 and 2
+        required: true
     }
 }, {
     timestamps: true
