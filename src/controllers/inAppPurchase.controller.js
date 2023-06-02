@@ -45,7 +45,7 @@ exports.insertInAppPurchase = async (req, res) => {
                 idArr.push(getId.user_id)
             }
 
-            const [field1 = null, field2 = null, field3 = null, field4 = null, field5 = null, field6 = null] = idArr;
+            const [field1 = null, field2 = null, field3 = null, field4 = null, field5 = null] = idArr;
 
             const insertmatchUsers = new MatchUsers({
                 user_id: req.params.user_id,
@@ -53,8 +53,7 @@ exports.insertInAppPurchase = async (req, res) => {
                 match_id_two: field2,
                 match_id_three: field3,
                 match_id_four: field4,
-                match_id_five: field5,
-                match_id_six: field6
+                match_id_five: field5
             });
             const saveMatchesData = await insertmatchUsers.save();
 

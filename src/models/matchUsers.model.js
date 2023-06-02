@@ -26,10 +26,6 @@ const matchUsers_schema = mongoose.Schema({
     match_id_five: {
         type: ObjectId,
         default: null
-    },
-    match_id_six: {
-        type: ObjectId,
-        default: null
     }
 }, {
     timestamps: true
