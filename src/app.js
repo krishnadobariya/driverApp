@@ -23,7 +23,7 @@ const bannerPost = require("./routes/banner.routes");
 const activityRouter = require('./routes/activity.routes');
 
 app.use("/auth", authRouter);
-app.use("/blog", blogRouter);
+app.use("/blog", blogRouter); 
 app.use("/chat", chatRouter);
 app.use("/event", eventRouter);
 app.use("/group", groupRouter);

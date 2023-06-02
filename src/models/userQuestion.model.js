@@ -22,6 +22,30 @@ const userQuestionSchema = mongoose.Schema({
         type: String,
         required: true
     },
+    que_five: {
+        type: String,
+        required: true
+    },
+    que_six: {
+        type: String,
+        required: true
+    },
+    que_seven: {
+        type: String,
+        required: true
+    },
+    que_eight: {
+        type: String,
+        required: true
+    },
+    que_nine: {
+        type: String,
+        required: true
+    },
+    que_ten: {
+        type: String,
+        required: true
+    },
 }, {
     timestamps: true
 }, {

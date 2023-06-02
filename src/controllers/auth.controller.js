@@ -94,6 +94,12 @@ exports.registration = async (req, res) => {
                 que_two: req.body.que_two,
                 que_three: req.body.que_three,
                 que_four: req.body.que_four,
+                que_five: req.body.que_five,
+                que_six: req.body.que_six,
+                que_seven: req.body.que_seven,
+                que_eight: req.body.que_eight,
+                que_nine: req.body.que_nine,
+                que_ten: req.body.que_ten,
             });
             const saveQue = await insertAns.save();
 
@@ -112,7 +118,8 @@ exports.registration = async (req, res) => {
                 latitude: saveData.location.coordinates[1],
                 user_type: saveData.user_type,
                 status: saveData.status,
-                vehicle: saveData.vehicle
+                vehicle: saveData.vehicle,
+                questions: saveQue
             }
 
             res.status(status.CREATED).json(
@@ -476,7 +483,9 @@ exports.userProfile = async (req, res) => {
             }
             // console.log("getChatRoom", getChatRoom);
 
-            const getAnswer = await Question.findOne({ user_id: req.params.id }).select({ 'que_one': 1, 'que_two': 1, 'que_three': 1, 'que_four': 1, '_id': 0 });
+            const getAnswer = await Question.findOne({ user_id: req.params.id }).select({
+                'que_one': 1, 'que_two': 1, 'que_three': 1, 'que_four': 1, 'que_five': 1, 'que_six': 1, 'que_seven': 1, 'que_eight': 1, 'que_nine': 1, 'que_ten': 1, 'id': 0
+            });
 
             const getGroupData = await GroupList.find({ user_id: req.params.id });
             // console.log("getGroupData::--", getGroupData);
