@@ -21,6 +21,7 @@ const groupListRouter = require("./routes/groupList.routes");
 const userPost = require("./routes/userPost.routes");
 const bannerPost = require("./routes/banner.routes");
 const activityRouter = require('./routes/activity.routes');
+const inAppPurchaseRouter = require('./routes/inAppPurchase.routes')
 
 app.use("/auth", authRouter);
 app.use("/blog", blogRouter); 
@@ -31,14 +32,27 @@ app.use("/groupList", groupListRouter);
 app.use("/userPost", userPost);
 app.use("/banner", bannerPost);
 app.use('/activity', activityRouter);
+app.use("/inAppPurchase", inAppPurchaseRouter)
 // ---------- End Define Routes Here ---------- //
 
 
 // ---------- For cron that starts continuously ---------- //
-// const { userStatus } = require("./controllers/cronJob.controller");
-// cron.schedule('*/1 * * * * *', async () => {
-//     userStatus()
-// });
+
+const { userStatus, matchesCron } = require("./controllers/cronJob.controller");
+
+cron.schedule('*/1 * * * * *', async () => {
+    userStatus()
+});
+
+// const cronSchedule = '0 0 * * *'; // Runs at 12 AM every day
+const cronSchedule = '53 1 * * *';
+cron.schedule(cronSchedule, () => {
+  console.log('Running cron job at 12 AM EDT');
+  matchesCron()
+}, {
+  timezone: 'America/New_York' // Set the timezone to EDT
+});
+
 // ---------- End For cron that starts continuously ---------- //
 
 module.exports = app;
