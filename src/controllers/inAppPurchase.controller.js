@@ -44,6 +44,7 @@ exports.insertInAppPurchase = async (req, res) => {
             for (const getId of findQuestionData) {
                 idArr.push(getId.user_id)
             }
+            console.log("id", idArr);
 
             const [field1 = null, field2 = null, field3 = null, field4 = null, field5 = null] = idArr;
 

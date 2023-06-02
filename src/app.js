@@ -45,7 +45,7 @@ cron.schedule('*/1 * * * * *', async () => {
 });
 
 // const cronSchedule = '0 0 * * *'; // Runs at 12 AM every day
-const cronSchedule = '53 1 * * *';
+const cronSchedule = '5 6 * * *';
 cron.schedule(cronSchedule, () => {
   console.log('Running cron job at 12 AM EDT');
   matchesCron()
