@@ -438,7 +438,7 @@ exports.userProfile = async (req, res) => {
                 _id: req.params.id
             }
         );
-        // console.log("userProfile:::", getUserData);
+        console.log("userProfile:::", getUserData);
 
         if (getUserData == null) {
 
@@ -484,7 +484,7 @@ exports.userProfile = async (req, res) => {
             // console.log("getChatRoom", getChatRoom);
 
             const getAnswer = await Question.findOne({ user_id: req.params.id }).select({
-                'que_one': 1, 'que_two': 1, 'que_three': 1, 'que_four': 1, 'que_five': 1, 'que_six': 1, 'que_seven': 1, 'que_eight': 1, 'que_nine': 1, 'que_ten': 1, 'id': 0
+                'que_one': 1, 'que_two': 1, 'que_three': 1, 'que_four': 1, 'que_five': 1, 'que_six': 1, 'que_seven': 1, 'que_eight': 1, 'que_nine': 1, 'que_ten': 1, '_id': 0
             });
 
             const getGroupData = await GroupList.find({ user_id: req.params.id });
