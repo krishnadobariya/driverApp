@@ -6,7 +6,7 @@ const FriendRequest = require("../models/frdReq.model");
 const cloudinary = require("../utils/cloudinary.utils");
 const status = require("http-status");
 const { Readable } = require('stream');
-
+const mongoose = require("mongoose");
 
 
 exports.addUserPost = async (req, res) => {
@@ -522,9 +522,14 @@ exports.userPostLikeDislike = async (req, res) => {
                 console.log("userPostLikeModel::---", userPostLikeModel);
 
                 const reqUserInLikeModel = await UserPostLike.findOne({
-                    "reqAuthId._id": userId
+                    // "reqAuthId._id": userId
+                    reqAuthId: {
+                        $elemMatch: {
+                            _id: mongoose.Types.ObjectId(req.params.id)
+                        }
+                    }
                 });
-                console.log("reqUserInLikeModel::---", userPostLikeModel);
+                console.log("reqUserInLikeModel::---", userPostLikeModel, "userId", userId);
                 console.log("data:body:-", req.body.like);
 
                 if (req.body.like == 1) {
@@ -541,12 +546,14 @@ exports.userPostLikeDislike = async (req, res) => {
 
                     } else if (userPostLikeModel) {
 
+                        const findPostData = await UserPost.findOne({ _id : userPostLikeModel.post_id })
+                        console.log("----1", findPostData);
                         const updateLike = await UserPost.updateOne({
                             // group_id: groupId
-                            user_id: userId
+                            _id: findPostData._id
                         }, {
-                            $inc: {
-                                like_count: 1
+                            $set: {
+                                likes: findPostData.likes + 1
                             }
                         });
                         console.log("updateLike::", updateLike);
@@ -584,11 +591,12 @@ exports.userPostLikeDislike = async (req, res) => {
                         const saveData = await insertLike.save();
                         console.log("saveData::--", saveData);
 
+                        console.log("----2", findPost.likes);
                         const updateLike = await UserPost.updateOne({
                             _id: req.params.postId
                         }, {
-                            $inc: {
-                                likes: 1
+                            $set: {
+                                likes: findPost.likes + 1
                             }
                         });
                         console.log("updateLike::", updateLike);
@@ -606,13 +614,24 @@ exports.userPostLikeDislike = async (req, res) => {
                     console.log('Data::---', req.body.like);
 
 
-                    if (userPostLikeModel && reqUserInLikeModel) {
+                    if (userPostLikeModel == null && reqUserInLikeModel == null) {
 
+                        console.log("---------------------->>>>>>>>>");
+                        res.status(status.OK).json({
+                            message: "Dislike added!",
+                            status: true,
+                            code: 409,
+                            statusCode: 1,
+                        })
+
+                    } else {
+
+                        console.log("----3", findPost.likes);
                         const updateLike = await UserPost.updateOne({
                             _id: postId
                         }, {
-                            $inc: {
-                                likes: -1
+                            $set: {
+                                likes: findPost.likes - 1
                             }
                         });
                         console.log("updateLike::-", updateLike);
@@ -632,15 +651,6 @@ exports.userPostLikeDislike = async (req, res) => {
                             post_id: postId
                         });
                         console.log("deleteLikedUser::---", deleteLikedUser);
-
-                        res.status(status.OK).json({
-                            message: "Dislike added!",
-                            status: true,
-                            code: 409,
-                            statusCode: 1,
-                        })
-
-                    } else {
 
                         res.status(status.OK).json({
                             message: "Dislike added!",
