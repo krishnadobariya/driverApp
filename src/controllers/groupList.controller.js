@@ -223,6 +223,7 @@ exports.remainingList = async (req, res) => {
 
 exports.groupListByChat = async (req, res) => {
     try {
+        
         // groupChatRoom ma check karvanu user chhe ke nai
         let userId = req.params.userId;
         const findUser = await User.findOne({ _id: userId });
@@ -248,11 +249,12 @@ exports.groupListByChat = async (req, res) => {
                     }
                 }
             );
-            // console.log("findGroup::", findGroup);
+            console.log("findGroup::", findGroup);
 
             const response = [];
             for (const respData of findGroup) {
-                // console.log("respData::", respData.group_id);
+                // console.log("respData::", respData.groupId);
+
                 const findChats = await GroupChat.find({ groupId: respData.groupId });
                 // console.log("findChats::--:", findChats.length);
 
@@ -275,36 +277,54 @@ exports.groupListByChat = async (req, res) => {
 
                     for (const findChat of findChats) {
 
-                        const chatMessage = findChat.chat;
-                        const getLastMessage = chatMessage[chatMessage.length - 1];
+                        const chatDataLenght = findChat.chat
+                        if (chatDataLenght.length == 0) {
 
-                        var readCount = 0
-                        var unReadCount = 0
-                        for (const getReader of chatMessage) {
+                            const chatData = {
+                                groupId: getGroupData._id,
+                                groupName: getGroupData.group_name,
+                                groupImage: getGroupData.group_img,
+                                unReadCount: 0,
+                                lastMsg: '',
+                                lastMsgUsername: '',
+                            }
+                            response.push(chatData);
 
-                            var readerCount = getReader.read;
+                        } else {
 
-                            var data = readerCount.find(function (ele) {
-                                return ele.reader == userId;
-                            });
+                            const chatMessage = findChat.chat;
+                            const getLastMessage = chatMessage[chatMessage.length - 1];
+                            console.log("chatMessage", chatMessage, "getLastMessage", getLastMessage);
 
-                            if (data == undefined) {
-                                unReadCount += 1
-                            } else {
-                                readCount += 1
+                            var readCount = 0
+                            var unReadCount = 0
+                            for (const getReader of chatMessage) {
+
+                                var readerCount = getReader.read;
+
+                                var data = readerCount.find(function (ele) {
+                                    return ele.reader == userId;
+                                });
+
+                                if (data == undefined) {
+                                    unReadCount += 1
+                                } else {
+                                    readCount += 1
+                                }
+
                             }
 
-                        }
+                            const chatData = {
+                                groupId: getGroupData._id,
+                                groupName: getGroupData.group_name,
+                                groupImage: getGroupData.group_img,
+                                unReadCount: unReadCount,
+                                lastMsg: getLastMessage.message,
+                                lastMsgUsername: getLastMessage.senderName,
+                            }
+                            response.push(chatData);
 
-                        const chatData = {
-                            groupId: getGroupData._id,
-                            groupName: getGroupData.group_name,
-                            groupImage: getGroupData.group_img,
-                            unReadCount: unReadCount,
-                            lastMsg: getLastMessage.message,
-                            lastMsgUsername: getLastMessage.senderName,
                         }
-                        response.push(chatData);
 
                     }
 

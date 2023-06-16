@@ -1185,19 +1185,19 @@ exports.userLogout = async (req, res, next) => {
             })
 
             /* Delete Group Member */
-            await GroupMember.updateOne({
-                users: {
-                    $elemMatch: {
-                        user_id: req.params.id
-                    }
-                }
-            }, {
-                $pull: {
-                    users: {
-                        user_id: req.params.id
-                    }
-                }
-            });
+            // await GroupMember.updateOne({
+            //     users: {
+            //         $elemMatch: {
+            //             user_id: req.params.id
+            //         }
+            //     }
+            // }, {
+            //     $pull: {
+            //         users: {
+            //             user_id: req.params.id
+            //         }
+            //     }
+            // });
 
             /* Delete Notification Data BY UserId */
             await Notification.deleteMany(
@@ -1206,30 +1206,28 @@ exports.userLogout = async (req, res, next) => {
                 });
 
             /* Find Group By UserId */
-            const findGroup = await GroupMember.find({
-                users: {
-                    $elemMatch: {
-                        user_id: req.params.id
-                    }
-                }
-            });
-            console.log("findGroup::", findGroup);
+            // const findGroup = await GroupMember.find({
+            //     users: {
+            //         $elemMatch: {
+            //             user_id: req.params.id
+            //         }
+            //     }
+            // });
+            // console.log("findGroup::", findGroup);
 
             /* Descrease Group Memeber Number */
-            for (const groupResp of findGroup) {
+            // for (const groupResp of findGroup) {
 
-                await Group.updateOne(
-                    {
-                        _id: groupResp.group_id
-                    },
-                    {
-                        $inc: {
-                            group_members: -1
-                        }
-                    }
-                );
+            //     await Group.updateOne(
+            //         {
+            //             _id: groupResp.group_id
+            //         },
+            //         {
+            //             group_members: groupResp.group_members - 1
+            //         }
+            //     );
 
-            }
+            // }
 
 
             /* Decrease Group Memeber Number */
@@ -1243,23 +1241,29 @@ exports.userLogout = async (req, res, next) => {
             console.log("findMember::", findMember);
 
             for (const getGroupId of findMember) {
-                console.log('getGroupId::', getGroupId);
 
-                await Group.updateOne({
-                    _id: getGroupId.group_id
-                }, {
-                    $inc: {
-                        group_members: -1
+                const findGroup = await Group.findOne({ _id: getGroupId.group_id })
+                await Group.updateOne(
+                    {
+                        _id: getGroupId.group_id
+                    },
+                    {
+                        $set: {
+                            group_members: findGroup.group_members - 1
+                        }
                     }
-                });
+                );
 
-                await GroupList.updateOne({
-                    group_id: getGroupId.group_id
-                }, {
-                    $inc: {
-                        group_members: -1
+                await GroupList.updateOne(
+                    {
+                        group_id: getGroupId.group_id
+                    },
+                    {
+                        $set: {
+                            group_members: findGroup.group_members - 1
+                        }
                     }
-                });
+                );
 
             }
 

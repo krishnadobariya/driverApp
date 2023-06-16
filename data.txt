@@ -48,9 +48,9 @@
 [If group_type-1 (1/2 (1-Public, 2-Private))]
 - Socket : joinGroup
 {
-    "group_id": "6426bac269c9ba33533dbdc0",
-    "user_id": "6426aaee382909befb38eae7",
-    "group_type": 1
+    "groupId" : "648c255919a4de60e5d3b0af",
+    "userId" : "6487f85219a4de60e5cb082a",
+    "group_type" : 1
 }
 - emit : groupJoin
 

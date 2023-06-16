@@ -84,6 +84,10 @@ function socket(io) {
                 _id: arg.receiver_id
             })
 
+            const findSenderUser = await authModel.findOne({
+                _id: arg.sender_id
+            })
+
             const checkUser1 = await chatRoom.findOne(
                 {
                     user1: arg.sender_id,
@@ -141,7 +145,7 @@ function socket(io) {
                         const response = {
                             sender: arg.sender_id,
                             receiver: arg.receiver_id,
-                            user_name: findUserForNotiy.username,
+                            user_name: findSenderUser.username,
                             message: arg.message
                         }
 
@@ -149,7 +153,7 @@ function socket(io) {
 
 
                         if (findUserForNotiy.fcm_token) {
-                            const title = `${findUserForNotiy.username}`;
+                            const title = `${findSenderUser.username}`;
                             const body = `${arg.message}`;
                             const text = arg.message;
                             const sendBy = arg.sender_id;
@@ -183,14 +187,14 @@ function socket(io) {
                         const response = {
                             sender: arg.sender_id,
                             receiver: arg.receiver_id,
-                            user_name: findUserForNotiy.username,
+                            user_name: findSenderUser.username,
                             message: arg.message
                         }
 
                         io.to(userRoom).emit("chatReceive", response)
 
                         if (findUserForNotiy.fcm_token) {
-                            const title = `${findUserForNotiy.username}`;
+                            const title = `${findSenderUser.username}`;
                             const body = `${arg.message}`;
                             const text = arg.message;
                             const sendBy = arg.sender_id;
@@ -257,14 +261,14 @@ function socket(io) {
                             const response = {
                                 sender: arg.sender_id,
                                 receiver: arg.receiver_id,
-                                user_name: findUserForNotiy.username,
+                                user_name: findSenderUser.username,
                                 message: arg.message
                             }
 
                             io.to(userRoom).emit("chatReceive", response)
 
                             if (findUserForNotiy.fcm_token) {
-                                const title = `${findUserForNotiy.username}`;
+                                const title = `${findSenderUser.username}`;
                                 const body = `${arg.message}`;
                                 const text = arg.message;
                                 const sendBy = arg.sender_id;
@@ -311,14 +315,14 @@ function socket(io) {
                             const response = {
                                 sender: arg.sender_id,
                                 receiver: arg.receiver_id,
-                                user_name: findUserForNotiy.username,
+                                user_name: findSenderUser.username,
                                 message: arg.message
                             }
 
                             io.to(userRoom).emit("chatReceive", response)
 
                             if (findUserForNotiy.fcm_token) {
-                                const title = `${findUserForNotiy.username}`;
+                                const title = `${findSenderUser.username}`;
                                 const body = `${arg.message}`;
                                 const text = arg.message;
                                 const sendBy = arg.sender_id;
@@ -364,14 +368,14 @@ function socket(io) {
                             const response = {
                                 sender: arg.sender_id,
                                 receiver: arg.receiver_id,
-                                user_name: findUserForNotiy.username,
+                                user_name: findSenderUser.username,
                                 message: arg.message
                             }
 
                             io.to(userRoom).emit("chatReceive", response)
 
                             if (findUserForNotiy.fcm_token) {
-                                const title = `${findUserForNotiy.username}`;
+                                const title = `${findSenderUser.username}`;
                                 const body = `${arg.message}`;
                                 const text = arg.message;
                                 const sendBy = arg.sender_id;
@@ -418,14 +422,14 @@ function socket(io) {
                             const response = {
                                 sender: arg.sender_id,
                                 receiver: arg.receiver_id,
-                                user_name: findUserForNotiy.username,
+                                user_name: findSenderUser.username,
                                 message: arg.message
                             }
 
                             io.to(userRoom).emit("chatReceive", response)
 
                             if (findUserForNotiy.fcm_token) {
-                                const title = `${findUserForNotiy.username}`;
+                                const title = `${findSenderUser.username}`;
                                 const body = `${arg.message}`;
                                 const text = arg.message;
                                 const sendBy = arg.sender_id;
@@ -1597,6 +1601,7 @@ function socket(io) {
 
 
                 const getReqUserData = await authModel.findOne({ _id: reqUserId });
+                const findUserData = await authModel.findOne({ _id: userId });
                 const insertNotifi = NotificationModel({
                     user_id: userId,
                     req_user_id: reqUserId,
@@ -1610,7 +1615,7 @@ function socket(io) {
 
                 const respnse = {
                     title: "Follow Request Accepted",
-                    message: `${getReqUserData.username} started following you.`,
+                    message: `${findUserData.username} started following you.`,
                     userId: userId,
                     reqUserId: reqUserId
                 }
@@ -1618,7 +1623,7 @@ function socket(io) {
                 io.to(userRoom).emit("followRequest", respnse)
 
                 const title = `Follow Request Accepted`;
-                const body = `${getReqUserData.username} started following you.`;
+                const body = `${findUserData.username} started following you.`;
                 const text = 'Request Accepted';
                 const sendBy = userId;
                 const registrationToken = getUserData.fcm_token;

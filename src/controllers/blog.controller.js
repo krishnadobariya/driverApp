@@ -578,14 +578,30 @@ exports.getCommentList = async (req, res) => {
                         _id: getDataOfCOmmentAbout.user_id
                     });
                     console.log("userFound::", userFound);
-                    const response = {
-                        user_id: getDataOfCOmmentAbout.user_id,
-                        email: userFound.email,
-                        commentText: getDataOfCOmmentAbout.text,
-                        username: userFound?.username,
-                        profile: userFound?.profile[0]?.res
+
+                    if(userFound == undefined) {
+
+                        const response = {
+                            user_id: getDataOfCOmmentAbout.user_id,
+                            email: "deleteduser@gmail.com",
+                            commentText: getDataOfCOmmentAbout.text,
+                            username: "Deleted User",
+                            profile: "https://pic.onlinewebfonts.com/svg/img_529679.png"
+                        }
+                        getCommentOnBlog.push(response)
+
+                    } else {
+
+                        const response = {
+                            user_id: getDataOfCOmmentAbout.user_id,
+                            email: userFound.email,
+                            commentText: getDataOfCOmmentAbout.text,
+                            username: userFound?.username,
+                            profile: userFound?.profile[0]?.res
+                        }
+                        getCommentOnBlog.push(response)
+
                     }
-                    getCommentOnBlog.push(response)
 
                 }
 
@@ -681,13 +697,28 @@ exports.likedUser = async (req, res) => {
                     _id: getUSerData._id
                 })
 
-                const userData = {
-                    user_id: getUSerData._id,
-                    profile: findUserDetails.profile[0] ? findUserDetails.profile[0].res : "",
-                    username: findUserDetails.username,
-                    email: findUserDetails.email
+                if(findUserDetails == undefined) {
+
+                    const userData = {
+                        user_id: getUSerData._id,
+                        profile: "https://pic.onlinewebfonts.com/svg/img_529679.png",
+                        username: "Deleted User",
+                        email: "deleteduser@gmail.com"
+                    }
+                    response.push(userData)
+
+                } else {
+
+                    const userData = {
+                        user_id: getUSerData._id,
+                        profile: findUserDetails.profile[0] ? findUserDetails.profile[0].res : "",
+                        username: findUserDetails.username,
+                        email: findUserDetails.email
+                    }
+                    response.push(userData)
+
                 }
-                response.push(userData)
+
             }
 
             res.status(status.OK).json(
