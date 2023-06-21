@@ -1601,7 +1601,7 @@ function socket(io) {
 
 
                 const getReqUserData = await authModel.findOne({ _id: reqUserId });
-                const findUserData = await authModel.findOne({ _id: userId });
+                // const findUserData = await authModel.findOne({ _id: userId });
                 const insertNotifi = NotificationModel({
                     user_id: userId,
                     req_user_id: reqUserId,
@@ -1614,16 +1614,16 @@ function socket(io) {
                 console.log("saveData", saveData);
 
                 const respnse = {
-                    title: "Follow Request Accepted",
-                    message: `${findUserData.username} started following you.`,
+                    title: "Follow Request",
+                    message: `${getReqUserData.username} started following you.`,
                     userId: userId,
                     reqUserId: reqUserId
                 }
 
                 io.to(userRoom).emit("followRequest", respnse)
 
-                const title = `Follow Request Accepted`;
-                const body = `${findUserData.username} started following you.`;
+                const title = `Follow Request`;
+                const body = `${getReqUserData.username} started following you.`;
                 const text = 'Request Accepted';
                 const sendBy = userId;
                 const registrationToken = getUserData.fcm_token;
