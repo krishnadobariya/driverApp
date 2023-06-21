@@ -48,7 +48,7 @@ function socket(io) {
             const body = "In 5 minutes, You will be offline on map";
             const text = arg.message;
             const sendBy = arg.sender_id;
-            const registrationToken = findUserForNotiy.fcm_token
+            const registrationToken = respData.fcm_token
             if (registrationToken != null) {
                 Notification.sendPushNotificationFCM(
                     registrationToken,
