@@ -12,6 +12,7 @@ const GroupChat = require("./models/groupChat.model");
 const GroupMemberList = require("../models/groupMemberList.model");
 const FriendRequest = require("../models/frdReq.model");
 const Notification = require("../helper/firebaseHelper");
+const InAppPurchaseModel = require("../models/inAppPurchase.model");
 
 function socket(io) {
 
@@ -1550,6 +1551,7 @@ function socket(io) {
         // sender ne notification mlavi joiye
         // notification na table ma change avse --> old entry delete 
 
+        // ----- friendReqAccept ----- //
         socket.on('friendReqAccept', async (arg) => {
 
             const userId = arg.user_id;
@@ -1657,7 +1659,23 @@ function socket(io) {
             }
 
         })
+        // ----- friendReqAccept ----- //
 
+
+        // ----- checkInAppPurchase ----- //
+        socket.on('checkInAppPurchase', async (arg) => {
+            const userId = arg.user_id;
+            const userRoom = `User${arg.user_id}`;
+
+            const findData = await InAppPurchaseModel.find({ user_id : userId })
+
+            if(findData[0] == undefined) {
+                io.to(userRoom).emit("inAppPurchaseOrNot", "User Not Found");
+            } else {
+                io.to(userRoom).emit("inAppPurchaseOrNot", findData);
+            }
+        })
+        // ----- checkInAppPurchase ----- //
 
     })
 

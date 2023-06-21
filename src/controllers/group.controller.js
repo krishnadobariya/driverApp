@@ -883,12 +883,13 @@ exports.addPost = async (req, res) => {
         let groupId = req.params.groupId;
         let userId = req.params.userId;
 
-        const getGroup = await Group.findOne({ _id: groupId });
-        if (getGroup == null) {
+        const getUser = await Auth.findOne({ _id: userId });
+        
+        if (getUser == null) {
 
             res.status(status.NOT_FOUND).json(
                 {
-                    message: "Group Not Exist",
+                    message: "User Not Exist",
                     status: false,
                     code: 404,
                     statusCode: 0
@@ -897,13 +898,13 @@ exports.addPost = async (req, res) => {
 
         } else {
 
-            const getUser = await Auth.findOne({ _id: userId });
+            const getGroup = await Group.findOne({ _id: groupId });
 
-            if (getUser == null) {
+            if (getGroup == null) {
 
                 res.status(status.NOT_FOUND).json(
                     {
-                        message: "Data Not Exist",
+                        message: "Group Not Exist",
                         status: false,
                         code: 404,
                         statusCode: 0
@@ -912,66 +913,160 @@ exports.addPost = async (req, res) => {
 
             } else {
 
-                const cloudinaryImageUploadMethod = async (file) => {
-                    return new Promise((resolve, reject) => {
-                        cloudinary.uploader.upload(
-                            file,
-                            { resource_type: "auto" },
-                            (err, res) => {
-                                if (err) reject(err);
-                                resolve({
-                                    res: res.secure_url,
-                                });
-                            }
-                        );
+                if(getGroup.group_type == 1) {
+
+                    // public
+                    const cloudinaryImageUploadMethod = async (file) => {
+                        return new Promise((resolve, reject) => {
+                            cloudinary.uploader.upload(
+                                file,
+                                { resource_type: "auto" },
+                                (err, res) => {
+                                    if (err) reject(err);
+                                    resolve({
+                                        res: res.secure_url,
+                                    });
+                                }
+                            );
+                        });
+                    }; 
+            
+                    const urls = [];
+                    const files = req.files;
+                    
+                    await Promise.all(
+                      files.map(async (file) => {
+                        const { path } = file;
+                        const newPath = await cloudinaryImageUploadMethod(path);
+                        urls.push(newPath);
+                      })
+                    ); 
+                    console.log("urls:::", urls);
+    
+                    const groupPostData = GroupPost({
+                        group_id: groupId,
+                        user_id: userId,
+                        user_img: getUser.profile[0] ? getUser.profile[0].res : "",
+                        user_name: getUser.username,
+                        desc: req.body.description,
+                        image_video: urls[0],
+                        media_type: req.body.media_type
                     });
-                }; 
-        
-                const urls = [];
-                const files = req.files;
-                
-                await Promise.all(
-                  files.map(async (file) => {
-                    const { path } = file;
-                    const newPath = await cloudinaryImageUploadMethod(path);
-                    urls.push(newPath);
-                  })
-                ); 
-                console.log("urls:::", urls);
-
-                const groupPostData = GroupPost({
-                    group_id: groupId,
-                    user_id: userId,
-                    user_img: getUser.profile[0] ? getUser.profile[0].res : "",
-                    user_name: getUser.username,
-                    desc: req.body.description,
-                    image_video: urls[0],
-                    media_type: req.body.media_type
-                });
-                const saveData = await groupPostData.save();
-
-                const response = {
-                    post_id: saveData._id,
-                    group_id: saveData.group_id,
-                    user_id: saveData.userId,
-                    user_img: saveData.user_img,
-                    user_name: saveData.user_name,
-                    desc: saveData.desc,
-                    image_video: saveData.image_video[0] ? saveData.image_video[0].res : "",
-                    like_count: saveData.like_count,
-                    comment_count: saveData.comment_count,
-                    media_type: saveData.media_type
-                }
-
-                res.status(status.OK).json(
-                    {
-                        message: "POST ADDED SUCCESSFULLY",
-                        status: true,
-                        code: 200,
-                        statusCode: 1,
-                        data: response
+                    const saveData = await groupPostData.save();
+    
+                    const response = {
+                        post_id: saveData._id,
+                        group_id: saveData.group_id,
+                        user_id: saveData.userId,
+                        user_img: saveData.user_img,
+                        user_name: saveData.user_name,
+                        desc: saveData.desc,
+                        image_video: saveData.image_video[0] ? saveData.image_video[0].res : "",
+                        like_count: saveData.like_count,
+                        comment_count: saveData.comment_count,
+                        media_type: saveData.media_type
                     }
-                )
+    
+                    res.status(status.OK).json(
+                        {
+                            message: "POST ADDED SUCCESSFULLY",
+                            status: true,
+                            code: 200,
+                            statusCode: 1,
+                            data: response
+                        }
+                    )
+
+                } else {
+
+                    // private
+                    const findMember = await GroupMemberList.findOne({
+                        group_id: groupId,
+                        users: {
+                            $elemMatch: {
+                                user_id: userId
+                            }
+                        }
+                    });
+                    console.log("findMember::", findMember);
+                    
+                    if(findMember == null) {
+
+                        res.status(status.NOT_FOUND).json(
+                            {
+                                message: "This Group Is Private And You Are Not A Member So You Can't Add Post",
+                                status: false,
+                                code: 404,
+                                statusCode: 0
+                            }
+                        )
+
+                    } else {
+
+                        const cloudinaryImageUploadMethod = async (file) => {
+                            return new Promise((resolve, reject) => {
+                                cloudinary.uploader.upload(
+                                    file,
+                                    { resource_type: "auto" },
+                                    (err, res) => {
+                                        if (err) reject(err);
+                                        resolve({
+                                            res: res.secure_url,
+                                        });
+                                    }
+                                );
+                            });
+                        }; 
+                
+                        const urls = [];
+                        const files = req.files;
+                        
+                        await Promise.all(
+                          files.map(async (file) => {
+                            const { path } = file;
+                            const newPath = await cloudinaryImageUploadMethod(path);
+                            urls.push(newPath);
+                          })
+                        ); 
+                        console.log("urls:::", urls);
+        
+                        const groupPostData = GroupPost({
+                            group_id: groupId,
+                            user_id: userId,
+                            user_img: getUser.profile[0] ? getUser.profile[0].res : "",
+                            user_name: getUser.username,
+                            desc: req.body.description,
+                            image_video: urls[0],
+                            media_type: req.body.media_type
+                        });
+                        const saveData = await groupPostData.save();
+        
+                        const response = {
+                            post_id: saveData._id,
+                            group_id: saveData.group_id,
+                            user_id: saveData.userId,
+                            user_img: saveData.user_img,
+                            user_name: saveData.user_name,
+                            desc: saveData.desc,
+                            image_video: saveData.image_video[0] ? saveData.image_video[0].res : "",
+                            like_count: saveData.like_count,
+                            comment_count: saveData.comment_count,
+                            media_type: saveData.media_type
+                        }
+        
+                        res.status(status.OK).json(
+                            {
+                                message: "POST ADDED SUCCESSFULLY",
+                                status: true,
+                                code: 200,
+                                statusCode: 1,
+                                data: response
+                            }
+                        )
+
+                    }
+
+                }
 
             }
 
