@@ -27,6 +27,66 @@ const matchUsers_schema = mongoose.Schema({
         type: ObjectId,
         default: null
     },
+    match_id_six: {
+        type: ObjectId,
+        default: null
+    },
+    match_id_seven: {
+        type: ObjectId,
+        default: null
+    },
+    match_id_eight: {
+        type: ObjectId,
+        default: null
+    },
+    match_id_nine: {
+        type: ObjectId,
+        default: null
+    },
+    match_id_ten: {
+        type: ObjectId,
+        default: null
+    },
+    match_id_eleven: {
+        type: ObjectId,
+        default: null
+    },
+    match_id_twelve: {
+        type: ObjectId,
+        default: null
+    },
+    match_id_thirteen: {
+        type: ObjectId,
+        default: null
+    },
+    match_id_fourteen: {
+        type: ObjectId,
+        default: null
+    },
+    match_id_fifteen: {
+        type: ObjectId,
+        default: null
+    },
+    match_id_sixteen: {
+        type: ObjectId,
+        default: null
+    },
+    match_id_seventeen: {
+        type: ObjectId,
+        default: null
+    },
+    match_id_eighteen: {
+        type: ObjectId,
+        default: null
+    },
+    match_id_nineteen: {
+        type: ObjectId,
+        default: null
+    },
+    match_id_twenty: {
+        type: ObjectId,
+        default: null
+    },
     credit: {
         type: String,
         default: null
