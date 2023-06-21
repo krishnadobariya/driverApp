@@ -1317,7 +1317,7 @@ exports.userLogout = async (req, res, next) => {
                 const delGroupChat = await GroupChat.deleteOne({ groupId: respData._id });
 
                 /* Find Group Post By GroupId */
-                const groupPost = await GroupPost.find({ group_id: respData._id });
+                const groupPost = await GroupPost.find({ user_id: req.params.id });
                 console.log("groupPost", groupPost);
 
                 for (const respPost of groupPost) {
