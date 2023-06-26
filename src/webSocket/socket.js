@@ -13,6 +13,7 @@ const GroupMemberList = require("../models/groupMemberList.model");
 const FriendRequest = require("../models/frdReq.model");
 const Notification = require("../helper/firebaseHelper");
 const InAppPurchaseModel = require("../models/inAppPurchase.model");
+const datetime = require("datetime")
 
 function socket(io) {
 
@@ -1498,7 +1499,7 @@ function socket(io) {
                     const respnse = {
                         title: "Follow Request",
                         message: `${findUserData.username} requested to follow you.`,
-                        
+
                         userId: userId,
                         reqUserId: reqUserId,
                         userName: findUserData.username,
@@ -1666,15 +1667,56 @@ function socket(io) {
         socket.on('checkInAppPurchase', async (arg) => {
             const userId = arg.user_id;
             const userRoom = `User${arg.user_id}`;
-
-            const findData = await InAppPurchaseModel.find({ user_id : userId })
-
-            if(findData[0] == undefined) {
-                io.to(userRoom).emit("inAppPurchaseOrNot", "User Not Found");
+          
+            const findData = await InAppPurchaseModel.find({ user_id: userId });
+          
+            if (findData[0] === undefined) {
+              io.to(userRoom).emit("inAppPurchaseOrNot", "User Not Found");
             } else {
-                io.to(userRoom).emit("inAppPurchaseOrNot", findData);
+              const resArr = [];
+          
+              for (const checkTime of findData) {
+                const timestamp = parseFloat(checkTime.purchaseTime);
+                const date = new Date(timestamp);
+                const currentDate = new Date();
+          
+                const oneMonthLater = new Date(date.getTime());
+                oneMonthLater.setMonth(oneMonthLater.getMonth() + 1);
+          
+                const remainingTimeMs = oneMonthLater - currentDate;
+                let remainingTime;
+                let timeUnit;
+          
+                if (remainingTimeMs >= 0) {
+                  if (remainingTimeMs < 24 * 60 * 60 * 1000) {
+                    // Less than a day remaining
+                    remainingTime = Math.floor(remainingTimeMs / (60 * 60 * 1000)); // Remaining hours
+                    timeUnit = 'hours';
+                  } else {
+                    remainingTime = Math.floor(remainingTimeMs / (24 * 60 * 60 * 1000)); // Remaining days
+                    timeUnit = 'days';
+                  }
+          
+                  const response = {
+                    InAppPurchase_id: checkTime._id,
+                    message: `Remaining ${timeUnit}: ${remainingTime}`,
+                    success: 1
+                  };
+                  resArr.push(response);
+                } else {
+                  const response = {
+                    InAppPurchase_id: checkTime._id,
+                    message: "Pack is over",
+                    success: 0
+                  };
+                  resArr.push(response);
+                }
+              }
+          
+              io.to(userRoom).emit("inAppPurchaseOrNot", resArr);
             }
-        })
+          });
+          
         // ----- checkInAppPurchase ----- //
 
     })
