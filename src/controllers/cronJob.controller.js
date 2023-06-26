@@ -11,7 +11,6 @@ exports.userStatus = async (req, res) => {
         const getUser = await User.find({ end_time: presentTime });
 
         for (const respData of getUser) {
-            console.log("respData", respData);
 
             const updateStatus = await User.findByIdAndUpdate(
                 {
@@ -49,162 +48,64 @@ exports.matchesCron = async (req, res) => {
 
         for (const findMatchUsers of findUser) {
 
-            const findUserQuestion = await Question.findOne({ user_id: findMatchUsers.user_id })
-
+            const findUserQuestion = await Question.findOne({
+                user_id: findMatchUsers.user_id,
+            });
             const findQuestionData = await Question.find({
                 user_id: { $ne: findMatchUsers.user_id },
-                que_one: findUserQuestion.que_one, que_two: findUserQuestion.que_two, que_three: findUserQuestion.que_three,
-                que_four: findUserQuestion.que_four, que_five: findUserQuestion.que_five, que_six: findUserQuestion.que_six
-            })
+                que_one: findUserQuestion.que_one,
+                que_two: findUserQuestion.que_two,
+                que_three: findUserQuestion.que_three,
+                que_four: findUserQuestion.que_four,
+                que_five: findUserQuestion.que_five,
+                que_six: findUserQuestion.que_six,
+            }).select("user_id -_id");
+            // console.log("findQuestionData", findQuestionData);
 
-            if (findMatchUsers.credit == 5) {
+            const idArr = []
+            for (const getIds of findQuestionData) {
+                idArr.push(getIds.user_id)
+            }
+            // console.log("idArr", idArr);
 
-                var idArr = []
-                for (const getId of findQuestionData) {
-                    idArr.push(getId.user_id)
-                }
-                console.log("id", idArr);
+            const findMatchUser = await MatchUsers.find({ user_id: findMatchUsers.user_id })
 
-                const [field1 = null, field2 = null, field3 = null, field4 = null, field5 = null] = idArr;
+            var saveMatchCount = parseInt(0);
+            // console.log('saveMatchCount:---:', saveMatchCount);
+            for (const checkMatches of findMatchUser) {
 
-                const updateData = await MatchUsers.findOneAndUpdate({ _id: findMatchUsers._id }, {
-                    user_id: findMatchUsers.user_id,
-                    match_id_one: field1,
-                    match_id_two: field2,
-                    match_id_three: field3,
-                    match_id_four: field4,
-                    match_id_five: field5,
-                    credit: findMatchUsers.credit
-                })
+                if (checkMatches.credit == checkMatches.match_count) {
 
-                if (idArr.length < 5) {
-                    console.log("---", findMatchUsers.user_id);
+                    saveMatchCount += parseInt(checkMatches.credit)
+                    // console.log("saveMatchCount----", `${checkMatches.credit}`, saveMatchCount);
 
-                    const title = "5 user match soon!";
-                    const body = "In 5 minutes";
-                    const text = "your 5 match user complete soon";
-                    const sendBy = "abc";
-                    // const registrationToken = findUserForNotiy.fcm_token
-                    // if (registrationToken != null) {
-                    console.log("--------");
-                    Notification.sendPushNotificationFCM(
-                        // registrationToken,
-                        title,
-                        body,
-                        text,
-                        sendBy,
-                        true
-                    );
-                    // } 
+                } else {
 
-                }
+                    let matchIds = [];
+                    if (checkMatches.credit == 5) {
+                        // console.log("parseInt(saveMatchCount)----------", saveMatchCount);
+                        matchIds = findQuestionData.slice(saveMatchCount, saveMatchCount + 5).map((getId) => getId.user_id);
+                        saveMatchCount += parseInt(checkMatches.credit)
+                    } else if (checkMatches.credit == 15) {
+                        matchIds = findQuestionData.slice(saveMatchCount, saveMatchCount + 15).map((getId) => getId.user_id);
+                        saveMatchCount += parseInt(checkMatches.credit)
+                    } else {
+                        matchIds = findQuestionData.slice(saveMatchCount, saveMatchCount + 20).map((getId) => getId.user_id);
+                        saveMatchCount += parseInt(checkMatches.credit)
+                    }
 
-            } else if (findMatchUsers.credit == 15) {
+                    const updateData = await MatchUsers.findOneAndUpdate(
+                        {
+                            _id: checkMatches._id
+                        },
+                        {
+                            match_user: matchIds,
+                            match_count: matchIds.length
+                        }
+                    )
 
-                var idArr = []
-                for (const getId of findQuestionData) {
-                    idArr.push(getId.user_id)
-                }
-                console.log("id", idArr);
+                    // console.log("matchIds", matchIds); 
 
-                const [field1 = null, field2 = null, field3 = null, field4 = null, field5 = null, field6 = null, field7 = null, field8 = null, field9 = null, field10 = null, field11 = null, field12 = null, field13 = null, field14 = null, field15 = null] = idArr;
-
-                const updateData = await MatchUsers.findOneAndUpdate({ _id: findMatchUsers._id }, {
-                    user_id: findMatchUsers.user_id,
-                    match_id_one: field1,
-                    match_id_two: field2,
-                    match_id_three: field3,
-                    match_id_four: field4,
-                    match_id_five: field5,
-                    match_id_six: field6,
-                    match_id_seven: field7,
-                    match_id_eight: field8,
-                    match_id_nine: field9,
-                    match_id_ten: field10,
-                    match_id_eleven: field11,
-                    match_id_twelve: field12,
-                    match_id_thirteen: field13,
-                    match_id_fourteen: field14,
-                    match_id_fifteen: field15,
-                    credit: findMatchUsers.credit
-                })
-
-                if (idArr.length < 15) {
-                    console.log("---", findMatchUsers.user_id);
-
-                    const title = "15 user match soon!";
-                    const body = "In 5 minutes";
-                    const text = "your 15 match user complete soon";
-                    const sendBy = "abc";
-                    // const registrationToken = findUserForNotiy.fcm_token
-                    // if (registrationToken != null) {
-                    console.log("--------");
-                    Notification.sendPushNotificationFCM(
-                        // registrationToken,
-                        title,
-                        body,
-                        text,
-                        sendBy,
-                        true
-                    );
-                    // } 
-
-                }
-
-            } else {
-
-                var idArr = []
-                for (const getId of findQuestionData) {
-                    idArr.push(getId.user_id)
-                }
-                console.log("id", idArr);
-
-                const [field1 = null, field2 = null, field3 = null, field4 = null, field5 = null, field6 = null, field7 = null, field8 = null, field9 = null, field10 = null, field11 = null, field12 = null, field13 = null, field14 = null, field15 = null, field16 = null, field17 = null, field18 = null, field19 = null, field20 = null] = idArr;
-
-                const updateData = await MatchUsers.findOneAndUpdate({ _id: findMatchUsers._id }, {
-                    user_id: findMatchUsers.user_id,
-                    match_id_one: field1,
-                    match_id_two: field2,
-                    match_id_three: field3,
-                    match_id_four: field4,
-                    match_id_five: field5,
-                    match_id_six: field6,
-                    match_id_seven: field7,
-                    match_id_eight: field8,
-                    match_id_nine: field9,
-                    match_id_ten: field10,
-                    match_id_eleven: field11,
-                    match_id_twelve: field12,
-                    match_id_thirteen: field13,
-                    match_id_fourteen: field14,
-                    match_id_fifteen: field15,
-                    match_id_sixteen: field16,
-                    match_id_seventeen: field17,
-                    match_id_eighteen: field18,
-                    match_id_nineteen: field19,
-                    match_id_twenty: field20,
-                    credit: findMatchUsers.credit
-                })
-
-                if (idArr.length < 20) {
-                    console.log("---", findMatchUsers.user_id);
-
-                    const title = "20 user match soon!";
-                    const body = "In 5 minutes";
-                    const text = "your 20 match user complete soon";
-                    const sendBy = "abc";
-                    // const registrationToken = findUserForNotiy.fcm_token
-                    // if (registrationToken != null) {
-                    console.log("--------");
-                    Notification.sendPushNotificationFCM(
-                        // registrationToken,
-                        title,
-                        body,
-                        text,
-                        sendBy,
-                        true
-                    );
-                    // }
                 }
 
             }
