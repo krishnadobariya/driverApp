@@ -1211,19 +1211,22 @@ exports.userLogout = async (req, res, next) => {
                 const delGroupChatRoom = await GroupChatRoom.deleteOne({ groupId: respData._id });
                 const delGroupChat = await GroupChat.deleteOne({ groupId: respData._id });
 
-                // Find Group Post By GroupId 
-                const groupPost = await GroupPost.find({ user_id: req.params.id });
-                console.log("groupPost", groupPost);
+            }
 
-                for (const respPost of groupPost) {
-                    console.log("respPost:::", respPost);
+            // Find Group Post By GroupId 
+            const groupPost = await GroupPost.find({ user_id: req.params.id });
+            console.log("groupPost", groupPost);
 
-                    // Delete GroupPost & GroupPostLike & GroupPostComment By PostId 
-                    const delPost = await GroupPost.deleteOne({ _id: respPost._id });
-                    const delPostLike = await GroupPostLike.deleteOne({ post_id: respPost._id });
-                    const delPostComm = await GroupPostComm.deleteOne({ post_id: respPost._id });
+            for (const respPost of groupPost) {
+                console.log("respPost:::", respPost);
 
-                }
+                const findPost = await GroupPost.findOne({ _id: mongoose.Types.ObjectId(respPost._id) });
+                console.log("findPost", findPost);
+
+                // Delete GroupPost & GroupPostLike & GroupPostComment By PostId 
+                const delPost = await GroupPost.deleteOne({ _id: mongoose.Types.ObjectId(respPost._id) });
+                const delPostLike = await GroupPostLike.deleteOne({ post_id: respPost._id });
+                const delPostComm = await GroupPostComm.deleteOne({ post_id: respPost._id });
 
             }
 
