@@ -388,7 +388,7 @@ exports.groupPostLikedList = async (req, res) => {
                 res.status(status.NOT_FOUND).json({
                     message: "Liked user Not Found!",
                     status: true,
-                    code: 200,
+                    code: 404,
                     statusCode: 1,
                     data: []
                 })
