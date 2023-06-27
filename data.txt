@@ -3,14 +3,14 @@
 
 - Socket : joinUser
 {
-    "user_id": "63da52c0a436ea28cdd0ee0b"
+    "user_id": "648173cb19a4de60e5bdc67f"
 }
 
 
 - Socket : chat
 {
-    "sender_id": "63ae8347ad6ae4296048bfeb",
-    "receiver_id": "63ae8debcf146b1c502ba640",
+    "sender_id": "6487f85219a4de60e5cb082a",
+    "receiver_id": "648173cb19a4de60e5bdc67f",
     "message": "Hello!"
 }
 - emit : chatReceive
@@ -68,9 +68,9 @@
 
 - Socket : groupChat
 {
-    "groupId": "64116e34e0278f59be4119b0",
-    "groupName": "abc",
-    "sender_id": "63d8ffe2a436ea28cdd0ecc1",
+    "groupId": "6488002919a4de60e5cb2021",
+    "groupName": "Ashish Grp",
+    "sender_id": "6487f85219a4de60e5cb082a",
     "message": "km chho"
 }
 - emit : messageYou

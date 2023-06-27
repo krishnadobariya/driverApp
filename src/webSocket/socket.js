@@ -147,6 +147,7 @@ function socket(io) {
                         const response = {
                             sender: arg.sender_id,
                             receiver: arg.receiver_id,
+                            chatRoomId: getChatRoom._id,
                             user_name: findSenderUser.username,
                             message: arg.message
                         }
@@ -189,6 +190,7 @@ function socket(io) {
                         const response = {
                             sender: arg.sender_id,
                             receiver: arg.receiver_id,
+                            chatRoomId: getChatRoom2._id,
                             user_name: findSenderUser.username,
                             message: arg.message
                         }
@@ -263,6 +265,7 @@ function socket(io) {
                             const response = {
                                 sender: arg.sender_id,
                                 receiver: arg.receiver_id,
+                                chatRoomId: getChatRoom._id,
                                 user_name: findSenderUser.username,
                                 message: arg.message
                             }
@@ -317,6 +320,7 @@ function socket(io) {
                             const response = {
                                 sender: arg.sender_id,
                                 receiver: arg.receiver_id,
+                                chatRoomId: getChatRoom._id,
                                 user_name: findSenderUser.username,
                                 message: arg.message
                             }
@@ -370,6 +374,7 @@ function socket(io) {
                             const response = {
                                 sender: arg.sender_id,
                                 receiver: arg.receiver_id,
+                                chatRoomId: getChatRoom2._id,
                                 user_name: findSenderUser.username,
                                 message: arg.message
                             }
@@ -424,6 +429,7 @@ function socket(io) {
                             const response = {
                                 sender: arg.sender_id,
                                 receiver: arg.receiver_id,
+                                chatRoomId: getChatRoom2._id,
                                 user_name: findSenderUser.username,
                                 message: arg.message
                             }
@@ -1260,6 +1266,7 @@ function socket(io) {
 
                                 const response = {
                                     sender: arg.sender_id,
+                                    groupId: arg.groupId,
                                     group_name: arg.groupName,
                                     user_name: getUserData.username,
                                     message: arg.message
@@ -1334,6 +1341,7 @@ function socket(io) {
 
                         const response = {
                             sender: arg.sender_id,
+                            groupId: arg.groupId,
                             group_name: arg.groupName,
                             user_name: getUserData.username,
                             message: arg.message
