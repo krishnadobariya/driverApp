@@ -1,5 +1,6 @@
 const GroupList = require("../models/groupList.model");
 const Group = require("../models/group.model");
+const GroupPost = require("../models/groupPost.model");
 const GroupChat = require("../webSocket/models/groupChat.model");
 const GroupPostLike = require("../models/groupPostLike.model");
 const GroupMemberList = require("../models/groupMemberList.model");
@@ -364,48 +365,94 @@ exports.groupPostLikedList = async (req, res) => {
     try {
 
         let postId = req.params.postId;
-        const findGroupPostData = await GroupPostLike.findOne({
-            post_id: postId
-        });
-        console.log("findGroupPostData::", findGroupPostData);
 
-        if (findGroupPostData == null) {
+        const findPost = await GroupPost.findOne({ _id: postId });
+        if (findPost == null) {
 
             res.status(status.NOT_FOUND).json({
-                message: "Liked user Not Found!",
+                message: "POST NOT EXIST",
                 status: true,
-                code: 200,
+                code: 404,
                 statusCode: 1,
-                data: []
             })
 
         } else {
 
-            const response = [];
-            for (const respData of findGroupPostData.reqAuthId) {
+            const findGroupPostData = await GroupPostLike.findOne({
+                post_id: postId
+            });
+            console.log("findGroupPostData::", findGroupPostData);
 
-                const getUserData = await User.findOne({
-                    _id: respData._id
-                });
+            if (findGroupPostData == null) {
 
-                const userData = {
-                    user_id: respData._id,
-                    profile: getUserData.profile[0] ? getUserData.profile[0].res : "",
-                    username: getUserData.username,
-                    email: getUserData.email
-                }
-                response.push(userData)
-            }
-
-            res.status(status.OK).json(
-                {
-                    message: "Get Liked User Data List From Group Post Successfully",
+                res.status(status.NOT_FOUND).json({
+                    message: "Liked user Not Found!",
                     status: true,
                     code: 200,
                     statusCode: 1,
-                    data: response
+                    data: []
+                })
+
+            } else {
+
+                const getLikeOnPost = [];
+
+                for (const getDataOfLikeAbout of findGroupPostData.reqAuthId) {
+
+                    const userFound = await User.findOne({
+                        _id: getDataOfLikeAbout._id
+                    });
+                    console.log("userFound::", userFound);
+
+                    if (userFound == null) {
+
+                        const response = {
+                            user_id: getDataOfLikeAbout._id,
+                            email: "deleteduser@gmail.com",
+                            username: "Deleted User",
+                            profile: "https://pic.onlinewebfonts.com/svg/img_529679.png"
+                        }
+                        getLikeOnPost.push(response)
+
+                    } else {
+
+                        const response = {
+                            user_id: getDataOfLikeAbout._id,
+                            email: userFound.email,
+                            username: userFound?.username,
+                            profile: userFound?.profile[0]?.res
+                        }
+                        getLikeOnPost.push(response)
+
+                    }
+
                 }
-            )
+
+                const findAthorProfile = await User.findOne({
+                    _id: findPost.user_id
+                })
+
+                const finalGetLikeData = {
+                    post_id: findPost._id,
+                    group_id: findPost.group_id,
+                    authorId: findPost.user_id,
+                    author_name: findAthorProfile?.username,
+                    author_profile: findAthorProfile?.profile[0]?.res,
+                    email: findAthorProfile.email,
+                    likeList: getLikeOnPost
+                }
+
+                res.status(status.OK).json(
+                    {
+                        message: "Get Liked User Data List From Group Post Successfully",
+                        status: true,
+                        code: 200,
+                        statusCode: 1,
+                        data: finalGetLikeData
+                    }
+                )
+
+            }
 
         }
 

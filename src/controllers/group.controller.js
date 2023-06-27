@@ -554,13 +554,13 @@ exports.addCommentOnPost = async (req, res) => {
 exports.commentList = async (req, res) => {
     try {
 
-        const getCommentedPost = await GroupPostComment.find({ post_id: req.params.postId });
-        console.log("getCommentedPost:::", getCommentedPost);
+        let postId = req.params.postId;
 
-        if (getCommentedPost.length == 0) {
+        const findPost = await GroupPost.findOne({ _id: postId });
+        if (findPost == null) {
 
             res.status(status.NOT_FOUND).json({
-                message: "THIS POST HAS NO COMMENT",
+                message: "POST NOT EXIST",
                 status: true,
                 code: 404,
                 statusCode: 1,
@@ -568,13 +568,77 @@ exports.commentList = async (req, res) => {
 
         } else {
 
-            res.status(status.OK).json({
-                message: "ALL COMMENTED MESSAGE WITH USER LIST",
-                status: true,
-                code: 200,
-                statusCode: 1,
-                data: getCommentedPost
-            })
+            const getCommentedPost = await GroupPostComment.findOne({ post_id: postId });
+            console.log("getCommentedPost:::", getCommentedPost);
+
+            if (getCommentedPost == null) {
+
+                res.status(status.NOT_FOUND).json({
+                    message: "THIS POST HAS NO COMMENT",
+                    status: true,
+                    code: 404,
+                    statusCode: 1,
+                })
+
+            } else {
+
+                const getCommentOnPost = [];
+
+                for (const getDataOfCOmmentAbout of getCommentedPost.comment) {
+
+                    const userFound = await Auth.findOne({
+                        _id: getDataOfCOmmentAbout.user_id
+                    });
+                    console.log("userFound::", userFound);
+
+                    if (userFound == null) {
+
+                        const response = {
+                            user_id: getDataOfCOmmentAbout.user_id,
+                            email: "deleteduser@gmail.com",
+                            commentText: getDataOfCOmmentAbout.text,
+                            username: "Deleted User",
+                            profile: "https://pic.onlinewebfonts.com/svg/img_529679.png"
+                        }
+                        getCommentOnPost.push(response)
+
+                    } else {
+
+                        const response = {
+                            user_id: getDataOfCOmmentAbout.user_id,
+                            email: userFound.email,
+                            commentText: getDataOfCOmmentAbout.text,
+                            username: userFound?.username,
+                            profile: userFound?.profile[0]?.res
+                        }
+                        getCommentOnPost.push(response)
+
+                    }
+
+                }
+
+                const findAthorProfile = await Auth.findOne({
+                    _id: findPost.user_id
+                })
+
+                const finalGetCommentData = {
+                    post_id: findPost._id,
+                    group_id: findPost.group_id,
+                    authorId: findPost.user_id,
+                    author_name: findAthorProfile?.username,
+                    author_profile: findAthorProfile?.profile[0]?.res,
+                    commentList: getCommentOnPost
+                }
+
+                res.status(status.OK).json({
+                    message: "ALL COMMENTED MESSAGE WITH USER LIST",
+                    status: true,
+                    code: 200,
+                    statusCode: 1,
+                    data: finalGetCommentData
+                })
+
+            }
 
         }
 

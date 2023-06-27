@@ -701,8 +701,9 @@ exports.userPostCommnetList = async (req, res) => {
 
         } else {
 
-            const getCommentedPost = await UserPostComment.find({ post_id: postId });
-            if (getCommentedPost.length == 0) {
+            const getCommentedPost = await UserPostComment.findOne({ post_id: postId });
+
+            if (getCommentedPost == null) {
 
                 res.status(status.NOT_FOUND).json({
                     message: "THIS POST HAS NO COMMENT",
@@ -713,12 +714,59 @@ exports.userPostCommnetList = async (req, res) => {
 
             } else {
 
+                const getCommentOnPost = [];
+
+                for (const getDataOfCOmmentAbout of getCommentedPost.comment) {
+
+                    const userFound = await User.findOne({
+                        _id: getDataOfCOmmentAbout.user_id
+                    });
+                    console.log("userFound::", userFound);
+
+                    if(userFound == null) {
+
+                        const response = {
+                            user_id: getDataOfCOmmentAbout.user_id,
+                            email: "deleteduser@gmail.com",
+                            commentText: getDataOfCOmmentAbout.text,
+                            username: "Deleted User",
+                            profile: "https://pic.onlinewebfonts.com/svg/img_529679.png"
+                        }
+                        getCommentOnPost.push(response)
+
+                    } else {
+
+                        const response = {
+                            user_id: getDataOfCOmmentAbout.user_id,
+                            email: userFound.email,
+                            commentText: getDataOfCOmmentAbout.text,
+                            username: userFound?.username,
+                            profile: userFound?.profile[0]?.res
+                        }
+                        getCommentOnPost.push(response)
+
+                    }
+
+                }
+
+                const findAthorProfile = await User.findOne({
+                    _id: findPost.user_id
+                })
+
+                const finalGetCommentData = {
+                    authorId: findPost.user_id,
+                    postId: findPost._id,
+                    author_name: findAthorProfile?.username,
+                    author_profile: findAthorProfile?.profile[0]?.res,
+                    commentList: getCommentOnPost
+                }
+
                 res.status(status.OK).json({
                     message: "ALL COMMENTED MESSAGE WITH USER LIST",
                     status: true,
                     code: 200,
                     statusCode: 1,
-                    data: getCommentedPost
+                    data: finalGetCommentData
                 })
 
             }
@@ -746,48 +794,92 @@ exports.userPostLikedList = async (req, res) => {
 
         let postId = req.params.postId;
 
-        const findUserPostData = await UserPostLike.find({
-            post_id: postId
-        });
-        console.log("findUserPostData::", findUserPostData[0].reqAuthId);
-
-        if (findUserPostData.length == 0) {
+        const findPost = await UserPost.findOne({ _id: postId });
+        if (findPost == null) {
 
             res.status(status.NOT_FOUND).json({
-                message: "Liked user Not Found!",
+                message: "POST NOT EXIST",
                 status: true,
-                code: 200,
+                code: 404,
                 statusCode: 1,
-                data: []
             })
 
-        } else {
+        }  else {
 
-            const response = [];
-            for (const getUserData of findUserPostData[0].reqAuthId) {
-                console.log("getUserData::", getUserData._id);
-                const findUserDetails = await User.findOne({
-                    _id: getUserData._id
-                });
+            const findUserPostData = await UserPostLike.findOne({
+                post_id: postId
+            });
+            console.log("findUserPostData::", findUserPostData.reqAuthId);
 
-                const userData = {
-                    user_id: getUserData._id,
-                    profile: findUserDetails.profile[0] ? findUserDetails.profile[0].res : "",
-                    username: findUserDetails.username,
-                    email: findUserDetails.email
-                }
-                response.push(userData)
-            }
+            if (findUserPostData == null) {
 
-            res.status(status.OK).json(
-                {
-                    message: "Get Liked User Data List Successfully",
+                res.status(status.NOT_FOUND).json({
+                    message: "THIS POST HAS NO LIKE",
                     status: true,
-                    code: 200,
+                    code: 404,
                     statusCode: 1,
-                    data: response
+                })
+
+            } else {
+
+                const getLikeOnPost = [];
+
+                for (const getDataOfLikeAbout of findUserPostData.reqAuthId) {
+                    console.log("getDataOfLikeAbout", getDataOfLikeAbout);
+
+                    const userFound = await User.findOne({
+                        _id: getDataOfLikeAbout._id
+                    });
+                    console.log("userFound::", userFound);
+
+                    if(userFound == null) {
+
+                        const response = {
+                            user_id: getDataOfLikeAbout._id,
+                            email: "deleteduser@gmail.com",
+                            username: "Deleted User",
+                            profile: "https://pic.onlinewebfonts.com/svg/img_529679.png"
+                        }
+                        getLikeOnPost.push(response)
+
+                    } else {
+
+                        const response = {
+                            user_id: getDataOfLikeAbout._id,
+                            email: userFound.email,
+                            username: userFound?.username,
+                            profile: userFound?.profile[0]?.res
+                        }
+                        getLikeOnPost.push(response)
+
+                    }
+
                 }
-            )
+
+                const findAthorProfile = await User.findOne({
+                    _id: findPost.user_id
+                })
+                console.log("findAthorProfile", findAthorProfile);
+
+                const finalGetCommentData = {
+                    userId: findPost.user_id,
+                    postId: findPost._id,
+                    user_name: findAthorProfile?.username,
+                    user_profile: findAthorProfile?.profile[0]?.res,
+                    likeList: getLikeOnPost
+                }
+
+                res.status(status.OK).json(
+                    {
+                        message: "Get Liked User Data List Successfully",
+                        status: true,
+                        code: 200,
+                        statusCode: 1,
+                        data: finalGetCommentData
+                    }
+                )
+
+            }
 
         }
 
