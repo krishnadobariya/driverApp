@@ -1184,53 +1184,50 @@ exports.userLogout = async (req, res, next) => {
                 user_id: req.params.id
             })
 
-            /* Delete Group Member */
-            // await GroupMember.updateOne({
-            //     users: {
-            //         $elemMatch: {
-            //             user_id: req.params.id
-            //         }
-            //     }
-            // }, {
-            //     $pull: {
-            //         users: {
-            //             user_id: req.params.id
-            //         }
-            //     }
-            // });
-
             /* Delete Notification Data BY UserId */
             await Notification.deleteMany(
                 {
                     user_id: req.params.id
                 });
 
-            /* Find Group By UserId */
-            // const findGroup = await GroupMember.find({
-            //     users: {
-            //         $elemMatch: {
-            //             user_id: req.params.id
-            //         }
-            //     }
-            // });
-            // console.log("findGroup::", findGroup);
 
-            /* Descrease Group Memeber Number */
-            // for (const groupResp of findGroup) {
+            /* ----- Delete Group , Group Post , Group Like , Group Comment ----- */
 
-            //     await Group.updateOne(
-            //         {
-            //             _id: groupResp.group_id
-            //         },
-            //         {
-            //             group_members: groupResp.group_members - 1
-            //         }
-            //     );
+            //  Delete From Group List 
+            const delGroupList = await GroupList.deleteMany({ user_id: req.params.id });
 
-            // }
+            //  Find Group Data 
+            const getGroup = await Group.find({ user_id: req.params.id });
+            console.log("getGroup", getGroup);
 
+            //  Delete Group Post /~> Post Related Comment,Like /~> GroupMemeberList  
+            for (const respData of getGroup) {
 
-            /* Decrease Group Memeber Number */
+                //  Delete Group & GroupMember & Notification & GroupChatRoom & GroupChat By GroupId 
+                const delGroup = await Group.deleteOne({ _id: respData._id });
+                const delGroupList = await GroupList.deleteOne({ group_id: respData._id });
+                const delGroupMemberList = await GroupMember.deleteOne({ group_id: respData._id });
+                const delGroupNoti = await Notification.deleteOne({ group_id: respData._id });
+                const delGroupChatRoom = await GroupChatRoom.deleteOne({ groupId: respData._id });
+                const delGroupChat = await GroupChat.deleteOne({ groupId: respData._id });
+
+                // Find Group Post By GroupId 
+                const groupPost = await GroupPost.find({ user_id: req.params.id });
+                console.log("groupPost", groupPost);
+
+                for (const respPost of groupPost) {
+                    console.log("respPost:::", respPost);
+
+                    // Delete GroupPost & GroupPostLike & GroupPostComment By PostId 
+                    const delPost = await GroupPost.deleteOne({ _id: respPost._id });
+                    const delPostLike = await GroupPostLike.deleteOne({ post_id: respPost._id });
+                    const delPostComm = await GroupPostComm.deleteOne({ post_id: respPost._id });
+
+                }
+
+            }
+
+            // Decrease Group Memeber Number 
             const findMember = await GroupMember.find({
                 users: {
                     $elemMatch: {
@@ -1265,72 +1262,22 @@ exports.userLogout = async (req, res, next) => {
                     }
                 );
 
-            }
-
-            /* Delete GroupMember On List By UserId */
-            await GroupMember.updateMany({
-                users: {
-                    $elemMatch: {
-                        user_id: req.params.id
+                await GroupMember.updateMany(
+                    {
+                        _id: getGroupId.group_id
+                    }, {
+                    $pull: {
+                        users: {
+                            user_id: req.params.id
+                        }
                     }
-                }
-            }, {
-                $pull: {
-                    users: {
-                        user_id: req.params.id
-                    }
-                }
-            });
-
-
-            /* Delete Comment From Group Post By UserId */
-            await GroupPostComm.updateOne({
-                comment: {
-                    $elemMatch: {
-                        user_id: req.params.id
-                    }
-                }
-            }, {
-                $pull: {
-                    comment: {
-                        user_id: req.params.id
-                    }
-                }
-            });
-
-            /* Delete From Group List */
-            const delGroupList = await GroupList.deleteMany({ user_id: req.params.id });
-
-            /* Find Group Data */
-            const getGroup = await Group.find({ user_id: req.params.id });
-            console.log("getGroup", getGroup);
-
-            /* Delete Group Post /~> Post Related Comment,Like /~> GroupMemeberList  */
-            for (const respData of getGroup) {
-
-                /* Delete Group & GroupMember & Notification & GroupChatRoom & GroupChat By GroupId */
-                const delGroup = await Group.deleteOne({ _id: respData._id });
-                const delGroupList = await GroupList.deleteOne({ group_id: respData._id });
-                const delGroupMemberList = await GroupMember.deleteOne({ group_id: respData._id });
-                const delGroupNoti = await Notification.deleteOne({ group_id: respData._id });
-                const delGroupChatRoom = await GroupChatRoom.deleteOne({ groupId: respData._id });
-                const delGroupChat = await GroupChat.deleteOne({ groupId: respData._id });
-
-                /* Find Group Post By GroupId */
-                const groupPost = await GroupPost.find({ user_id: req.params.id });
-                console.log("groupPost", groupPost);
-
-                for (const respPost of groupPost) {
-                    console.log("respPost:::", respPost);
-
-                    /* Delete GroupPost & GroupPostLike & GroupPostComment By PostId */
-                    const delPost = await GroupPost.deleteOne({ _id: respPost._id });
-                    const delPostLike = await GroupPostLike.deleteOne({ post_id: respPost._id });
-                    const delPostComm = await GroupPostComm.deleteOne({ post_id: respPost._id });
-
-                }
+                });
 
             }
+            // End Decrease Group Memeber Number 
+
+            /* ----- End Delete Group , Group Post , Group Like , Group Comment ----- */
+
 
             /* Delete User From Friend Request Table */
             const delFrdData = await FriendRequest.deleteMany({
