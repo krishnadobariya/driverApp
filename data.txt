@@ -104,4 +104,11 @@
     "action": 1
 }
 - emit : requestAccept
- 
+
+
+- Socket : checkInAppPurchase
+{
+    "user_id" : "648173cb19a4de60e5bdc67f",
+    "subscription_type" : 2
+}
+ - emit : inAppPurchaseOrNot

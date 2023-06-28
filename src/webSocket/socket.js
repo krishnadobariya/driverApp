@@ -1674,57 +1674,115 @@ function socket(io) {
         // ----- checkInAppPurchase ----- //
         socket.on('checkInAppPurchase', async (arg) => {
             const userId = arg.user_id;
+            const subscription_type = arg.subscription_type;
             const userRoom = `User${arg.user_id}`;
-          
-            const findData = await InAppPurchaseModel.find({ user_id: userId });
-          
-            if (findData[0] === undefined) {
-              io.to(userRoom).emit("inAppPurchaseOrNot", "User Not Found");
-            } else {
-              const resArr = [];
-          
-              for (const checkTime of findData) {
-                const timestamp = parseFloat(checkTime.purchaseTime);
-                const date = new Date(timestamp);
-                const currentDate = new Date();
-          
-                const oneMonthLater = new Date(date.getTime());
-                oneMonthLater.setMonth(oneMonthLater.getMonth() + 1);
-          
-                const remainingTimeMs = oneMonthLater - currentDate;
-                let remainingTime;
-                let timeUnit;
-          
-                if (remainingTimeMs >= 0) {
-                  if (remainingTimeMs < 24 * 60 * 60 * 1000) {
-                    // Less than a day remaining
-                    remainingTime = Math.floor(remainingTimeMs / (60 * 60 * 1000)); // Remaining hours
-                    timeUnit = 'hours';
-                  } else {
-                    remainingTime = Math.floor(remainingTimeMs / (24 * 60 * 60 * 1000)); // Remaining days
-                    timeUnit = 'days';
-                  }
-          
-                  const response = {
-                    InAppPurchase_id: checkTime._id,
-                    message: `Remaining ${timeUnit}: ${remainingTime}`,
-                    success: 1
-                  };
-                  resArr.push(response);
+
+            if (subscription_type == 1) {
+
+                const findData = await InAppPurchaseModel.find({ user_id: userId, subscription_type: 1 });
+                // console.log("findData", findData);
+
+                if (findData[0] === undefined) {
+                    io.to(userRoom).emit("inAppPurchaseOrNot", "User In App Purchase Not Found");
                 } else {
-                  const response = {
-                    InAppPurchase_id: checkTime._id,
-                    message: "Pack is over",
-                    success: 0
-                  };
-                  resArr.push(response);
+                    const resArr = [];
+
+                    for (const checkTime of findData) {
+                        const timestamp = parseFloat(checkTime.purchaseTime);
+                        const date = new Date(timestamp);
+                        const currentDate = new Date();
+
+                        const futureDate = new Date(date.getTime());
+                        futureDate.setMonth(futureDate.getMonth() + parseFloat(checkTime.credit));
+
+                        const remainingTimeMs = futureDate - currentDate;
+
+                        let remainingTime;
+                        let timeUnits = [];
+
+                        if (remainingTimeMs >= 0) {
+                            if (remainingTimeMs < 24 * 60 * 60 * 1000) {
+                                // Less than a day remaining
+                                remainingTime = Math.floor(remainingTimeMs / (60 * 60 * 1000)); // Remaining hours
+                                timeUnits.push({ unit: 'hours', value: remainingTime });
+                            } else if (remainingTimeMs < 30 * 24 * 60 * 60 * 1000) {
+                                // Less than a month remaining
+                                remainingTime = Math.floor(remainingTimeMs / (24 * 60 * 60 * 1000)); // Remaining days
+                                timeUnits.push({ unit: 'days', value: remainingTime });
+                                let remainingMs = remainingTimeMs % (24 * 60 * 60 * 1000);
+                                remainingTime = Math.floor(remainingMs / (60 * 60 * 1000)); // Remaining hours
+                                timeUnits.push({ unit: 'hours', value: remainingTime });
+                            } else {
+                                // More than a month remaining
+                                remainingTime = Math.floor(remainingTimeMs / (30 * 24 * 60 * 60 * 1000)); // Remaining months
+                                timeUnits.push({ unit: 'months', value: remainingTime });
+                                let remainingMs = remainingTimeMs % (30 * 24 * 60 * 60 * 1000);
+                                remainingTime = Math.floor(remainingMs / (24 * 60 * 60 * 1000)); // Remaining days
+                                timeUnits.push({ unit: 'days', value: remainingTime });
+                                remainingMs %= 24 * 60 * 60 * 1000;
+                                remainingTime = Math.floor(remainingMs / (60 * 60 * 1000)); // Remaining hours
+                                timeUnits.push({ unit: 'hours', value: remainingTime });
+                            }
+
+                            const response = {
+                                InAppPurchase_id: checkTime._id,
+                                message: `Remaining: ${timeUnits.map(unit => `${unit.value} ${unit.unit}`).join(', ')}`,
+                                success: 1
+                            };
+                            resArr.push(response);
+                        } else {
+                            const response = {
+                                InAppPurchase_id: checkTime._id,
+                                message: "Pack is over",
+                                success: 0
+                            };
+                            resArr.push(response);
+                        }
+                    }
+
+                    console.log("resArr", resArr);
+                    io.to(userRoom).emit("inAppPurchaseOrNot", resArr);
                 }
-              }
-          
-              io.to(userRoom).emit("inAppPurchaseOrNot", resArr);
+
+            } else {
+                console.log("subscription_type = 2");
+
+                const findData = await InAppPurchaseModel.find({ user_id: userId, subscription_type: 2 });
+                console.log("findData", findData);
+
+                if (findData[0] === undefined) {
+                    io.to(userRoom).emit("inAppPurchaseOrNot", "User In App Purchase Not Found");
+                } else {
+                    const resArr = [];
+
+                    for (const checkCredit of findData) {
+
+                        if (checkCredit.credit == 0) {
+                            const response = {
+                                InAppPurchase_id: checkCredit._id,
+                                message: "Pack is over",
+                                success: 0
+                            };
+                            resArr.push(response);
+                        } else {
+                            const response = {
+                                InAppPurchase_id: checkCredit._id,
+                                message: "Pack is running",
+                                success: 1
+                            };
+                            resArr.push(response);
+                        }
+
+                    }
+
+                    console.log("resArr", resArr);
+                    io.to(userRoom).emit("inAppPurchaseOrNot", resArr);
+                }
+
             }
-          });
-          
+
+        });
+
         // ----- checkInAppPurchase ----- //
 
     })
