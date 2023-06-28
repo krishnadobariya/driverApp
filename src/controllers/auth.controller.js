@@ -1220,8 +1220,8 @@ exports.userLogout = async (req, res, next) => {
             for (const respPost of groupPost) {
                 console.log("respPost:::", respPost);
 
-                const findPost = await GroupPost.findOne({ _id: mongoose.Types.ObjectId(respPost._id) });
-                console.log("findPost", findPost);
+                // const findPost = await GroupPost.findOne({ _id: mongoose.Types.ObjectId(respPost._id) });
+                // console.log("findPost", findPost);
 
                 // Delete GroupPost & GroupPostLike & GroupPostComment By PostId 
                 const delPost = await GroupPost.deleteOne({ _id: mongoose.Types.ObjectId(respPost._id) });
@@ -1267,7 +1267,11 @@ exports.userLogout = async (req, res, next) => {
 
                 await GroupMember.updateMany(
                     {
-                        _id: getGroupId.group_id
+                        users: {
+                            $elemMatch: {
+                                user_id: mongoose.Types.ObjectId(req.params.id)
+                            }
+                        }
                     }, {
                     $pull: {
                         users: {
