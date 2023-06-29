@@ -25,6 +25,7 @@ const UserPostLike = require("../models/userPostLike.model");
 const activity = require("../models/activity.model");
 const Event = require("../models/event.model");
 const JoinEvent = require("../models/joinEvent.model");
+const InAppPurchase = require("../models/inAppPurchase.model");
 const cloudinary = require("../utils/cloudinary.utils");
 const { mailService } = require("../services/email.service");
 const status = require("http-status");
@@ -2173,7 +2174,166 @@ exports.searchData = async (req, res) => {
 }
 
 // search with Vehicle type , vehicle_img_id and questions
-exports.searchByVehical = async (req, res) => {
+// exports.searchByVehical = async (req, res) => {
+//     try {
+
+//         const userId = req.params.userId
+
+//         const findUser = await authModel.findOne({ _id: userId })
+//         console.log("findUser", findUser);
+
+//         if (findUser == null) {
+
+//             res.status(status.NOT_FOUND).json(
+//                 {
+//                     message: "User Not Found",
+//                     status: false,
+//                     code: 404,
+//                     statusCode: 0
+//                 }
+//             )
+
+//         } else {
+
+//             const findOtherUser = await authModel.find({ _id: { $ne: userId } })
+//             console.log("findOtherUser", findOtherUser.length);
+
+//             var userDataArr = []
+//             for (const checkVehicalData of findOtherUser) {
+
+//                 // console.log("checkVehicalData", checkVehicalData);
+
+//                 const findBlockUser = await Block.find({
+//                     user_id: userId,
+//                     block_user_id: checkVehicalData._id
+//                 });
+
+//                 if (findBlockUser.length != 0) {
+
+//                 } else {
+
+//                     var finalChatId = "";
+//                     finalChatId = await chatRoomModel.find(
+//                         {
+//                             user1: checkVehicalData._id,
+//                             user2: userId,
+//                         }
+//                     );
+
+//                     if (finalChatId.length == 0) {
+//                         finalChatId = await chatRoomModel.find(
+//                             {
+//                                 user2: checkVehicalData._id,
+//                                 user1: userId,
+//                             }
+//                         );
+
+//                     }
+
+//                     const findUserQuestion = await Question.findOne({ user_id: userId })
+//                     // console.log("findUserQuestion", findUserQuestion);
+
+//                     const findQuestionData = await Question.findOne({
+//                         user_id: checkVehicalData._id,
+//                         que_one: findUserQuestion.que_one,
+//                         que_two: findUserQuestion.que_two,
+//                         que_three: findUserQuestion.que_three,
+//                         que_four: findUserQuestion.que_four,
+//                         que_five: findUserQuestion.que_five,
+//                         que_six: findUserQuestion.que_six,
+//                         // $or: [
+//                         //     { $and: [{ que_one: findUserQuestion.que_one, que_two: findUserQuestion.que_two, que_three: findUserQuestion.que_three }] },
+//                         //     { $and: [{ que_two: findUserQuestion.que_two, que_three: findUserQuestion.que_three, que_four: findUserQuestion.que_four }] },
+//                         //     { $and: [{ que_one: findUserQuestion.que_one, que_three: findUserQuestion.que_three, que_four: findUserQuestion.que_four }] },
+//                         //     { $and: [{ que_one: findUserQuestion.que_one, que_two: findUserQuestion.que_two, que_four: findUserQuestion.que_four }] },
+//                         //     { $and: [{ que_one: findUserQuestion.que_one, que_two: findUserQuestion.que_two, que_three: findUserQuestion.que_three, que_four: findUserQuestion.que_four }] }
+//                         // ]
+//                     })
+//                     // console.log("findQuestionData", findQuestionData);
+
+//                     var vehicleDataArr = []
+//                     var isVehicleData = false;
+//                     if (findQuestionData) {
+
+//                         for (const getVehical of checkVehicalData.vehicle) {
+
+//                             if (getVehical.vehicle_img_id == findUser.vehicle[0].vehicle_img_id && getVehical.vehicle_type == checkVehicalData.vehicle[0].vehicle_type) {
+
+//                                 isVehicleData = true;
+//                                 const response = {
+//                                     vehicleImageId: getVehical.vehicle_img_id,
+//                                     model: getVehical.model,
+//                                     type: getVehical.vehicle_type,
+//                                     year: getVehical.year,
+//                                     trim: getVehical.trim,
+//                                     dailyDriving: getVehical.daily_driving,
+//                                     unit: getVehical.unit,
+//                                     duration: getVehical.duration,
+//                                     distance: getVehical.distance
+//                                 }
+//                                 vehicleDataArr.push(response)
+//                             }
+
+//                         }
+
+//                     }
+
+//                     // console.log("vehicleDataArr", vehicleDataArr);
+//                     if (isVehicleData) {
+//                         const response = {
+//                             user_id: checkVehicalData._id,
+//                             profile: checkVehicalData.profile[0] ? checkVehicalData.profile[0].res : "",
+//                             userName: checkVehicalData.username,
+//                             email: checkVehicalData.email,
+//                             phone: `${checkVehicalData.country_code}${checkVehicalData.phone_number}`,
+//                             age: checkVehicalData.age,
+//                             gender: checkVehicalData.gender,
+//                             vehicles: vehicleDataArr,
+//                             chatRoomId: finalChatId[0] ? finalChatId[0]._id : "",
+//                             que_one: findQuestionData.que_one,
+//                             que_two: findQuestionData.que_two,
+//                             que_three: findQuestionData.que_three,
+//                             que_four: findQuestionData.que_four,
+//                             que_five: findUserQuestion.que_five,
+//                             que_six: findUserQuestion.que_six,
+//                         }
+//                         userDataArr.push(response)
+//                     }
+
+//                 }
+//                 console.log("userDataArr", userDataArr.length);
+//             }
+
+
+//             res.status(status.OK).json(
+//                 {
+//                     message: "User View Successfully",
+//                     status: true,
+//                     code: 200,
+//                     statusCode: 1,
+//                     data: userDataArr
+//                 }
+//             )
+
+//         }
+
+//     } catch (error) {
+
+//         console.log("searchByVehical--Error::", error);
+//         res.status(status.INTERNAL_SERVER_ERROR).json(
+//             {
+//                 message: "Something Went Wrong",
+//                 status: false,
+//                 code: 500,
+//                 statusCode: 0,
+//                 error: error.message
+//             }
+//         )
+
+//     }
+// }
+
+exports.matchUser = async (req, res) => {
     try {
 
         const userId = req.params.userId
@@ -2195,114 +2355,120 @@ exports.searchByVehical = async (req, res) => {
         } else {
 
             const findOtherUser = await authModel.find({ _id: { $ne: userId } })
-            console.log("findOtherUser", findOtherUser.length);
+            //console.log("findOtherUser", findOtherUser.length);
 
             var userDataArr = []
-            for (const checkVehicalData of findOtherUser) {
 
-                // console.log("checkVehicalData", checkVehicalData);
+            const findQuestionData = await Question.findOne({
+                user_id: userId
+            })
 
-                const findBlockUser = await Block.find({
-                    user_id: userId,
-                    block_user_id: checkVehicalData._id
-                });
+            const findMatchesQueData = await Question.find({
+                que_one: findQuestionData.que_one,
+                que_two: findQuestionData.que_two,
+                que_three: findQuestionData.que_three,
+                que_four: findQuestionData.que_four,
+                que_five: findQuestionData.que_five,
+                que_six: findQuestionData.que_six
+            })
+            console.log("findQuestionData1 : ", findMatchesQueData.length);
 
-                if (findBlockUser.length != 0) {
+            var matchIdArr = []
+            for (const iterator of findMatchesQueData) {
+                matchIdArr.push(iterator.user_id)
+            }
+            console.log("matchIdArr", matchIdArr);
 
-                } else {
+            for (const checkVehicalData of findMatchesQueData) {
 
-                    var finalChatId = "";
-                    finalChatId = await chatRoomModel.find(
-                        {
-                            user1: checkVehicalData._id,
-                            user2: userId,
-                        }
-                    );
+                const getUserData = await authModel.findOne({ _id: checkVehicalData.user_id })
 
-                    if (finalChatId.length == 0) {
+                if (getUserData != null) {
+                    const findBlockUser = await Block.find({
+                        user_id: userId,
+                        block_user_id: checkVehicalData.user_id
+                    });
+
+                    if (findBlockUser.length != 0) {
+
+                    } else {
+                        var finalChatId = "";
                         finalChatId = await chatRoomModel.find(
                             {
-                                user2: checkVehicalData._id,
-                                user1: userId,
+                                user1: checkVehicalData.user_id,
+                                user2: userId,
                             }
                         );
 
-                    }
-
-                    const findUserQuestion = await Question.findOne({ user_id: userId })
-                    // console.log("findUserQuestion", findUserQuestion);
-
-                    const findQuestionData = await Question.findOne({
-                        user_id: checkVehicalData._id,
-                        que_one: findUserQuestion.que_one,
-                        que_two: findUserQuestion.que_two,
-                        que_three: findUserQuestion.que_three,
-                        que_four: findUserQuestion.que_four,
-                        que_five: findUserQuestion.que_five,
-                        que_six: findUserQuestion.que_six,
-                        // $or: [
-                        //     { $and: [{ que_one: findUserQuestion.que_one, que_two: findUserQuestion.que_two, que_three: findUserQuestion.que_three }] },
-                        //     { $and: [{ que_two: findUserQuestion.que_two, que_three: findUserQuestion.que_three, que_four: findUserQuestion.que_four }] },
-                        //     { $and: [{ que_one: findUserQuestion.que_one, que_three: findUserQuestion.que_three, que_four: findUserQuestion.que_four }] },
-                        //     { $and: [{ que_one: findUserQuestion.que_one, que_two: findUserQuestion.que_two, que_four: findUserQuestion.que_four }] },
-                        //     { $and: [{ que_one: findUserQuestion.que_one, que_two: findUserQuestion.que_two, que_three: findUserQuestion.que_three, que_four: findUserQuestion.que_four }] }
-                        // ]
-                    })
-                    // console.log("findQuestionData", findQuestionData);
-
-                    var vehicleDataArr = []
-                    var isVehicleData = false;
-                    if (findQuestionData) {
-
-                        for (const getVehical of checkVehicalData.vehicle) {
-
-                            if (getVehical.vehicle_img_id == findUser.vehicle[0].vehicle_img_id && getVehical.vehicle_type == checkVehicalData.vehicle[0].vehicle_type) {
-
-                                isVehicleData = true;
-                                const response = {
-                                    vehicleImageId: getVehical.vehicle_img_id,
-                                    model: getVehical.model,
-                                    type: getVehical.vehicle_type,
-                                    year: getVehical.year,
-                                    trim: getVehical.trim,
-                                    dailyDriving: getVehical.daily_driving,
-                                    unit: getVehical.unit,
-                                    duration: getVehical.duration,
-                                    distance: getVehical.distance
+                        if (finalChatId.length == 0) {
+                            finalChatId = await chatRoomModel.find(
+                                {
+                                    user2: checkVehicalData.user_id,
+                                    user1: userId,
                                 }
-                                vehicleDataArr.push(response)
+                            );
+
+                        }
+
+                        var vehicleDataArr = []
+                        var isVehicleData = false;
+
+                        for (const getVehical of getUserData.vehicle) {
+                            isVehicleData = true;
+                            const response = {
+                                vehicleImageId: getVehical.vehicle_img_id,
+                                model: getVehical.model,
+                                type: getVehical.vehicle_type,
+                                year: getVehical.year,
+                                trim: getVehical.trim,
+                                dailyDriving: getVehical.daily_driving,
+                                unit: getVehical.unit,
+                                duration: getVehical.duration,
+                                distance: getVehical.distance
                             }
-
+                            vehicleDataArr.push(response)
                         }
 
-                    }
+                        const getInAppPurchase = await InAppPurchase.find({ user_id : getUserData._id })
 
-                    // console.log("vehicleDataArr", vehicleDataArr);
-                    if (isVehicleData) {
-                        const response = {
-                            user_id: checkVehicalData._id,
-                            profile: checkVehicalData.profile[0] ? checkVehicalData.profile[0].res : "",
-                            userName: checkVehicalData.username,
-                            email: checkVehicalData.email,
-                            phone: `${checkVehicalData.country_code}${checkVehicalData.phone_number}`,
-                            age: checkVehicalData.age,
-                            gender: checkVehicalData.gender,
-                            vehicles: vehicleDataArr,
-                            chatRoomId: finalChatId[0] ? finalChatId[0]._id : "",
-                            que_one: findQuestionData.que_one,
-                            que_two: findQuestionData.que_two,
-                            que_three: findQuestionData.que_three,
-                            que_four: findQuestionData.que_four,
-                            que_five: findUserQuestion.que_five,
-                            que_six: findUserQuestion.que_six,
+                        var credit = 0
+                        for (const creditSum of getInAppPurchase) {
+                            credit += parseFloat(creditSum.credit)
                         }
-                        userDataArr.push(response)
-                    }
+                        console.log("credit", credit);
 
+                        function getElements(array, number) {
+                            return array.slice(0, number);
+                          }                          
+
+                        if (isVehicleData) {
+                            const response = {
+                                user_id: getUserData._id,
+                                profile: getUserData.profile[0] ? getUserData.profile[0].res : "",
+                                userName: getUserData.username,
+                                email: getUserData.email,
+                                phone: `${getUserData.country_code}${getUserData.phone_number}`,
+                                age: getUserData.age,
+                                gender: getUserData.gender,
+                                vehicles: vehicleDataArr,
+                                chatRoomId: finalChatId[0] ? finalChatId[0]._id : "",
+                                questions: [
+                                    {
+                                        que_one: checkVehicalData.que_one,
+                                        que_two: checkVehicalData.que_two,
+                                        que_three: checkVehicalData.que_three,
+                                        que_four: checkVehicalData.que_four,
+                                        que_five: checkVehicalData.que_five,
+                                        que_six: checkVehicalData.que_six,
+                                    }
+                                ],
+                                match_user: getElements(matchIdArr, credit)
+                            }
+                            userDataArr.push(response)
+                        }
+                    }
                 }
-                console.log("userDataArr", userDataArr.length);
             }
-
 
             res.status(status.OK).json(
                 {

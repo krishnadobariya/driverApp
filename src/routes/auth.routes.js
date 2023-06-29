@@ -22,7 +22,7 @@ const {
     removeFollowing,
     removeFollower,
     searchData,
-    searchByVehical,
+    matchUser,
     topTenUser
 } = require("../controllers/auth.controller");
 
@@ -52,7 +52,7 @@ router.get("/follower/:userId", followerList)
 router.delete("/remove-following/:userId/:removeUserId", removeFollowing)
 router.delete("/remove-follower/:userId/:removeUserId", removeFollower);
 router.get("/search/:id", searchData)
-router.get("/search-by-vehical/:userId", searchByVehical)
+router.get("/match-user/:userId", matchUser)
 router.get("/ten-user/:id", topTenUser)
 
 
