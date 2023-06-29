@@ -2234,13 +2234,19 @@ exports.searchByVehical = async (req, res) => {
 
                     const findQuestionData = await Question.findOne({
                         user_id: checkVehicalData._id,
-                        $or: [
-                            { $and: [{ que_one: findUserQuestion.que_one, que_two: findUserQuestion.que_two, que_three: findUserQuestion.que_three }] },
-                            { $and: [{ que_two: findUserQuestion.que_two, que_three: findUserQuestion.que_three, que_four: findUserQuestion.que_four }] },
-                            { $and: [{ que_one: findUserQuestion.que_one, que_three: findUserQuestion.que_three, que_four: findUserQuestion.que_four }] },
-                            { $and: [{ que_one: findUserQuestion.que_one, que_two: findUserQuestion.que_two, que_four: findUserQuestion.que_four }] },
-                            { $and: [{ que_one: findUserQuestion.que_one, que_two: findUserQuestion.que_two, que_three: findUserQuestion.que_three, que_four: findUserQuestion.que_four }] }
-                        ]
+                        que_one: findUserQuestion.que_one,
+                        que_two: findUserQuestion.que_two,
+                        que_three: findUserQuestion.que_three,
+                        que_four: findUserQuestion.que_four,
+                        que_five: findUserQuestion.que_five,
+                        que_six: findUserQuestion.que_six,
+                        // $or: [
+                        //     { $and: [{ que_one: findUserQuestion.que_one, que_two: findUserQuestion.que_two, que_three: findUserQuestion.que_three }] },
+                        //     { $and: [{ que_two: findUserQuestion.que_two, que_three: findUserQuestion.que_three, que_four: findUserQuestion.que_four }] },
+                        //     { $and: [{ que_one: findUserQuestion.que_one, que_three: findUserQuestion.que_three, que_four: findUserQuestion.que_four }] },
+                        //     { $and: [{ que_one: findUserQuestion.que_one, que_two: findUserQuestion.que_two, que_four: findUserQuestion.que_four }] },
+                        //     { $and: [{ que_one: findUserQuestion.que_one, que_two: findUserQuestion.que_two, que_three: findUserQuestion.que_three, que_four: findUserQuestion.que_four }] }
+                        // ]
                     })
                     // console.log("findQuestionData", findQuestionData);
 
@@ -2286,7 +2292,9 @@ exports.searchByVehical = async (req, res) => {
                             que_one: findQuestionData.que_one,
                             que_two: findQuestionData.que_two,
                             que_three: findQuestionData.que_three,
-                            que_four: findQuestionData.que_four
+                            que_four: findQuestionData.que_four,
+                            que_five: findUserQuestion.que_five,
+                            que_six: findUserQuestion.que_six,
                         }
                         userDataArr.push(response)
                     }
