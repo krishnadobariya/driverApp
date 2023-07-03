@@ -3,8 +3,6 @@ const User = require("../models/auth.model");
 const InAppPurchase = require("../models/inAppPurchase.model");
 const MatchUsers = require("../models/matchUsers.model")
 const Question = require("../models/userQuestion.model")
-const mongoose = require("mongoose");
-const ObjectId = mongoose.Types.ObjectId;
 
 
 exports.insertInAppPurchase = async (req, res) => {
@@ -111,15 +109,15 @@ exports.insertInAppPurchase = async (req, res) => {
                 const saveMatchUserData = await insertMatchUser.save();
                 console.log("saveMatchUserData::--->>>.", saveMatchUserData);
 
-                res.status(status.CREATED).json({
-                    message: "inAppPurchase Insert Successfully",
-                    status: true,
-                    code: 201,
-                    statusCode: 1,
-                    data: saveData,
-                });
-
             }
+
+            res.status(status.CREATED).json({
+                message: "inAppPurchase Insert Successfully",
+                status: true,
+                code: 201,
+                statusCode: 1,
+                data: saveData,
+            });
 
         }
 

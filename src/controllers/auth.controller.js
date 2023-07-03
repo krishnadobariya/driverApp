@@ -24,6 +24,7 @@ const UserPostComment = require("../models/userPostComment.model");
 const UserPostLike = require("../models/userPostLike.model");
 const activity = require("../models/activity.model");
 const Event = require("../models/event.model");
+const MatchUsers = require("../models/matchUsers.model")
 const JoinEvent = require("../models/joinEvent.model");
 const InAppPurchase = require("../models/inAppPurchase.model");
 const cloudinary = require("../utils/cloudinary.utils");
@@ -2339,7 +2340,7 @@ exports.matchUser = async (req, res) => {
         const userId = req.params.userId
 
         const findUser = await authModel.findOne({ _id: userId })
-        console.log("findUser", findUser);
+        // console.log("findUser", findUser);
 
         if (findUser == null) {
 
@@ -2354,34 +2355,24 @@ exports.matchUser = async (req, res) => {
 
         } else {
 
-            const findOtherUser = await authModel.find({ _id: { $ne: userId } })
-            //console.log("findOtherUser", findOtherUser.length);
-
             var userDataArr = []
 
-            const findQuestionData = await Question.findOne({
+            const findQuestionData = await MatchUsers.find({
                 user_id: userId
             })
 
-            const findMatchesQueData = await Question.find({
-                que_one: findQuestionData.que_one,
-                que_two: findQuestionData.que_two,
-                que_three: findQuestionData.que_three,
-                que_four: findQuestionData.que_four,
-                que_five: findQuestionData.que_five,
-                que_six: findQuestionData.que_six
-            })
-            console.log("findQuestionData1 : ", findMatchesQueData.length);
-
-            var matchIdArr = []
-            for (const iterator of findMatchesQueData) {
-                matchIdArr.push(iterator.user_id)
+            var ids = [];
+            for (const findmatchUserId of findQuestionData) {
+                ids.push(...findmatchUserId.match_user);
             }
-            console.log("matchIdArr", matchIdArr);
+            console.log("ids", ids);
 
-            for (const checkVehicalData of findMatchesQueData) {
+            for (const checkVehicalData of ids) {
+                // console.log("checkVehicalData", checkVehicalData);
 
-                const getUserData = await authModel.findOne({ _id: checkVehicalData.user_id })
+                const getUserData = await authModel.findOne({ _id: checkVehicalData })
+                const findQue = await Question.findOne({ user_id : checkVehicalData })
+                // console.log("getUserData", getUserData);
 
                 if (getUserData != null) {
                     const findBlockUser = await Block.find({
@@ -2429,17 +2420,19 @@ exports.matchUser = async (req, res) => {
                             vehicleDataArr.push(response)
                         }
 
-                        const getInAppPurchase = await InAppPurchase.find({ user_id : getUserData._id })
+                        const getInAppPurchase = await InAppPurchase.find({ user_id: getUserData._id })
+                        console.log('getInAppPurchase', getInAppPurchase);
 
                         var credit = 0
                         for (const creditSum of getInAppPurchase) {
                             credit += parseFloat(creditSum.credit)
                         }
-                        console.log("credit", credit);
+                        // console.log("credit", credit);
 
                         function getElements(array, number) {
+                            console.log("array", array, "number", number);
                             return array.slice(0, number);
-                          }                          
+                        }
 
                         if (isVehicleData) {
                             const response = {
@@ -2454,15 +2447,15 @@ exports.matchUser = async (req, res) => {
                                 chatRoomId: finalChatId[0] ? finalChatId[0]._id : "",
                                 questions: [
                                     {
-                                        que_one: checkVehicalData.que_one,
-                                        que_two: checkVehicalData.que_two,
-                                        que_three: checkVehicalData.que_three,
-                                        que_four: checkVehicalData.que_four,
-                                        que_five: checkVehicalData.que_five,
-                                        que_six: checkVehicalData.que_six,
+                                        que_one: findQue.que_one,
+                                        que_two: findQue.que_two,
+                                        que_three: findQue.que_three,
+                                        que_four: findQue.que_four,
+                                        que_five: findQue.que_five,
+                                        que_six: findQue.que_six,
                                     }
                                 ],
-                                match_user: getElements(matchIdArr, credit)
+                                match_user: getElements(ids, credit)
                             }
                             userDataArr.push(response)
                         }
