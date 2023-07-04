@@ -90,13 +90,13 @@ exports.matchesCron = async (req, res) => {
                     let matchIds = [];
                     if (checkMatches.credit == 5) {
                         // console.log("parseInt(saveMatchCount)----------", saveMatchCount);
-                        matchIds = findQuestionData.slice(saveMatchCount, saveMatchCount + 5).map((getId) => getId.user_id);
+                        matchIds = idArr.slice(saveMatchCount, saveMatchCount + 5).map((getId) => getId);
                         saveMatchCount += parseInt(checkMatches.credit)
                     } else if (checkMatches.credit == 15) {
-                        matchIds = findQuestionData.slice(saveMatchCount, saveMatchCount + 15).map((getId) => getId.user_id);
+                        matchIds = idArr.slice(saveMatchCount, saveMatchCount + 15).map((getId) => getId);
                         saveMatchCount += parseInt(checkMatches.credit)
                     } else {
-                        matchIds = findQuestionData.slice(saveMatchCount, saveMatchCount + 20).map((getId) => getId.user_id);
+                        matchIds = idArr.slice(saveMatchCount, saveMatchCount + 20).map((getId) => getId);
                         saveMatchCount += parseInt(checkMatches.credit)
                     }
 

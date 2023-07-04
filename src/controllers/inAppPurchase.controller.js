@@ -44,19 +44,18 @@ exports.insertInAppPurchase = async (req, res) => {
                     que_five: findUserQuestion.que_five,
                     que_six: findUserQuestion.que_six,
                 }).select("user_id -_id");
-                // console.log("findQuestionData", findQuestionData);
+                console.log("findQuestionData", findQuestionData);
 
                 const idArr = []
                 for (const getIds of findQuestionData) {
-                    
                     const findUserData = await User.findOne({ _id: getIds.user_id });
 
-                    if(findUserData) {
+                    if (findUserData) {
                         idArr.push(getIds.user_id)
                     }
 
                 }
-                console.log("idArr", idArr.length);
+                console.log("idArr", idArr);
 
                 const findMatchUser = await MatchUsers.find({ user_id: req.params.user_id })
 
@@ -73,14 +72,14 @@ exports.insertInAppPurchase = async (req, res) => {
 
                         let matchIds = [];
                         if (checkMatches.credit == 5) {
-                            console.log("parseInt(saveMatchCount)----------", saveMatchCount);
-                            matchIds = findQuestionData.slice(saveMatchCount, saveMatchCount + 5).map((getId) => getId.user_id);
+                            // console.log("parseInt(saveMatchCount)----------", saveMatchCount);
+                            matchIds = idArr.slice(saveMatchCount, saveMatchCount + 5).map((getId) => getId);
                             saveMatchCount += parseInt(checkMatches.credit)
                         } else if (checkMatches.credit == 15) {
-                            matchIds = findQuestionData.slice(saveMatchCount, saveMatchCount + 15).map((getId) => getId.user_id);
+                            matchIds = idArr.slice(saveMatchCount, saveMatchCount + 15).map((getId) => getId);
                             saveMatchCount += parseInt(checkMatches.credit)
                         } else {
-                            matchIds = findQuestionData.slice(saveMatchCount, saveMatchCount + 20).map((getId) => getId.user_id);
+                            matchIds = idArr.slice(saveMatchCount, saveMatchCount + 20).map((getId) => getId);
                             saveMatchCount += parseInt(checkMatches.credit)
                         }
 

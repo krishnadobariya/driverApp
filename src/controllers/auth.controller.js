@@ -2365,7 +2365,7 @@ exports.matchUser = async (req, res) => {
             for (const findmatchUserId of findQuestionData) {
                 ids.push(...findmatchUserId.match_user);
             }
-            console.log("ids", ids);
+            console.log("ids======", ids);
 
             for (const checkVehicalData of ids) {
                 console.log("checkVehicalData", checkVehicalData);
