@@ -2368,11 +2368,11 @@ exports.matchUser = async (req, res) => {
             console.log("ids", ids);
 
             for (const checkVehicalData of ids) {
-                // console.log("checkVehicalData", checkVehicalData);
+                console.log("checkVehicalData", checkVehicalData);
 
                 const getUserData = await authModel.findOne({ _id: checkVehicalData })
                 const findQue = await Question.findOne({ user_id : checkVehicalData })
-                // console.log("getUserData", getUserData);
+                console.log("getUserData", getUserData);
 
                 if (getUserData != null) {
                     const findBlockUser = await Block.find({

@@ -44,13 +44,19 @@ exports.insertInAppPurchase = async (req, res) => {
                     que_five: findUserQuestion.que_five,
                     que_six: findUserQuestion.que_six,
                 }).select("user_id -_id");
-                console.log("findQuestionData", findQuestionData);
+                // console.log("findQuestionData", findQuestionData);
 
                 const idArr = []
                 for (const getIds of findQuestionData) {
-                    idArr.push(getIds.user_id)
+                    
+                    const findUserData = await User.findOne({ _id: getIds.user_id });
+
+                    if(findUserData) {
+                        idArr.push(getIds.user_id)
+                    }
+
                 }
-                console.log("idArr", idArr);
+                console.log("idArr", idArr.length);
 
                 const findMatchUser = await MatchUsers.find({ user_id: req.params.user_id })
 

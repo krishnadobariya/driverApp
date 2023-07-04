@@ -63,10 +63,16 @@ exports.matchesCron = async (req, res) => {
             // console.log("findQuestionData", findQuestionData);
 
             const idArr = []
-            for (const getIds of findQuestionData) {
-                idArr.push(getIds.user_id)
-            }
-            // console.log("idArr", idArr);
+                for (const getIds of findQuestionData) {
+                    
+                    const findUserData = await User.findOne({ _id: getIds.user_id });
+
+                    if(findUserData) {
+                        idArr.push(getIds.user_id)
+                    }
+
+                }
+                console.log("idArr", idArr.length);
 
             const findMatchUser = await MatchUsers.find({ user_id: findMatchUsers.user_id })
 
