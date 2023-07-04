@@ -1328,6 +1328,10 @@ exports.userLogout = async (req, res, next) => {
                 }
             });
 
+            /* Delete User Question By UserId */
+            await Question.deleteMany({
+                user_id: req.params.id
+            })
 
             res.status(status.OK).json(
                 {
