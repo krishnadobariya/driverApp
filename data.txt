@@ -112,3 +112,10 @@
     "subscription_type" : 2
 }
 - emit : inAppPurchaseOrNot
+
+
+- Socket : checkSubscription
+{
+    "user_id" : "648173cb19a4de60e5bdc67f"
+}
+- emit : expireSubscriptionOrNot

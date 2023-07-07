@@ -48,8 +48,8 @@ function socket(io) {
 
             const title = "You will be offline soon!";
             const body = "In 5 minutes, You will be offline on map";
-            const text = arg.message;
-            const sendBy = arg.sender_id;
+            const text = "In 5 minutes, You will be offline on map";
+            const sendBy = `${respData._id}`;
             const registrationToken = respData.fcm_token
             if (registrationToken != null) {
                 Notification.sendPushNotificationFCM(
@@ -1782,8 +1782,79 @@ function socket(io) {
             }
 
         });
-
         // ----- checkInAppPurchase ----- //
+
+
+        // ----- matchUser ----- //
+        socket.on('checkSubscription', async (arg) => {
+            const userId = arg.user_id;
+            const userRoom = `User${arg.user_id}`;
+
+            const findData = await InAppPurchaseModel.find({ user_id: userId, subscription_type: 1 });
+
+            if (findData[0] === undefined) {
+                io.to(userRoom).emit("expireSubscriptionOrNot", "User In App Purchase Not Found");
+            } else {
+                const resArr = [];
+
+                for (const checkTime of findData) {
+                    const timestamp = parseFloat(checkTime.purchaseTime);
+                    const date = new Date(timestamp);
+                    const currentDate = new Date();
+
+                    const futureDate = new Date(date.getTime());
+                    futureDate.setMonth(futureDate.getMonth() + parseFloat(checkTime.credit));
+
+                    const remainingTimeMs = futureDate - currentDate;
+
+                    let remainingTime;
+                    let timeUnits = [];
+
+                    if (remainingTimeMs >= 0) {
+                        if (remainingTimeMs < 24 * 60 * 60 * 1000) {
+                            // Less than a day remaining
+                            remainingTime = Math.floor(remainingTimeMs / (60 * 60 * 1000)); // Remaining hours
+                            timeUnits.push({ unit: 'hours', value: remainingTime });
+                        } else if (remainingTimeMs < 30 * 24 * 60 * 60 * 1000) {
+                            // Less than a month remaining
+                            remainingTime = Math.floor(remainingTimeMs / (24 * 60 * 60 * 1000)); // Remaining days
+                            timeUnits.push({ unit: 'days', value: remainingTime });
+                            let remainingMs = remainingTimeMs % (24 * 60 * 60 * 1000);
+                            remainingTime = Math.floor(remainingMs / (60 * 60 * 1000)); // Remaining hours
+                            timeUnits.push({ unit: 'hours', value: remainingTime });
+                        } else {
+                            // More than a month remaining
+                            remainingTime = Math.floor(remainingTimeMs / (30 * 24 * 60 * 60 * 1000)); // Remaining months
+                            timeUnits.push({ unit: 'months', value: remainingTime });
+                            let remainingMs = remainingTimeMs % (30 * 24 * 60 * 60 * 1000);
+                            remainingTime = Math.floor(remainingMs / (24 * 60 * 60 * 1000)); // Remaining days
+                            timeUnits.push({ unit: 'days', value: remainingTime });
+                            remainingMs %= 24 * 60 * 60 * 1000;
+                            remainingTime = Math.floor(remainingMs / (60 * 60 * 1000)); // Remaining hours
+                            timeUnits.push({ unit: 'hours', value: remainingTime });
+                        }
+
+                        const response = {
+                            InAppPurchase_id: checkTime._id,
+                            message: `Remaining: ${timeUnits.map(unit => `${unit.value} ${unit.unit}`).join(', ')}`,
+                            success: 1
+                        };
+                        resArr.push(response);
+                    } else {
+                        const response = {
+                            InAppPurchase_id: checkTime._id,
+                            message: "Pack is over",
+                            success: 0
+                        };
+                        resArr.push(response);
+                    }
+                }
+
+                console.log("resArr", resArr);
+                io.to(userRoom).emit("expireSubscriptionOrNot", resArr);
+            }
+        })
+        // ----- matchUser ----- //
 
     })
 

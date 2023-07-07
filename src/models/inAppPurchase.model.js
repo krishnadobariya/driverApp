@@ -28,7 +28,7 @@ const inAppPurchase_schema = mongoose.Schema({
         required: true
     },
     subscription_type: {
-        type: String,      // 1 - map and 2 - matches
+        type: String,      // 1 - map (month) and 2 - matches
         required: true
     }
 }, {
