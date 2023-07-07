@@ -1843,7 +1843,7 @@ function socket(io) {
                     } else {
                         const response = {
                             InAppPurchase_id: checkTime._id,
-                            message: "Pack is over",
+                            message: "Expire Subscription",
                             success: 0
                         };
                         resArr.push(response);
