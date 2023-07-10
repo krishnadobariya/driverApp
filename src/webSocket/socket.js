@@ -1690,6 +1690,32 @@ function socket(io) {
                     for (const checkTime of findData) {
                         const timestamp = parseFloat(checkTime.purchaseTime);
                         const date = new Date(timestamp);
+                        console.log("date", date);
+                        console.log("checkTime.credit", checkTime.credit);
+
+                        // ---------------------------------------------------------------------
+                        // Convert input date to JavaScript Date object
+                        var datee = new Date(date);
+                        var monthsToAdd = parseFloat(checkTime.credit);
+
+                        // Add 3 months to the date
+                        datee.setMonth(datee.getMonth() + monthsToAdd);
+
+                        // Format the date as DD-MM-YYYY
+                        var day = datee.getDate();
+                        var month = datee.getMonth() + 1; // Months are zero-based
+                        var year = datee.getFullYear();
+
+                        // Padding with leading zeros if necessary
+                        day = day < 10 ? "0" + day : day;
+                        month = month < 10 ? "0" + month : month;
+
+                        // Formatted date string
+                        var formattedDate = day + "-" + month + "-" + year;
+
+                        console.log(formattedDate);
+                        // ---------------------------------------------------------------------
+
                         const currentDate = new Date();
 
                         const futureDate = new Date(date.getTime());
@@ -1726,21 +1752,22 @@ function socket(io) {
 
                             const response = {
                                 InAppPurchase_id: checkTime._id,
+                                success: 1,
                                 message: `Remaining: ${timeUnits.map(unit => `${unit.value} ${unit.unit}`).join(', ')}`,
-                                success: 1
+                                expire_date: formattedDate
                             };
                             resArr.push(response);
                         } else {
                             const response = {
                                 InAppPurchase_id: checkTime._id,
-                                message: "Pack is over",
-                                success: 0
+                                success: 0,
+                                message: "Pack is over"
                             };
                             resArr.push(response);
                         }
                     }
 
-                    console.log("resArr", resArr);
+                    // console.log("resArr", resArr);
                     io.to(userRoom).emit("inAppPurchaseOrNot", resArr);
                 }
 
@@ -1836,15 +1863,16 @@ function socket(io) {
 
                         const response = {
                             InAppPurchase_id: checkTime._id,
+                            success: 1,
                             message: `Remaining: ${timeUnits.map(unit => `${unit.value} ${unit.unit}`).join(', ')}`,
-                            success: 1
+                            credit: checkTime.credit
                         };
                         resArr.push(response);
                     } else {
                         const response = {
                             InAppPurchase_id: checkTime._id,
+                            success: 0,
                             message: "Expire Subscription",
-                            success: 0
                         };
                         resArr.push(response);
                     }

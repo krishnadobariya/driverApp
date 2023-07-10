@@ -38,6 +38,7 @@ exports.sendPushNotificationFCM = (registrationToken, title, body, text, sendBy,
             .catch(function (error) {
                 console.log("Error sending message:", error);
             });
+            
     } else {
         console.log("False Flage");
     }
