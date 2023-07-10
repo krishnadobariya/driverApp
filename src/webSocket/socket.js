@@ -1767,8 +1767,18 @@ function socket(io) {
                         }
                     }
 
-                    // console.log("resArr", resArr);
-                    io.to(userRoom).emit("inAppPurchaseOrNot", resArr);
+                    // Get the maximum date element from resArr
+                    let maxDateElement = resArr[0];
+                    for (let i = 1; i < resArr.length; i++) {
+                        const currentDate = new Date(resArr[i].expire_date);
+                        const maxDate = new Date(maxDateElement.expire_date);
+                        if (currentDate > maxDate) {
+                            maxDateElement = resArr[i];
+                        }
+                    }
+
+                    io.to(userRoom).emit("inAppPurchaseOrNot", maxDateElement);
+                    // io.to(userRoom).emit("inAppPurchaseOrNot", resArr);
                 }
 
             } else {
