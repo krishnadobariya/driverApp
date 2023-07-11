@@ -2366,8 +2366,12 @@ exports.matchUser = async (req, res) => {
             })
 
             var ids = [];
+            let total_count = 0;
+            let match_count = 0
             for (const findmatchUserId of findQuestionData) {
                 ids.push(...findmatchUserId.match_user);
+                total_count = parseInt(findmatchUserId.credit) + parseInt(total_count)
+                match_count = parseInt(match_count) + parseInt(findmatchUserId.match_count)
             }
             console.log("ids======", ids);
 
@@ -2461,8 +2465,6 @@ exports.matchUser = async (req, res) => {
                                     }
                                 ],
                                 match_user: userIds,
-                                total_count: credit,
-                                match_count: userIds.length
                             }
                             userDataArr.push(response)
                         }
@@ -2476,7 +2478,9 @@ exports.matchUser = async (req, res) => {
                     status: true,
                     code: 200,
                     statusCode: 1,
-                    data: userDataArr
+                    data: userDataArr,
+                    total_count: total_count,
+                    match_count: match_count
                 }
             )
 

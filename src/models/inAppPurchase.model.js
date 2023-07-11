@@ -19,9 +19,6 @@ const inAppPurchase_schema = mongoose.Schema({
         type: String,
         required: true
     },
-    startDate: {
-        type: String
-    },
     purchaseToken: {
         type: String,
         required: true
