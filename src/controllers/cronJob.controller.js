@@ -50,15 +50,19 @@ exports.matchesCron = async (req, res) => {
             const findUserQuestion = await Question.findOne({
                 user_id: findMatchUsers.user_id,
             });
-            const findQuestionData = await Question.find({
-                user_id: { $ne: findMatchUsers.user_id },
-                que_one: findUserQuestion.que_one,
-                que_two: findUserQuestion.que_two,
-                que_three: findUserQuestion.que_three,
-                que_four: findUserQuestion.que_four,
-                que_five: findUserQuestion.que_five,
-                que_six: findUserQuestion.que_six,
-            }).select("user_id -_id");
+            console.log("findUserQuestion", findMatchUsers.user_id);
+
+            if (findUserQuestion) {
+                var findQuestionData = await Question.find({
+                    user_id: { $ne: findMatchUsers.user_id },
+                    que_one: findUserQuestion.que_one,
+                    que_two: findUserQuestion.que_two,
+                    que_three: findUserQuestion.que_three,
+                    que_four: findUserQuestion.que_four,
+                    que_five: findUserQuestion.que_five,
+                    que_six: findUserQuestion.que_six,
+                }).select("user_id -_id");
+            }
             // console.log("findQuestionData", findQuestionData);
 
             const idArr = []
@@ -71,7 +75,7 @@ exports.matchesCron = async (req, res) => {
                 }
 
             }
-            // console.log("idArr", idArr.length);
+            console.log("idArr", idArr);
 
             const findMatchUser = await MatchUsers.find({ user_id: findMatchUsers.user_id })
 
@@ -83,22 +87,7 @@ exports.matchesCron = async (req, res) => {
                 if (checkMatches.credit == checkMatches.match_count) {
 
                     saveMatchCount += parseInt(checkMatches.credit)
-
-                    const title = "New Matches";
-                    const body = `You've found ${checkMatches.credit} new matches!`;
-                    const text = `${checkMatches.user_id}`;
-                    const sendBy = `${checkMatches.user_id}`;
-                    const registrationToken = findUserDataForNotfi.fcm_token
-                    if (registrationToken != null) {
-                        Notification.sendPushNotificationFCM(
-                            registrationToken,
-                            title,
-                            body,
-                            text,
-                            sendBy,
-                            true
-                        );
-                    }
+                    console.log("match user complete che....");
 
                 } else {
 
@@ -126,20 +115,22 @@ exports.matchesCron = async (req, res) => {
 
                     // console.log("matchIds", matchIds); 
 
-                    const title = "New Matches";
-                    const body = `You've found ${matchIds.length} new matches!`;
-                    const text = `${checkMatches.user_id}`;
-                    const sendBy = `${checkMatches.user_id}`;
-                    const registrationToken = findUserDataForNotfi.fcm_token
-                    if (registrationToken != null) {
-                        Notification.sendPushNotificationFCM(
-                            registrationToken,
-                            title,
-                            body,
-                            text,
-                            sendBy,
-                            true
-                        );
+                    if (matchIds.length > 0) {
+                        const title = "New Matches";
+                        const body = `You've found ${matchIds.length} new matches!`;
+                        const text = `${checkMatches.user_id}`;
+                        const sendBy = `${checkMatches.user_id}`;
+                        const registrationToken = findUserDataForNotfi.fcm_token
+                        if (registrationToken != null) {
+                            Notification.sendPushNotificationFCM(
+                                registrationToken,
+                                title,
+                                body,
+                                text,
+                                sendBy,
+                                true
+                            );
+                        }
                     }
                 }
 
