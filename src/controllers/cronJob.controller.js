@@ -50,7 +50,7 @@ exports.matchesCron = async (req, res) => {
             const findUserQuestion = await Question.findOne({
                 user_id: findMatchUsers.user_id,
             });
-            console.log("findUserQuestion", findMatchUsers.user_id);
+            // console.log("findUserQuestion", findMatchUsers.user_id);
 
             if (findUserQuestion) {
                 var findQuestionData = await Question.find({
@@ -75,7 +75,7 @@ exports.matchesCron = async (req, res) => {
                 }
 
             }
-            console.log("idArr", idArr);
+            // console.log("idArr", idArr);
 
             const findMatchUser = await MatchUsers.find({ user_id: findMatchUsers.user_id })
 
@@ -87,7 +87,7 @@ exports.matchesCron = async (req, res) => {
                 if (checkMatches.credit == checkMatches.match_count) {
 
                     saveMatchCount += parseInt(checkMatches.credit)
-                    console.log("match user complete che....");
+                    // console.log("match user complete che....");
 
                 } else {
 
