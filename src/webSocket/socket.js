@@ -1686,54 +1686,62 @@ function socket(io) {
                     io.to(userRoom).emit("inAppPurchaseOrNot", "User In App Purchase Not Found");
                 } else {
 
-                    const timestamp = parseFloat(findData[0].purchaseTime);
-                    const date = new Date(timestamp);
-                    console.log("date", date);
-                    console.log("findData[0].credit", findData[0].credit);
+                    let currentDate = new Date();
+                    let i = 0;
+                    let remaining_time = "Remaining: 0 months, 0 days, 0 hours";
 
-                    // ---------------------------------------------------------------------
-                    // Convert input date to JavaScript Date object
-                    var datee = new Date(date);
-                    var monthsToAdd = parseFloat(findData[0].credit);
+                    for (const [index, checkTime] of findData.entries()) {
+                        if (remaining_time == "Remaining: 0 months, 0 days, 0 hours") {
 
-                    // Add 3 months to the date
-                    datee.setMonth(datee.getMonth() + monthsToAdd);
+                            console.log("index", index);
+                            console.log("checkTime", checkTime);
+                            const timestamp = parseFloat(checkTime.purchaseTime);
+                            const date = new Date(timestamp);
+                            console.log("date", date);
+                            console.log("checkTime.credit", checkTime.credit);
 
-                    // Format the date as DD-MM-YYYY
-                    var day = datee.getDate();
-                    var month = datee.getMonth() + 1; // Months are zero-based
-                    var year = datee.getFullYear();
+                            // ---------------------------------------------------------------------
+                            // Convert input date to JavaScript Date object
+                            var datee = new Date(date);
+                            var monthsToAdd = parseFloat(checkTime.credit);
 
-                    // Padding with leading zeros if necessary
-                    day = day < 10 ? "0" + day : day;
-                    month = month < 10 ? "0" + month : month;
+                            // Add 3 months to the date
+                            datee.setMonth(datee.getMonth() + monthsToAdd);
 
-                    // Formatted date string
-                    var formattedDate = day + "-" + month + "-" + year;
+                            // Format the date as DD-MM-YYYY
+                            var day = datee.getDate();
+                            var month = datee.getMonth() + 1; // Months are zero-based
+                            var year = datee.getFullYear();
 
-                    console.log(formattedDate);
-                    // ---------------------------------------------------------------------
+                            // Padding with leading zeros if necessary
+                            day = day < 10 ? "0" + day : day;
+                            month = month < 10 ? "0" + month : month;
 
-                    const currentDate = new Date();
+                            // Formatted date string
+                            var formattedDate = day + "-" + month + "-" + year;
 
-                    const futureDate = new Date(date.getTime());
-                    futureDate.setMonth(futureDate.getMonth() + parseFloat(findData[0].credit));
+                            console.log(formattedDate);
+                            // ---------------------------------------------------------------------
 
-                    const remainingTimeMs = futureDate - currentDate;
+                            const futureDate = new Date(date.getTime());
+                            futureDate.setMonth(futureDate.getMonth() + parseFloat(checkTime.credit));
 
-                    let remaining_time = "";
+                            const remainingTimeMs = futureDate - currentDate;
 
-                    if (remainingTimeMs >= 0) {
-                        const remainingMonths = Math.floor(remainingTimeMs / (31 * 24 * 60 * 60 * 1000));
-                        const remainingDays = Math.floor((remainingTimeMs % (31 * 24 * 60 * 60 * 1000)) / (24 * 60 * 60 * 1000));
-                        const remainingHours = Math.floor((remainingTimeMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
+                            if (remainingTimeMs >= 0) {
+                                const remainingMonths = Math.floor(remainingTimeMs / (31 * 24 * 60 * 60 * 1000));
+                                const remainingDays = Math.floor((remainingTimeMs % (31 * 24 * 60 * 60 * 1000)) / (24 * 60 * 60 * 1000));
+                                const remainingHours = Math.floor((remainingTimeMs % (24 * 60 * 60 * 1000)) / (60 * 60 * 1000));
 
-                        remaining_time = `Remaining: ${remainingMonths} months, ${remainingDays} days, ${remainingHours} hours`;
-                    } else {
-                        remaining_time = "Remaining: 0 months, 0 days, 0 hours";
+                                remaining_time = `Remaining: ${remainingMonths} months, ${remainingDays} days, ${remainingHours} hours`;
+                            }
+                            console.log("remaining_time", remaining_time);
+                            i++;
+                        }
                     }
 
-                    const sliceData = findData.slice(1)
+                    console.log("i------------", i);
+                    const sliceData = findData.slice(i)
                     // console.log("sliceData", sliceData);
 
                     // console.log("remaining_time", remaining_time);
@@ -1818,7 +1826,7 @@ function socket(io) {
                         }
                         io.to(userRoom).emit("inAppPurchaseOrNot", response);
 
-                        
+
                     }
 
                 }
