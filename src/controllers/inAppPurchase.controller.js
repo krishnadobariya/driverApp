@@ -19,6 +19,12 @@ exports.insertInAppPurchase = async (req, res) => {
             });
         } else {
 
+            // const findInAppData = await InAppPurchase.find({ user_id: req.params.user_id })
+
+            // for (const checkTime of findInAppData) {
+            //     console.log("checkTime", checkTime.purchaseTime);
+            // }
+
             const insertInAppPurchase = new InAppPurchase({
                 user_id: req.params.user_id,
                 orderId: req.body.orderId,

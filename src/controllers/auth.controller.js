@@ -2424,7 +2424,7 @@ exports.matchUser = async (req, res) => {
                             vehicleDataArr.push(response)
                         }
 
-                        const getInAppPurchase = await InAppPurchase.find({ user_id: getUserData._id })
+                        const getInAppPurchase = await InAppPurchase.find({ user_id: getUserData._id , subscription_type : 2 })
                         console.log('getInAppPurchase', getInAppPurchase);
 
                         var credit = 0
@@ -2438,6 +2438,7 @@ exports.matchUser = async (req, res) => {
                             return array.slice(0, number);
                         }
 
+                        const userIds = getElements(ids, credit)
                         if (isVehicleData) {
                             const response = {
                                 user_id: getUserData._id,
@@ -2459,7 +2460,9 @@ exports.matchUser = async (req, res) => {
                                         que_six: findQue.que_six,
                                     }
                                 ],
-                                match_user: getElements(ids, credit)
+                                match_user: userIds,
+                                total_count: credit,
+                                match_count: userIds.length
                             }
                             userDataArr.push(response)
                         }

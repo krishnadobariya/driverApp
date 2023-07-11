@@ -1691,6 +1691,29 @@ function socket(io) {
                     console.log("date", date);
                     console.log("findData[0].credit", findData[0].credit);
 
+                    // ---------------------------------------------------------------------
+                    // Convert input date to JavaScript Date object
+                    var datee = new Date(date);
+                    var monthsToAdd = parseFloat(findData[0].credit);
+
+                    // Add 3 months to the date
+                    datee.setMonth(datee.getMonth() + monthsToAdd);
+
+                    // Format the date as DD-MM-YYYY
+                    var day = datee.getDate();
+                    var month = datee.getMonth() + 1; // Months are zero-based
+                    var year = datee.getFullYear();
+
+                    // Padding with leading zeros if necessary
+                    day = day < 10 ? "0" + day : day;
+                    month = month < 10 ? "0" + month : month;
+
+                    // Formatted date string
+                    var formattedDate = day + "-" + month + "-" + year;
+
+                    console.log(formattedDate);
+                    // ---------------------------------------------------------------------
+
                     const currentDate = new Date();
 
                     const futureDate = new Date(date.getTime());
@@ -1713,7 +1736,7 @@ function socket(io) {
                     const sliceData = findData.slice(1)
                     // console.log("sliceData", sliceData);
 
-                    console.log("remaining_time", remaining_time);
+                    // console.log("remaining_time", remaining_time);
                     const resp = remaining_time.split(" ")
 
                     let timing = `Remaining: 0 months, 0 days, 0 hours`;
@@ -1795,7 +1818,7 @@ function socket(io) {
                         }
                         io.to(userRoom).emit("inAppPurchaseOrNot", response);
 
-
+                        
                     }
 
                 }
