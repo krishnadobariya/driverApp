@@ -1700,29 +1700,6 @@ function socket(io) {
                             console.log("date", date);
                             console.log("checkTime.credit", checkTime.credit);
 
-                            // ---------------------------------------------------------------------
-                            // Convert input date to JavaScript Date object
-                            var datee = new Date(date);
-                            var monthsToAdd = parseFloat(checkTime.credit);
-
-                            // Add 3 months to the date
-                            datee.setMonth(datee.getMonth() + monthsToAdd);
-
-                            // Format the date as DD-MM-YYYY
-                            var day = datee.getDate();
-                            var month = datee.getMonth() + 1; // Months are zero-based
-                            var year = datee.getFullYear();
-
-                            // Padding with leading zeros if necessary
-                            day = day < 10 ? "0" + day : day;
-                            month = month < 10 ? "0" + month : month;
-
-                            // Formatted date string
-                            var formattedDate = day + "-" + month + "-" + year;
-
-                            console.log(formattedDate);
-                            // ---------------------------------------------------------------------
-
                             const futureDate = new Date(date.getTime());
                             futureDate.setMonth(futureDate.getMonth() + parseFloat(checkTime.credit));
 

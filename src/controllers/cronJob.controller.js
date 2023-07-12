@@ -50,7 +50,6 @@ exports.matchesCron = async (req, res) => {
             const findUserQuestion = await Question.findOne({
                 user_id: findMatchUsers.user_id,
             });
-            // console.log("findUserQuestion", findMatchUsers.user_id);
 
             if (findUserQuestion) {
                 var findQuestionData = await Question.find({
@@ -114,8 +113,9 @@ exports.matchesCron = async (req, res) => {
                     )
 
                     // console.log("matchIds", matchIds); 
+                    console.log("matchIds.length", matchIds.length, "findUserQuestion", findMatchUsers.match_count);
 
-                    if (matchIds.length > 0) {
+                    if (matchIds.length > findMatchUsers.match_count) {
                         const title = "New Matches";
                         const body = `You've found ${matchIds.length} new matches!`;
                         const text = `${checkMatches.user_id}`;
