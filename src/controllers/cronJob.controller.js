@@ -89,7 +89,7 @@ exports.matchesCron = async (req, res) => {
                     // console.log("match user complete che....");
 
                 } else {
-
+                    
                     let matchIds = [];
                     if (checkMatches.credit == 5) {
                         matchIds = idArr.slice(saveMatchCount, saveMatchCount + 5).map((getId) => getId);
@@ -102,22 +102,12 @@ exports.matchesCron = async (req, res) => {
                         saveMatchCount += parseInt(checkMatches.credit)
                     }
 
-                    const updateData = await MatchUsers.findOneAndUpdate(
-                        {
-                            _id: checkMatches._id
-                        },
-                        {
-                            match_user: matchIds,
-                            match_count: matchIds.length
-                        }
-                    )
 
-                    // console.log("matchIds", matchIds); 
-                    console.log("matchIds.length", matchIds.length, "findUserQuestion", findMatchUsers.match_count);
+                    console.log("matchIds", matchIds.length , "checkMatches.match_count", checkMatches.match_count); 
 
-                    if (matchIds.length > findMatchUsers.match_count) {
+                    if (matchIds.length > checkMatches.match_count) {
                         const title = "New Matches";
-                        const body = `You've found ${matchIds.length} new matches!`;
+                        const body = `You've found ${parseInt(matchIds.length) - parseInt(checkMatches.match_count)} new matches!`;
                         const text = `${checkMatches.user_id}`;
                         const sendBy = `${checkMatches.user_id}`;
                         const registrationToken = findUserDataForNotfi.fcm_token
@@ -132,6 +122,16 @@ exports.matchesCron = async (req, res) => {
                             );
                         }
                     }
+
+                    const updateData = await MatchUsers.findOneAndUpdate(
+                        {
+                            _id: checkMatches._id
+                        },
+                        {
+                            match_user: matchIds,
+                            match_count: matchIds.length
+                        }
+                    )
                 }
 
 
