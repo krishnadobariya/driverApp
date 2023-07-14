@@ -58,3 +58,21 @@ blog1 = user1 = 643e74b8f3ab6de4d6751af2 ~comment-2~> user2
 ~~~~~~~~> Event
 even1 = user1 = 643e7187f3ab6de4d67517b7
 
+{
+    "development": {
+        "database": "app",
+        "username": "root",
+        "password": "",           
+        "host": "127.0.0.1",
+        "dialect": "mysql", 
+        "seederStorage": "sequelize"
+    },
+    "production": {
+        "username": "root",
+        "password": null,
+        "database": "master",
+        "host": "127.0.0.1",
+        "dialect": "mysql",
+        "seederStorage": "sequelize"
+    }
+}

@@ -66,14 +66,14 @@ exports.addUserPost = async (req, res) => {
 
         const urls = [];
         const files = req.files;
-        
+
         await Promise.all(
-          files.map(async (file) => {
-            const { path } = file;
-            const newPath = await cloudinaryImageUploadMethod(path);
-            urls.push(newPath);
-          })
-        ); 
+            files.map(async (file) => {
+                const { path } = file;
+                const newPath = await cloudinaryImageUploadMethod(path);
+                urls.push(newPath);
+            })
+        );
 
 
         /* const urls = [];
@@ -285,7 +285,7 @@ exports.userPostList = async (req, res) => {
 
                 }
                 /* End Of to show how long a post has been posted */
-                console.log("time",time);
+                console.log("time", time);
 
                 var findLikedUser = await UserPostLike.findOne({
                     post_id: respData._id,
@@ -546,7 +546,7 @@ exports.userPostLikeDislike = async (req, res) => {
 
                     } else if (userPostLikeModel) {
 
-                        const findPostData = await UserPost.findOne({ _id : userPostLikeModel.post_id })
+                        const findPostData = await UserPost.findOne({ _id: userPostLikeModel.post_id })
                         console.log("----1", findPostData);
                         const updateLike = await UserPost.updateOne({
                             // group_id: groupId
@@ -723,7 +723,7 @@ exports.userPostCommnetList = async (req, res) => {
                     });
                     console.log("userFound::", userFound);
 
-                    if(userFound == null) {
+                    if (userFound == null) {
 
                         const response = {
                             user_id: getDataOfCOmmentAbout.user_id,
@@ -804,7 +804,7 @@ exports.userPostLikedList = async (req, res) => {
                 statusCode: 1,
             })
 
-        }  else {
+        } else {
 
             const findUserPostData = await UserPostLike.findOne({
                 post_id: postId
@@ -832,7 +832,7 @@ exports.userPostLikedList = async (req, res) => {
                     });
                     console.log("userFound::", userFound);
 
-                    if(userFound == null) {
+                    if (userFound == null) {
 
                         const response = {
                             user_id: getDataOfLikeAbout._id,
@@ -896,5 +896,110 @@ exports.userPostLikedList = async (req, res) => {
             }
         )
 
+    }
+}
+
+exports.updateUserPost = async (req, res) => {
+    try {
+
+        const userId = req.params.userId
+        const postId = req.params.postId
+
+        const findPostData = await UserPost.findOne({ user_id: userId, _id: postId })
+
+        if (findPostData == null) {
+
+            res.status(status.NOT_FOUND).json({
+                message: "POST NOT EXIST",
+                status: true,
+                code: 404,
+                statusCode: 1,
+            })
+
+        } else {
+
+            const updatePostData = await UserPost.findOneAndUpdate(
+                {
+                    _id: findPostData._id
+                },
+                {
+                    $set: {
+                        desc: req.body.desc
+                    }
+                }
+            )
+
+            res.status(status.OK).json(
+                {
+                    message: "User Post Update Successfully",
+                    status: true,
+                    code: 200,
+                    statusCode: 1
+                }
+            )
+
+        }
+
+    } catch (error) {
+
+        console.log("updateUserPost--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
+
+exports.deleteUserPost = async (req, res) => {
+    try {
+
+        const userId = req.params.userId
+        const postId = req.params.postId
+
+        const findPostData = await UserPost.findOne({ user_id: userId, _id: postId })
+
+        if (findPostData == null) {
+
+            res.status(status.NOT_FOUND).json({
+                message: "POST NOT EXIST",
+                status: true,
+                code: 404,
+                statusCode: 1,
+            })
+
+        } else {
+
+            const deleteUserPost = await UserPost.deleteOne({ user_id: userId, _id: postId })
+
+            res.status(status.OK).json(
+                {
+                    message: "User Post Delete Successfully",
+                    status: true,
+                    code: 200,
+                    statusCode: 1
+                }
+            )
+
+        }
+        
+    } catch (error) {
+
+        console.log("deleteUserPost--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+        
     }
 }
