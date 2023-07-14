@@ -39,7 +39,7 @@ const authSchema = mongoose.Schema({
     status: {
         type: String,
         required: true,
-        default: "Active"
+        default: "Offline"
     },
     user_type: {
         type: Number, //1-Public,2-Private
