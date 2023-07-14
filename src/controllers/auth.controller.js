@@ -299,17 +299,13 @@ exports.userList = async (req, res) => {
         let page = parseInt(req.query.page);
         let limit = parseInt(req.query.limit);
 
-        // --- for pagination --- //
-        const startIndex = (page - 1) * limit;
-        const endIndex = page * limit;
-
         // --- get user whithout user that id pass --- //
         const blockUserId = [];
         const getUser = await authModel.find({
             _id: {
                 $ne: userId
             }
-        }).skip(startIndex).limit(endIndex).select('-__v').sort({ createdAt: -1 });
+        }).select('-__v').sort({ createdAt: -1 });
         console.log("getUser::", getUser.length);
 
         if (getUser.length == 0) {
@@ -333,14 +329,6 @@ exports.userList = async (req, res) => {
                     user_id: userId,
                     block_user_id: userDetails._id
                 });
-
-                // for (const getOneData of findBlockUser) {
-
-                //     blockUserId.push((getOneData.block_user_id).toString())
-
-                // }
-
-                // if (blockUserId.includes((userDetails._id).toString())) {
 
                 if (findBlockUser.length != 0) {
 
@@ -404,7 +392,15 @@ exports.userList = async (req, res) => {
 
             }
 
-            // console.log("i am here" , vehicleDetails);
+            function paginateArray(array, currentPage, itemsPerPage) {
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+
+                return array.slice(startIndex, endIndex);
+            }
+
+            const paginatedArray = paginateArray(vehicleDetails, page, limit);
+            console.log(paginatedArray); 
 
             res.status(status.OK).json(
                 {
@@ -412,7 +408,7 @@ exports.userList = async (req, res) => {
                     status: true,
                     code: 200,
                     statusCode: 1,
-                    data: vehicleDetails
+                    data: paginatedArray
                 }
             )
 
@@ -2379,7 +2375,7 @@ exports.matchUser = async (req, res) => {
                 console.log("checkVehicalData", checkVehicalData);
 
                 const getUserData = await authModel.findOne({ _id: checkVehicalData })
-                const findQue = await Question.findOne({ user_id : checkVehicalData })
+                const findQue = await Question.findOne({ user_id: checkVehicalData })
                 console.log("getUserData", getUserData);
 
                 if (getUserData != null) {
@@ -2428,7 +2424,7 @@ exports.matchUser = async (req, res) => {
                             vehicleDataArr.push(response)
                         }
 
-                        const getInAppPurchase = await InAppPurchase.find({ user_id: getUserData._id , subscription_type : 2 })
+                        const getInAppPurchase = await InAppPurchase.find({ user_id: getUserData._id, subscription_type: 2 })
                         console.log('getInAppPurchase', getInAppPurchase);
 
                         var credit = 0
