@@ -112,6 +112,8 @@ exports.remainingList = async (req, res) => {
     try {
 
         let userId = req.params.userId;
+        let page = parseInt(req.query.page) || 1;
+        let limit = parseInt(req.query.limit) || 10;
 
         const groupList = await Group.find({
             user_id: {
@@ -184,11 +186,15 @@ exports.remainingList = async (req, res) => {
         }
         console.log("response", response);
 
-        let page = parseInt(req.query.page) || 1;
-        let limit = parseInt(req.query.limit) || 10;
+        function paginateArray(array, currentPage, itemsPerPage) {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
 
-        const startIndex = (page - 1) * limit;
-        const endIndex = page * limit;
+            return array.slice(startIndex, endIndex);
+        }
+
+        const paginatedArray = paginateArray(response, page, limit);
+        console.log(paginatedArray);
 
         res.status(status.OK).json(
             {
@@ -196,7 +202,7 @@ exports.remainingList = async (req, res) => {
                 status: true,
                 code: 200,
                 statusCode: 1,
-                data: response.slice(startIndex, endIndex)
+                data: paginatedArray
             }
         )
 

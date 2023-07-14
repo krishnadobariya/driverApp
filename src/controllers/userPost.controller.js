@@ -172,6 +172,9 @@ exports.userPostList = async (req, res) => {
     try {
 
         let userId = req.params.userId;
+        let page = parseInt(req.query.page) || 1;
+        let limit = parseInt(req.query.limit) || 10;
+
         const findUser = await User.findOne({ _id: userId });
         console.log("findUser", findUser);
 
@@ -330,13 +333,15 @@ exports.userPostList = async (req, res) => {
 
             }
 
-            let page = parseInt(req.query.page) || 1;
-            let limit = parseInt(req.query.limit) || 10;
+            function paginateArray(array, currentPage, itemsPerPage) {
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
 
-            const startIndex = (page - 1) * limit;
-            const endIndex = page * limit;
+                return array.slice(startIndex, endIndex);
+            }
 
-            console.log(`Pagination :- ${startIndex}, ${endIndex}`);
+            const paginatedArray = paginateArray(response, page, limit);
+            console.log(paginatedArray);
 
             res.status(status.OK).json(
                 {
@@ -344,7 +349,7 @@ exports.userPostList = async (req, res) => {
                     status: true,
                     code: 200,
                     statusCode: 1,
-                    data: response.slice(startIndex, endIndex)
+                    data: paginatedArray
                 }
             )
 
@@ -989,7 +994,7 @@ exports.deleteUserPost = async (req, res) => {
             )
 
         }
-        
+
     } catch (error) {
 
         console.log("deleteUserPost--Error::", error);
@@ -1002,6 +1007,6 @@ exports.deleteUserPost = async (req, res) => {
                 error: error.message
             }
         )
-        
+
     }
 }

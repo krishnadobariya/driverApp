@@ -296,8 +296,8 @@ exports.userList = async (req, res) => {
 
         let userId = req.params.id;
         let vehicleType = req.body.vehicle_type;
-        let page = parseInt(req.query.page);
-        let limit = parseInt(req.query.limit);
+        let page = parseInt(req.query.page) || 1;
+        let limit = parseInt(req.query.limit) || 10;
 
         // --- get user whithout user that id pass --- //
         const blockUserId = [];
@@ -400,7 +400,7 @@ exports.userList = async (req, res) => {
             }
 
             const paginatedArray = paginateArray(vehicleDetails, page, limit);
-            console.log(paginatedArray); 
+            console.log(paginatedArray);
 
             res.status(status.OK).json(
                 {
@@ -737,17 +737,17 @@ exports.getLatLong = async (req, res) => {
 
 exports.getUserInfo = async (req, res) => {
     try {
-        const page = parseInt(req.query.page)
-        const limit = parseInt(req.query.limit)
-        const startIndex = (page - 1) * limit;
-        const endIndex = page * limit;
+        const page = parseInt(req.query.page) || 1
+        const limit = parseInt(req.query.limit) || 10
+
         // const getAllData = await authModel.find().skip(startIndex).limit(endIndex).select('-__v');
         const getAllData = await authModel.find({
             _id: {
                 $ne: req.params.id
             },
             status: "Active"
-        }).skip(startIndex).limit(endIndex).select('-__v').sort({ createdAt: -1 });
+        }).select('-__v').sort({ createdAt: -1 });
+
         const userInfoList = [];
         for (const userInfo of getAllData) {
 
@@ -772,13 +772,24 @@ exports.getUserInfo = async (req, res) => {
             }
 
         }
+
+        function paginateArray(array, currentPage, itemsPerPage) {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+
+            return array.slice(startIndex, endIndex);
+        }
+
+        const paginatedArray = paginateArray(userInfoList, page, limit);
+        console.log(paginatedArray);
+
         res.status(status.OK).json(
             {
                 message: "User Login Successfully",
                 status: true,
                 code: 200,
                 statusCode: 1,
-                data: userInfoList
+                data: paginatedArray
             }
         )
     } catch (error) {
@@ -2033,17 +2044,13 @@ exports.searchData = async (req, res) => {
         var pattern = `^${req.body.name}`
         var type = req.body.type;
 
-        let page = parseInt(req.query.page);
-        let limit = parseInt(req.query.limit);
-
-        // --- for pagination --- //
-        const startIndex = (page - 1) * limit;
-        const endIndex = limit * 1;
+        let page = parseInt(req.query.page) || 1;
+        let limit = parseInt(req.query.limit) || 10;
 
         // const findUserData = await authModel.find({ username: { $regex: pattern, $options: 'i' } }).skip(startIndex).limit(endIndex);
         // console.log("findUserData", findUserData);
 
-        const findUserData = await authModel.findOne({ _id: userId }).sort({ createdAt: -1 }).skip(startIndex).limit(endIndex)
+        const findUserData = await authModel.findOne({ _id: userId }).sort({ createdAt: -1 })
         console.log("findUserData", findUserData);
 
         if (findUserData == null) {
@@ -2074,7 +2081,7 @@ exports.searchData = async (req, res) => {
                             ]
                     }
                 }
-            ]).sort({ createdAt: -1 }).skip(startIndex).limit(endIndex);
+            ]).sort({ createdAt: -1 })
             console.log("findUser::", findUser);
 
             var userDataArr = []
@@ -2144,7 +2151,16 @@ exports.searchData = async (req, res) => {
                 }
 
             }
-            console.log("userDataArr", userDataArr);
+
+            function paginateArray(array, currentPage, itemsPerPage) {
+                const startIndex = (currentPage - 1) * itemsPerPage;
+                const endIndex = startIndex + itemsPerPage;
+    
+                return array.slice(startIndex, endIndex);
+            }
+    
+            const paginatedArray = paginateArray(userDataArr, page, limit);
+            console.log(paginatedArray);
 
             res.status(status.OK).json(
                 {
@@ -2152,7 +2168,7 @@ exports.searchData = async (req, res) => {
                     status: true,
                     code: 200,
                     statusCode: 1,
-                    data: userDataArr
+                    data: paginatedArray
                 }
             )
 
