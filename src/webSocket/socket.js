@@ -1927,8 +1927,20 @@ function socket(io) {
             const userId = arg.user_id;
             const latitude = arg.latitude;
             const longitude = arg.longitude;
+            const userRoom = `User${arg.user_id}`;
 
-            
+            const findUserData = await authModel.findOne({ _id: userId })
+
+            if (findUserData == null) {
+                io.to(userRoom).emit("updateUser", "User Not Found");
+            } else {
+                const updateData = await authModel.updateOne({ _id: findUserData._id }, {
+                    $set: {
+                        location: { type: "Point", coordinates: [parseFloat(latitude), parseFloat(longitude)] }
+                    }
+                })
+                io.to(userRoom).emit("updateUser", "User Update Successfully");
+            }
         })
         // ----- updateUserLatLong ----- //
 

@@ -119,3 +119,12 @@
     "user_id" : "648173cb19a4de60e5bdc67f"
 }
 - emit : expireSubscriptionOrNot
+
+
+- Socket : updateUserLatLong
+{
+    "user_id" : "64a55124315d2b1490c473bb",
+    "latitude" : ,
+    "longitude" : 
+}
+- emit : updateUser
