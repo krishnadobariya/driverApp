@@ -13,7 +13,9 @@ const {
     notificationList,
     groupChatList,
     deleteGroup,
-    removeMember
+    removeMember,
+    updateGroupPost,
+    deleteGroupPost
 } = require("../controllers/group.controller");
 
 router.post("/add/:user_id", upload.single("group_img"), insertGroup);
@@ -27,6 +29,8 @@ router.post("/post/add/:groupId/:userId", upload.array('posts'), addPost);
 router.get("/notificationList/:userId", notificationList);
 router.get("/groupChatList/:group_id", groupChatList);
 router.delete("/delete/:groupId", deleteGroup);
-router.delete("/delete-member/:groupId/:userId", removeMember)
+router.delete("/delete-member/:groupId/:userId", removeMember);
+router.post("/update/:groupId/:userId/:postId", updateGroupPost);
+router.delete("/delete/:groupId/:userId/:postId", deleteGroupPost);
 
 module.exports = router;

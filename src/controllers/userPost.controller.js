@@ -975,7 +975,9 @@ exports.deleteUserPost = async (req, res) => {
 
         } else {
 
-            const deleteUserPost = await UserPost.deleteOne({ user_id: userId, _id: postId })
+            await UserPost.deleteOne({ user_id: userId, _id: postId })
+            await UserPostLike.deleteOne({ post_id: postId })
+            await UserPostComment.deleteOne({ post_id: postId })
 
             res.status(status.OK).json(
                 {

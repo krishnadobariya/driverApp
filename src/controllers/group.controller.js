@@ -1530,3 +1530,112 @@ exports.removeMember = async (req, res) => {
 
     }
 }
+
+exports.updateGroupPost = async (req, res) => {
+    try {
+
+        const userId = req.params.userId
+        const postId = req.params.postId
+        const groupId = req.params.groupId
+
+        const findPostData = await GroupPost.findOne({ user_id: userId, _id: postId ,group_id : groupId })
+
+        if (findPostData == null) {
+
+            res.status(status.NOT_FOUND).json({
+                message: "GROUP POST NOT EXIST",
+                status: true,
+                code: 404,
+                statusCode: 1,
+            })
+
+        } else {
+
+            const updatePostData = await GroupPost.findOneAndUpdate(
+                {
+                    _id: findPostData._id
+                },
+                {
+                    $set: {
+                        desc: req.body.desc
+                    }
+                }
+            )
+
+            res.status(status.OK).json(
+                {
+                    message: "Group Post Update Successfully",
+                    status: true,
+                    code: 200,
+                    statusCode: 1
+                }
+            )
+
+        }
+
+    } catch (error) {
+
+        console.log("updateGroupPost--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
+
+exports.deleteGroupPost = async (req, res) => {
+    try {
+
+        const userId = req.params.userId
+        const postId = req.params.postId
+        const groupId = req.params.groupId
+
+        const findPostData = await GroupPost.findOne({ user_id: userId, _id: postId , group_id : groupId })
+
+        if (findPostData == null) {
+
+            res.status(status.NOT_FOUND).json({
+                message: "GROUP POST NOT EXIST",
+                status: true,
+                code: 404,
+                statusCode: 1,
+            })
+
+        } else {
+
+            await GroupPost.deleteOne({ user_id: userId, _id: postId , group_id : groupId })
+            await GroupPostLike.deleteOne({ post_id: postId, group_id : groupId })
+            await GroupPostComment.deleteOne({ post_id: postId, group_id : groupId })
+
+            res.status(status.OK).json(
+                {
+                    message: "Group Post Delete Successfully",
+                    status: true,
+                    code: 200,
+                    statusCode: 1
+                }
+            )
+
+        }
+        
+    } catch (error) {
+
+        console.log("deleteGroupPost--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+        
+    }
+}
