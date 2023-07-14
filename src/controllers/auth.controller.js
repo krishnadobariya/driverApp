@@ -740,13 +740,16 @@ exports.getUserInfo = async (req, res) => {
         const page = parseInt(req.query.page) || 1
         const limit = parseInt(req.query.limit) || 10
 
+        const startIndex = (page - 1) * limit;
+        const endIndex = limit * 1;
+
         // const getAllData = await authModel.find().skip(startIndex).limit(endIndex).select('-__v');
         const getAllData = await authModel.find({
             _id: {
                 $ne: req.params.id
             },
             status: "Active"
-        }).select('-__v').sort({ createdAt: -1 });
+        }).skip(startIndex).limit(endIndex).select('-__v').sort({ createdAt: -1 });
 
         const userInfoList = [];
         for (const userInfo of getAllData) {
@@ -773,23 +776,13 @@ exports.getUserInfo = async (req, res) => {
 
         }
 
-        function paginateArray(array, currentPage, itemsPerPage) {
-            const startIndex = (currentPage - 1) * itemsPerPage;
-            const endIndex = startIndex + itemsPerPage;
-
-            return array.slice(startIndex, endIndex);
-        }
-
-        const paginatedArray = paginateArray(userInfoList, page, limit);
-        console.log(paginatedArray);
-
         res.status(status.OK).json(
             {
                 message: "User Login Successfully",
                 status: true,
                 code: 200,
                 statusCode: 1,
-                data: paginatedArray
+                data: userInfoList
             }
         )
     } catch (error) {

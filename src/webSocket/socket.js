@@ -1921,6 +1921,17 @@ function socket(io) {
         })
         // ----- matchUser ----- //
 
+
+        // ----- updateUserLatLong ----- //
+        socket.on('updateUserLatLong', async (arg) => {
+            const userId = arg.user_id;
+            const latitude = arg.latitude;
+            const longitude = arg.longitude;
+
+            
+        })
+        // ----- updateUserLatLong ----- //
+
     })
 
 }
