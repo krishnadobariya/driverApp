@@ -1143,6 +1143,62 @@ exports.searchBlog = async (req, res) => {
     }
 }
 
+exports.updateBlog = async (req, res) => {
+    try {
+
+        const blogId = req.params.blogId
+        const userId = req.params.userId
+
+        const findBlogData = await Blog.findOne({ _id: blogId , user_id : userId })
+
+        if (findBlogData == null) {
+
+            res.status(status.NOT_FOUND).json({
+                message: "BLOG NOT EXIST",
+                status: true,
+                code: 404,
+                statusCode: 1,
+            })
+
+        } else {
+
+            const updatePostData = await Blog.findOneAndUpdate(
+                {
+                    _id: findBlogData._id
+                },
+                {
+                    $set: {
+                        category: req.body.category,
+                        heading: req.body.heading,
+                        description: req.body.description
+                    }
+                }
+            )
+
+            res.status(status.OK).json(
+                {
+                    message: "User Blog Update Successfully",
+                    status: true,
+                    code: 200,
+                    statusCode: 1
+                }
+            )
+
+        }
+        
+    } catch (error) {
+        console.log("Error::--updateBlog---", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+    }
+}
 
 /* ----- for report blog apis ----- */
 exports.reportBlog = async (req, res) => {
@@ -1236,3 +1292,4 @@ exports.reportBlog = async (req, res) => {
 
     }
 }
+

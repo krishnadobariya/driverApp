@@ -11,7 +11,8 @@ const {
     myBlog,
     deleteBlog,
     reportBlog,
-    searchBlog
+    searchBlog,
+    updateBlog
 } = require("../controllers/blog.controller");
 
 router.post("/add/:id", upload.array('thumbnail'), addBlog);
@@ -22,7 +23,8 @@ router.get("/comment-get-list/:blog_id", getCommentList);
 router.post("/liked-user/:id", likedUser); // passed blogId
 router.post("/my/:user_id", myBlog);
 router.post("/delete/:blog_id", deleteBlog);
-router.get("/search/:user_id", searchBlog)
+router.get("/search/:user_id", searchBlog);
+router.post("/update/:userId/:blogId", updateBlog);
 
 /* ----- For Report Blog APIs ----- */
 router.post("/report-blog/:user_id/:blog_id", reportBlog);
