@@ -380,6 +380,8 @@ exports.userList = async (req, res) => {
                             profile: userDetails.profile[0] ? userDetails.profile[0].res : "",
                             userName: userDetails.username,
                             email: userDetails.email,
+                            age: userDetails.age,
+                            gender: userDetails.gender,
                             phone: `${userDetails.country_code}${userDetails.phone_number}`,
                             chatRoomId: finalChatId[0] ? finalChatId[0]._id : "",
                             vehicles: arrVehicleData
