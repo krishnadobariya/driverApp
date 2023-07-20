@@ -829,7 +829,7 @@ exports.inviteList = async (req, res) => {
 
         // --- for pagination --- //
         const startIndex = (page - 1) * limit;
-        const endIndex = page * limit;
+        const endIndex = limit * 1;
 
         const getUserDatas = await Auth.find({
             _id: {
