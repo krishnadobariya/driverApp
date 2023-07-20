@@ -24,7 +24,7 @@ router.post("/likeDislike/:user_id/:group_id/:postId", groupPostLike);
 router.post("/comment/:userId/:groupId/:postId", addCommentOnPost)
 router.get("/commentList/:postId", commentList)
 router.get("/details/:groupId/:userId", groupDetails);
-router.get("/inviteList/:userId/:groupId", inviteList);
+router.get("/inviteList/:groupId/:userId", inviteList);
 router.post("/post/add/:groupId/:userId", upload.array('posts'), addPost);
 router.get("/notificationList/:userId", notificationList);
 router.get("/groupChatList/:group_id", groupChatList);
