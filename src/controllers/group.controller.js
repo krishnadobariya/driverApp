@@ -824,18 +824,14 @@ exports.inviteList = async (req, res) => {
 
         const userId = req.params.userId;
         const groupId = req.params.groupId;
-        let page = parseInt(req.query.page);
-        let limit = parseInt(req.query.limit);
-
-        // --- for pagination --- //
-        const startIndex = (page - 1) * limit;
-        const endIndex = limit * 1;
+        let page = parseInt(req.query.page) || 1;
+        let limit = parseInt(req.query.limit) || 10;
 
         const getUserDatas = await Auth.find({
             _id: {
                 $ne: userId
             }
-        }).skip(startIndex).limit(endIndex).sort({ createdAt: -1 });
+        }).sort({ createdAt: -1 });
         console.log("getUserDatas", getUserDatas.length);
 
         const response = [];
@@ -915,13 +911,23 @@ exports.inviteList = async (req, res) => {
 
         // console.log("getAllUserWhichIsInNotification", getAllUserWhichIsInNotification.length);
 
+        function paginateArray(array, currentPage, itemsPerPage) {
+            const startIndex = (currentPage - 1) * itemsPerPage;
+            const endIndex = startIndex + itemsPerPage;
+
+            return array.slice(startIndex, endIndex);
+        }
+
+        const paginatedArray = paginateArray(response, page, limit);
+        console.log(paginatedArray);
+
         res.status(status.OK).json(
             {
                 message: "Get User Details Successfully",
                 status: true,
                 code: 200,
                 statusCode: 1,
-                data: response
+                data: paginatedArray
             }
         )
 
