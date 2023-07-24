@@ -23,6 +23,7 @@ const {
     removeFollower,
     searchData,
     matchUser,
+    allMatchUser,
     topTenUser
 } = require("../controllers/auth.controller");
 
@@ -52,7 +53,8 @@ router.get("/follower/:userId", followerList)
 router.delete("/remove-following/:userId/:removeUserId", removeFollowing)
 router.delete("/remove-follower/:userId/:removeUserId", removeFollower);
 router.get("/search/:id", searchData)
-router.get("/match-user/:userId", matchUser)
+router.get("/match-user/:userId", matchUser);
+router.get("/find-match-user/:userId", allMatchUser);
 router.get("/ten-user/:id", topTenUser)
 
 

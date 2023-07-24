@@ -2150,10 +2150,10 @@ exports.searchData = async (req, res) => {
             function paginateArray(array, currentPage, itemsPerPage) {
                 const startIndex = (currentPage - 1) * itemsPerPage;
                 const endIndex = startIndex + itemsPerPage;
-    
+
                 return array.slice(startIndex, endIndex);
             }
-    
+
             const paginatedArray = paginateArray(userDataArr, page, limit);
             console.log(paginatedArray);
 
@@ -2490,6 +2490,185 @@ exports.matchUser = async (req, res) => {
                     match_count: match_count
                 }
             )
+
+        }
+
+    } catch (error) {
+
+        console.log("searchByVehical--Error::", error);
+        res.status(status.INTERNAL_SERVER_ERROR).json(
+            {
+                message: "Something Went Wrong",
+                status: false,
+                code: 500,
+                statusCode: 0,
+                error: error.message
+            }
+        )
+
+    }
+}
+
+exports.allMatchUser = async (req, res) => {
+    try {
+
+        const userId = req.params.userId
+
+        const findUser = await authModel.findOne({ _id: userId })
+        // console.log("findUser", findUser);
+
+        if (findUser == null) {
+
+            res.status(status.NOT_FOUND).json(
+                {
+                    message: "User Not Found",
+                    status: false,
+                    code: 404,
+                    statusCode: 0
+                }
+            )
+
+        } else {
+
+            const findUserQuestion = await Question.findOne({
+                user_id: userId,
+            });
+            const findQuestionData = await Question.find({
+                user_id: { $ne: userId },
+                que_one: findUserQuestion.que_one,
+                que_two: findUserQuestion.que_two,
+                que_three: findUserQuestion.que_three,
+                que_four: findUserQuestion.que_four,
+                que_five: findUserQuestion.que_five,
+                que_six: findUserQuestion.que_six,
+            }).select("user_id -_id");
+            console.log("findQuestionData", findQuestionData);
+
+            const idArr = []
+            for (const getIds of findQuestionData) {
+                const findUserData = await authModel.findOne({ _id: getIds.user_id });
+
+                if (findUserData) {
+                    idArr.push(getIds.user_id)
+                }
+
+            }
+            console.log("idArr", idArr);
+
+            const findMatchUser = await MatchUsers.findOne({ user_id: userId })
+
+            if(findMatchUser) {
+                await MatchUsers.findOneAndUpdate(
+                    {
+                        _id: findMatchUser._id
+                    },
+                    {
+                        match_user: idArr,
+                        match_count: idArr.length
+                    }
+                )
+            } else {
+                const insertMatchUser = new MatchUsers({
+                    user_id: userId,
+                    match_user: idArr,
+                    match_count: idArr.length
+                });
+                await insertMatchUser.save();
+            }
+
+            var userDataArr = []
+            for (const checkVehicalData of idArr) {
+                console.log("checkVehicalData", checkVehicalData);
+
+                const getUserData = await authModel.findOne({ _id: checkVehicalData })
+                const findQue = await Question.findOne({ user_id: checkVehicalData })
+                console.log("getUserData", getUserData);
+
+                if (getUserData != null) {
+                    const findBlockUser = await Block.find({
+                        user_id: userId,
+                        block_user_id: checkVehicalData.user_id
+                    });
+
+                    if (findBlockUser.length != 0) {
+
+                    } else {
+                        var finalChatId = "";
+                        finalChatId = await chatRoomModel.find(
+                            {
+                                user1: checkVehicalData.user_id,
+                                user2: userId,
+                            }
+                        );
+
+                        if (finalChatId.length == 0) {
+                            finalChatId = await chatRoomModel.find(
+                                {
+                                    user2: checkVehicalData.user_id,
+                                    user1: userId,
+                                }
+                            );
+
+                        }
+
+                        var vehicleDataArr = []
+                        var isVehicleData = false;
+
+                        for (const getVehical of getUserData.vehicle) {
+                            isVehicleData = true;
+                            const response = {
+                                vehicleImageId: getVehical.vehicle_img_id,
+                                model: getVehical.model,
+                                type: getVehical.vehicle_type,
+                                year: getVehical.year,
+                                trim: getVehical.trim,
+                                dailyDriving: getVehical.daily_driving,
+                                unit: getVehical.unit,
+                                duration: getVehical.duration,
+                                distance: getVehical.distance
+                            }
+                            vehicleDataArr.push(response)
+                        }
+
+                        const getMatch = await MatchUsers.findOne({ user_id: getUserData._id })
+                        console.log('getMatch', getMatch);
+
+                        if (isVehicleData) {
+                            const response = {
+                                user_id: getUserData._id,
+                                profile: getUserData.profile[0] ? getUserData.profile[0].res : "",
+                                userName: getUserData.username,
+                                email: getUserData.email,
+                                phone: `${getUserData.country_code}${getUserData.phone_number}`,
+                                age: getUserData.age,
+                                gender: getUserData.gender,
+                                vehicles: vehicleDataArr,
+                                chatRoomId: finalChatId[0] ? finalChatId[0]._id : "",
+                                questions: [
+                                    {
+                                        que_one: findQue.que_one,
+                                        que_two: findQue.que_two,
+                                        que_three: findQue.que_three,
+                                        que_four: findQue.que_four,
+                                        que_five: findQue.que_five,
+                                        que_six: findQue.que_six,
+                                    }
+                                ],
+                                match_user: getMatch == null ? "" : getMatch.match_user,
+                            }
+                            userDataArr.push(response)
+                        }
+                    }
+                }
+            }
+
+            res.status(status.CREATED).json({
+                message: "Match User View Successfully",
+                status: true,
+                code: 201,
+                statusCode: 1,
+                data: userDataArr
+            });
 
         }
 
