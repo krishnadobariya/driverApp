@@ -44,10 +44,9 @@ cron.schedule('*/1 * * * * *', async () => {
     userStatus()
 });
 
-// const cronSchedule = '0 0 * * *'; // Runs at 12 AM every day
-const cronSchedule = '*/1 * * * *';
+// const cronSchedule = '0 0,12 * * *'; // Runs at 12 AM and 12 PM every day
+const cronSchedule = '*/5 * * * * *';
 cron.schedule(cronSchedule, () => {
-  // console.log('Running cron job at 12 AM EDT');
   matchesCron()
 }, {
   timezone: 'America/New_York' // Set the timezone to EDT

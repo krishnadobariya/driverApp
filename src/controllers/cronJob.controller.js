@@ -76,66 +76,39 @@ exports.matchesCron = async (req, res) => {
             }
             // console.log("idArr", idArr);
 
-            const findMatchUser = await MatchUsers.find({ user_id: findMatchUsers.user_id })
+            const matchUserCountForNoti = idArr.length - (findMatchUsers.match_user).length
+            console.log("(findMatchUsers.match_user).length", (findMatchUsers.match_user).length, "idArr.length", idArr.length );
 
-            var saveMatchCount = parseInt(0);
-            for (const checkMatches of findMatchUser) {
+            if (matchUserCountForNoti > 0) {
 
-                const findUserDataForNotfi = await User.findOne({ _id: checkMatches.user_id });
+                const findUserDataForNotfi = await User.findOne({ _id: findMatchUsers.user_id });
 
-                if (checkMatches.credit == checkMatches.match_count) {
-
-                    saveMatchCount += parseInt(checkMatches.credit)
-                    // console.log("match user complete che....");
-
-                } else {
-                    
-                    let matchIds = [];
-                    if (checkMatches.credit == 5) {
-                        matchIds = idArr.slice(saveMatchCount, saveMatchCount + 5).map((getId) => getId);
-                        saveMatchCount += parseInt(checkMatches.credit)
-                    } else if (checkMatches.credit == 15) {
-                        matchIds = idArr.slice(saveMatchCount, saveMatchCount + 15).map((getId) => getId);
-                        saveMatchCount += parseInt(checkMatches.credit)
-                    } else {
-                        matchIds = idArr.slice(saveMatchCount, saveMatchCount + 20).map((getId) => getId);
-                        saveMatchCount += parseInt(checkMatches.credit)
-                    }
-
-
-                    console.log("matchIds", matchIds.length , "checkMatches.match_count", checkMatches.match_count); 
-
-                    if (matchIds.length > checkMatches.match_count) {
-                        const title = "New Matches";
-                        const body = `You've found ${parseInt(matchIds.length) - parseInt(checkMatches.match_count)} new matches!`;
-                        const text = `${checkMatches.user_id}`;
-                        const sendBy = `${checkMatches.user_id}`;
-                        const registrationToken = findUserDataForNotfi.fcm_token
-                        if (registrationToken != null) {
-                            Notification.sendPushNotificationFCM(
-                                registrationToken,
-                                title,
-                                body,
-                                text,
-                                sendBy,
-                                true
-                            );
-                        }
-                    }
-
-                    const updateData = await MatchUsers.findOneAndUpdate(
-                        {
-                            _id: checkMatches._id
-                        },
-                        {
-                            match_user: matchIds,
-                            match_count: matchIds.length
-                        }
-                    )
+                const title = "New Matches";
+                const body = `You've found ${matchUserCountForNoti} new matches!`;
+                const text = `${findMatchUsers.user_id}`;
+                const sendBy = `${findMatchUsers.user_id}`;
+                const registrationToken = findUserDataForNotfi.fcm_token
+                if (registrationToken != null) {
+                    Notification.sendPushNotificationFCM(
+                        registrationToken,
+                        title,
+                        body,
+                        text,
+                        sendBy,
+                        true
+                    );
                 }
-
-
             }
+
+            await MatchUsers.findOneAndUpdate(
+                {
+                    _id: findMatchUsers._id
+                },
+                {
+                    match_user: idArr,
+                    match_count: idArr.length
+                }
+            )
 
         }
 

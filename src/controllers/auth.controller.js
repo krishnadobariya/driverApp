@@ -394,6 +394,23 @@ exports.userList = async (req, res) => {
 
             }
 
+            // --------- first 64aee961671f9ca786fdce03 this user ----------
+
+            function moveElementToFront(arr, userId) {
+                const index = arr.findIndex((item) => item.user_id == userId);
+                if (index > 0) {
+                    const element = arr.splice(index, 1)[0];
+                    arr.unshift(element);
+                }
+            }
+
+            const targetUserId = "64aee961671f9ca786fdce03";
+            moveElementToFront(vehicleDetails, targetUserId);
+
+            console.log(vehicleDetails);
+
+            // --------- first 64aee961671f9ca786fdce03 this user ----------
+
             function paginateArray(array, currentPage, itemsPerPage) {
                 const startIndex = (currentPage - 1) * itemsPerPage;
                 const endIndex = startIndex + itemsPerPage;
@@ -2557,7 +2574,7 @@ exports.allMatchUser = async (req, res) => {
 
             const findMatchUser = await MatchUsers.findOne({ user_id: userId })
 
-            if(findMatchUser) {
+            if (findMatchUser) {
                 await MatchUsers.findOneAndUpdate(
                     {
                         _id: findMatchUser._id
@@ -2690,17 +2707,33 @@ exports.allMatchUser = async (req, res) => {
 
 exports.topTenUser = async (req, res) => {
     try {
-
         let userId = req.params.id;
         const blockUserId = [];
         const getUser = await authModel.find({
             _id: {
                 $ne: userId
             }
-        }).limit(10).sort({ createdAt: -1 });
+        }).sort({ createdAt: -1 });
         console.log("getUser", getUser);
 
-        if (getUser.length == 0) {
+        // --------- first 64aee961671f9ca786fdce03 this user ----------
+
+        function moveElementToFront(arr, userId) {
+            const index = arr.findIndex((item) => item._id == userId);
+            if (index > 0) {
+                const element = arr.splice(index, 1)[0];
+                arr.unshift(element);
+            }
+        }
+
+        const targetUserId = "64aee961671f9ca786fdce03";
+        moveElementToFront(getUser, targetUserId);
+
+        // --------- first 64aee961671f9ca786fdce03 this user ----------
+
+        const firstTenElements = getUser.slice(0, 10);
+
+        if (firstTenElements.length == 0) {
 
             res.status(status.NOT_FOUND).json(
                 {
@@ -2715,7 +2748,7 @@ exports.topTenUser = async (req, res) => {
         } else {
 
             const responseArr = [];
-            for (const userDetails of getUser) {
+            for (const userDetails of firstTenElements) {
 
                 const findBlockUser = await Block.find({
                     user_id: userId,
@@ -2744,7 +2777,7 @@ exports.topTenUser = async (req, res) => {
 
                     }
 
-                    console.log("finalChatId::::", finalChatId);
+                    // console.log("finalChatId::::", finalChatId);
 
                     const response = {
                         user_id: userDetails._id,
@@ -2806,4 +2839,4 @@ exports.testing = async (req, res) => {
             }
         )
     }
-}
+} 
