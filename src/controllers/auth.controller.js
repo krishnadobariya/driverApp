@@ -1713,7 +1713,6 @@ exports.changePassword = async (req, res) => {
 
 exports.forgetPassword = async (req, res) => {
     try {
-
         const email = req.body.email;
         const findUser = await authModel.findOne({ email: email });
         console.log("findUser::", findUser);
@@ -2153,6 +2152,8 @@ exports.searchData = async (req, res) => {
                             profile: findVehicalData.profile[0] ? findVehicalData.profile[0].res : "",
                             userName: findVehicalData.username,
                             email: findVehicalData.email,
+                            age: findVehicalData.age,
+                            gender : findVehicalData.gender,
                             phone: `${findVehicalData.country_code}${findVehicalData.phone_number}`,
                             chatRoomId: finalChatId[0] ? finalChatId[0]._id : "",
                             vehicles: vehicleDataArr

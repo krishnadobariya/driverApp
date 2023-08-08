@@ -2,7 +2,7 @@ require("dotenv").config();
 
 let CONFIG = {};
 
-CONFIG.email = process.env.EMAIL || "0083.work@gmail.com";
-CONFIG.password = process.env.PASSWORD || "izlsnoyieiqtaray";
+CONFIG.email = process.env.EMAIL || "5876.urvi@gmail.com";
+CONFIG.password = process.env.PASSWORD || "xojojghoarmbytgp";
 
 module.exports = CONFIG;
