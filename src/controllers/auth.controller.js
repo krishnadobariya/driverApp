@@ -2153,6 +2153,8 @@ exports.searchData = async (req, res) => {
                             profile: findVehicalData.profile[0] ? findVehicalData.profile[0].res : "",
                             userName: findVehicalData.username,
                             email: findVehicalData.email,
+                            age: findVehicalData.age,
+                            gender: findVehicalData.gender,
                             phone: `${findVehicalData.country_code}${findVehicalData.phone_number}`,
                             chatRoomId: finalChatId[0] ? finalChatId[0]._id : "",
                             vehicles: vehicleDataArr

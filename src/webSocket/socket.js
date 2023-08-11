@@ -13,7 +13,6 @@ const GroupMemberList = require("../models/groupMemberList.model");
 const FriendRequest = require("../models/frdReq.model");
 const Notification = require("../helper/firebaseHelper");
 const InAppPurchaseModel = require("../models/inAppPurchase.model");
-const datetime = require("datetime")
 
 function socket(io) {
 

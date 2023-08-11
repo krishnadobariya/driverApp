@@ -32,7 +32,7 @@ exports.getChatByUserId = async (req, res) => {
 
             const response = [];
             for (const findChatRoomId of findChatRoom) {
-        
+
                 const getChatRoom = await chatModel.findOne(
                     {
                         chatRoomId: findChatRoomId._id
@@ -72,41 +72,43 @@ exports.getChatByUserId = async (req, res) => {
                             }
                         );
                         console.log("getUserData::", getUserData);
+                        if (getUserData != null) {
+                            const chatMessage = getChatRoom.chat;
+                            console.log("chatMessage", chatMessage);
+                            const getLastMessage = chatMessage[chatMessage.length - 1];
+                            console.log("getLastMessage:::", getLastMessage);
 
-                        const chatMessage = getChatRoom.chat;
-                        console.log("chatMessage", chatMessage);
-                        const getLastMessage = chatMessage[chatMessage.length - 1];
-                        console.log("getLastMessage:::", getLastMessage);
+                            var count = 0;
+                            // for (const getReadCount of chatMessage) {
 
-                        var count = 0;
-                        // for (const getReadCount of chatMessage) {
+                            //     count = count + getReadCount.read;
+                            //     // console.log("chatCount:",count);
 
-                        //     count = count + getReadCount.read;
-                        //     // console.log("chatCount:",count);
+                            // }
 
-                        // }
+                            for (const getReadCount of chatMessage) {
 
-                        for (const getReadCount of chatMessage) {
+                                var s_id = (getReadCount.receiver).toString();
+                                var u_id = (req.body.user_id).toString();
 
-                            var s_id = (getReadCount.receiver).toString();
-                            var u_id = (req.body.user_id).toString();
+                                if (s_id == u_id) {
+                                    count = count + getReadCount.read;
+                                } else {
 
-                            if (s_id == u_id) {
-                                count = count + getReadCount.read;
-                            } else {
-
+                                }
                             }
+
+                            const lastMsgResponse = {
+                                profile: getUserData.profile[0] ? getUserData.profile[0].res : "",
+                                chatRoomId: getChatRoom.chatRoomId,
+                                receiverId: user_id,
+                                username: getUserData.username,
+                                message: getLastMessage.message,
+                                unreadMessage: count
+                            }
+                            response.push(lastMsgResponse);
                         }
 
-                        const lastMsgResponse = {
-                            profile: getUserData.profile[0] ? getUserData.profile[0].res : "",
-                            chatRoomId: getChatRoom.chatRoomId,
-                            receiverId: user_id,
-                            username: getUserData.username,
-                            message: getLastMessage.message,
-                            unreadMessage: count
-                        }
-                        response.push(lastMsgResponse);
                     }
 
                 }
