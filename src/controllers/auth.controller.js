@@ -1713,7 +1713,6 @@ exports.changePassword = async (req, res) => {
 
 exports.forgetPassword = async (req, res) => {
     try {
-
         const email = req.body.email;
         const findUser = await authModel.findOne({ email: email });
         console.log("findUser::", findUser);
