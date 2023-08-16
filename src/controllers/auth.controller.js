@@ -291,162 +291,276 @@ exports.logout = async (req, res) => {
     }
 }
 
+// exports.userList = async (req, res) => {
+//     try {
+//         let userId = req.params.id;
+//         let vehicleType = req.body.vehicle_type;
+//         let page = parseInt(req.query.page) || 1;
+//         let limit = parseInt(req.query.limit) || 10;
+
+//         // --- get user whithout user that id pass --- //
+//         const blockUserId = [];
+//         const getUser = await authModel.find({
+//             _id: {
+//                 $ne: userId
+//             }
+//         }).select('-__v').sort({ createdAt: -1 });
+//         console.log("getUser::", getUser.length);
+
+//         if (getUser.length == 0) {
+
+//             res.status(status.NOT_FOUND).json(
+//                 {
+//                     message: "Data Not Exist",
+//                     status: true,
+//                     code: 200,
+//                     statusCode: 1,
+//                     data: []
+//                 }
+//             )
+
+//         } else {
+
+//             const vehicleDetails = [];
+//             for (const userDetails of getUser) {
+
+//                 const findBlockUser = await Block.find({
+//                     user_id: userId,
+//                     block_user_id: userDetails._id
+//                 });
+
+//                 if (findBlockUser.length != 0) {
+
+//                 } else {
+
+//                     var finalChatId = "";
+//                     finalChatId = await chatRoomModel.find(
+//                         {
+//                             user1: userDetails._id,
+//                             user2: userId,
+//                         }
+//                     );
+
+//                     if (finalChatId.length == 0) {
+//                         finalChatId = await chatRoomModel.find(
+//                             {
+//                                 user2: userDetails._id,
+//                                 user1: userId,
+//                             }
+//                         );
+
+//                     }
+
+//                     console.log("finalChatId::::", finalChatId);
+
+//                     const arrVehicleData = [];
+//                     var isVehicleData = false;
+//                     for (const vehicleData of userDetails.vehicle) {
+
+//                         if (vehicleData.vehicle_type == vehicleType) {
+//                             isVehicleData = true;
+//                             const response = {
+//                                 vehicleImageId: vehicleData.vehicle_img_id,
+//                                 model: vehicleData.model,
+//                                 type: vehicleData.vehicle_type,
+//                                 year: vehicleData.year,
+//                                 trim: vehicleData.trim,
+//                                 dailyDriving: vehicleData.daily_driving,
+//                                 unit: vehicleData.unit,
+//                                 duration: vehicleData.duration,
+//                                 distance: vehicleData.distance
+//                             }
+//                             arrVehicleData.push(response);
+//                         }
+//                     }
+//                     if (isVehicleData) {
+//                         const response = {
+//                             user_id: userDetails._id,
+//                             profile: userDetails.profile[0] ? userDetails.profile[0].res : "",
+//                             userName: userDetails.username,
+//                             email: userDetails.email,
+//                             age: userDetails.age,
+//                             gender: userDetails.gender,
+//                             phone: `${userDetails.country_code}${userDetails.phone_number}`,
+//                             chatRoomId: finalChatId[0] ? finalChatId[0]._id : "",
+//                             vehicles: arrVehicleData
+//                         }
+//                         vehicleDetails.push(response)
+//                     }
+
+//                     // vehicleDetails.push(userDetails)
+//                 }
+
+//             }
+
+//             // --------- first 64aee961671f9ca786fdce03 this user ----------
+
+//             function moveElementToFront(arr, userId) {
+//                 const index = arr.findIndex((item) => item.user_id == userId);
+//                 if (index > 0) {
+//                     const element = arr.splice(index, 1)[0];
+//                     arr.unshift(element);
+//                 }
+//             }
+
+//             const targetUserId = "64aee961671f9ca786fdce03";
+//             moveElementToFront(vehicleDetails, targetUserId);
+
+//             console.log(vehicleDetails);
+
+//             // --------- first 64aee961671f9ca786fdce03 this user ----------
+
+//             function paginateArray(array, currentPage, itemsPerPage) {
+//                 const startIndex = (currentPage - 1) * itemsPerPage;
+//                 const endIndex = startIndex + itemsPerPage;
+
+//                 return array.slice(startIndex, endIndex);
+//             }
+
+//             const paginatedArray = paginateArray(vehicleDetails, page, limit);
+//             console.log(paginatedArray);
+
+//             res.status(status.OK).json(
+//                 {
+//                     message: "Get User Detail Successfully",
+//                     status: true,
+//                     code: 200,
+//                     statusCode: 1,
+//                     data: paginatedArray
+//                 }
+//             )
+
+//         }
+//     } catch (error) {
+
+//         console.log("userList-Error:", error);
+//         res.status(status.INTERNAL_SERVER_ERROR).json(
+//             {
+//                 message: "Something Went Wrong",
+//                 status: false,
+//                 code: 500,
+//                 statusCode: 0,
+//                 error: error.message
+//             }
+//         )
+
+//     }
+// }
+
+
 exports.userList = async (req, res) => {
     try {
-
         let userId = req.params.id;
         let vehicleType = req.body.vehicle_type;
         let page = parseInt(req.query.page) || 1;
         let limit = parseInt(req.query.limit) || 10;
 
-        // --- get user whithout user that id pass --- //
-        const blockUserId = [];
-        const getUser = await authModel.find({
-            _id: {
-                $ne: userId
-            }
-        }).select('-__v').sort({ createdAt: -1 });
-        console.log("getUser::", getUser.length);
+        const getUser = await authModel.find(
+            { _id: { $ne: userId } },
+            { __v: 0 }
+        ).sort({ createdAt: -1 });
 
-        if (getUser.length == 0) {
-
-            res.status(status.NOT_FOUND).json(
-                {
-                    message: "Data Not Exist",
-                    status: true,
-                    code: 200,
-                    statusCode: 1,
-                    data: []
-                }
-            )
-
-        } else {
-
-            const vehicleDetails = [];
-            for (const userDetails of getUser) {
-
-                const findBlockUser = await Block.find({
-                    user_id: userId,
-                    block_user_id: userDetails._id
-                });
-
-                if (findBlockUser.length != 0) {
-
-                } else {
-
-                    var finalChatId = "";
-                    finalChatId = await chatRoomModel.find(
-                        {
-                            user1: userDetails._id,
-                            user2: userId,
-                        }
-                    );
-
-                    if (finalChatId.length == 0) {
-                        finalChatId = await chatRoomModel.find(
-                            {
-                                user2: userDetails._id,
-                                user1: userId,
-                            }
-                        );
-
-                    }
-
-                    console.log("finalChatId::::", finalChatId);
-
-                    const arrVehicleData = [];
-                    var isVehicleData = false;
-                    for (const vehicleData of userDetails.vehicle) {
-
-                        if (vehicleData.vehicle_type == vehicleType) {
-                            isVehicleData = true;
-                            const response = {
-                                vehicleImageId: vehicleData.vehicle_img_id,
-                                model: vehicleData.model,
-                                type: vehicleData.vehicle_type,
-                                year: vehicleData.year,
-                                trim: vehicleData.trim,
-                                dailyDriving: vehicleData.daily_driving,
-                                unit: vehicleData.unit,
-                                duration: vehicleData.duration,
-                                distance: vehicleData.distance
-                            }
-                            arrVehicleData.push(response);
-                        }
-                    }
-                    if (isVehicleData) {
-                        const response = {
-                            user_id: userDetails._id,
-                            profile: userDetails.profile[0] ? userDetails.profile[0].res : "",
-                            userName: userDetails.username,
-                            email: userDetails.email,
-                            age: userDetails.age,
-                            gender: userDetails.gender,
-                            phone: `${userDetails.country_code}${userDetails.phone_number}`,
-                            chatRoomId: finalChatId[0] ? finalChatId[0]._id : "",
-                            vehicles: arrVehicleData
-                        }
-                        vehicleDetails.push(response)
-                    }
-
-                    // vehicleDetails.push(userDetails)
-                }
-
-            }
-
-            // --------- first 64aee961671f9ca786fdce03 this user ----------
-
-            function moveElementToFront(arr, userId) {
-                const index = arr.findIndex((item) => item.user_id == userId);
-                if (index > 0) {
-                    const element = arr.splice(index, 1)[0];
-                    arr.unshift(element);
-                }
-            }
-
-            const targetUserId = "64aee961671f9ca786fdce03";
-            moveElementToFront(vehicleDetails, targetUserId);
-
-            console.log(vehicleDetails);
-
-            // --------- first 64aee961671f9ca786fdce03 this user ----------
-
-            function paginateArray(array, currentPage, itemsPerPage) {
-                const startIndex = (currentPage - 1) * itemsPerPage;
-                const endIndex = startIndex + itemsPerPage;
-
-                return array.slice(startIndex, endIndex);
-            }
-
-            const paginatedArray = paginateArray(vehicleDetails, page, limit);
-            console.log(paginatedArray);
-
-            res.status(status.OK).json(
-                {
-                    message: "Get User Detail Successfully",
-                    status: true,
-                    code: 200,
-                    statusCode: 1,
-                    data: paginatedArray
-                }
-            )
-
+        if (getUser.length === 0) {
+            return res.status(status.NOT_FOUND).json({
+                message: "Data Not Exist",
+                status: true,
+                code: 200,
+                statusCode: 1,
+                data: [],
+            });
         }
+
+        const blockUsers = await Block.find({
+            user_id: userId,
+            block_user_id: { $in: getUser.map(user => user._id) },
+        });
+
+        const finalChatIds = await chatRoomModel.find({
+            $or: [
+                { user1: userId, user2: { $in: getUser.map(user => user._id) } },
+                { user2: userId, user1: { $in: getUser.map(user => user._id) } },
+            ],
+        });
+
+        const vehicleDetails = getUser
+            .filter(userDetails =>
+                !blockUsers.some(blockUser => blockUser.block_user_id.equals(userDetails._id))
+            )
+            .map(userDetails => {
+                const filteredVehicles = userDetails.vehicle.filter(
+                    vehicleData => vehicleData.vehicle_type === vehicleType
+                );
+
+                if (filteredVehicles.length === 0) {
+                    return null;
+                }
+
+                const response = {
+                    user_id: userDetails._id,
+                    profile: userDetails.profile[0]?.res || "",
+                    userName: userDetails.username,
+                    email: userDetails.email,
+                    age: userDetails.age,
+                    gender: userDetails.gender,
+                    phone: `${userDetails.country_code}${userDetails.phone_number}`,
+                    chatRoomId: finalChatIds.find(chatId =>
+                        (chatId.user1.equals(userId) && chatId.user2.equals(userDetails._id)) ||
+                        (chatId.user2.equals(userId) && chatId.user1.equals(userDetails._id))
+                    )?._id || "",
+                    vehicles: filteredVehicles.map(vehicleData => ({
+                        vehicleImageId: vehicleData.vehicle_img_id,
+                        model: vehicleData.model,
+                        type: vehicleData.vehicle_type,
+                        year: vehicleData.year,
+                        trim: vehicleData.trim,
+                        dailyDriving: vehicleData.daily_driving,
+                        unit: vehicleData.unit,
+                        duration: vehicleData.duration,
+                        distance: vehicleData.distance,
+                    })),
+                };
+
+                return response;
+            })
+            .filter(Boolean);
+
+        const targetUserId = "64aee961671f9ca786fdce03";
+        const targetUserIndex = vehicleDetails.findIndex(user => user.user_id === targetUserId);
+
+        if (targetUserIndex > 0) {
+            const [targetUser] = vehicleDetails.splice(targetUserIndex, 1);
+            vehicleDetails.unshift(targetUser);
+        }
+
+        const startIndex = (page - 1) * limit;
+        const endIndex = startIndex + limit;
+        const paginatedArray = vehicleDetails.slice(startIndex, endIndex);
+
+        return res.status(status.OK).json({
+            message: "Get User Detail Successfully",
+            status: true,
+            code: 200,
+            statusCode: 1,
+            data: paginatedArray,
+        });
     } catch (error) {
-
         console.log("userList-Error:", error);
-        res.status(status.INTERNAL_SERVER_ERROR).json(
-            {
-                message: "Something Went Wrong",
-                status: false,
-                code: 500,
-                statusCode: 0,
-                error: error.message
-            }
-        )
-
+        return res.status(status.INTERNAL_SERVER_ERROR).json({
+            message: "Something Went Wrong",
+            status: false,
+            code: 500,
+            statusCode: 0,
+            error: error.message,
+        });
     }
-}
+};
+
+
+
+
+
+
+
 
 exports.userProfile = async (req, res) => {
     try {
